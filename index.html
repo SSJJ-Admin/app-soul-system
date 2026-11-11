@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Soul System Jiu Jitsu — Executive Club</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js pour le Radar de Performance -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            carbone: '#090A0C',
+            carbone: '#08090B',
             anthracite: '#121418',
             cardbg: '#181A1F',
             gold: {
@@ -30,7 +32,6 @@
     }
   </script>
   <style>
-    /* FOND CARBONE LUXE AVEC REFLETS ARGENT & OR */
     body {
       background-color: #08090B;
       background-image: 
@@ -64,7 +65,6 @@
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
     }
 
-    /* BADGE CEINTURE MARRON */
     .brown-belt {
       background: linear-gradient(90deg, #3E2723 0%, #5D4037 70%, #111 70%, #111 100%);
       border: 1px solid #8D6E63;
@@ -74,13 +74,13 @@
 
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-  <!-- TOP BAR & BRANDING LUXE -->
+  <!-- TOP BAR -->
   <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4 rounded-2xl card-luxe mb-8">
     <div class="flex items-center space-x-4">
-      <img src="https://lh3.googleusercontent.com/d/1daK1EnKZNnBTN5XQ8d_ZLyRyOt2vBAxL" alt="Soul System JJ" class="h-14 w-auto object-contain filter drop-shadow-md">
+      <img src="https://lh3.googleusercontent.com/d/1daK1EnKZNnBTN5XQ8d_ZLyRyOt2vBAxL" alt="Soul System JJ" class="h-14 w-auto object-contain">
       <div>
         <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
-        <p class="text-xs text-silver tracking-wider uppercase">Executive Academy & Coaching</p>
+        <p class="text-xs text-silver tracking-wider uppercase">Executive Academy & Performance</p>
       </div>
     </div>
     
@@ -95,157 +95,218 @@
     </div>
   </header>
 
-  <!-- DASHBOARD PRINCIPAL -->
+  <!-- CONTENU PRINCIPAL -->
   <main class="w-full max-w-7xl mx-auto space-y-8">
     
-    <!-- SECTION HEAD COACH PROFIL -->
+    <!-- HEADER PROFESSEUR -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      
-      <!-- PROFIL PROFESSEUR (MARTIN HUAMBACHANO) -->
       <div class="card-luxe p-6 rounded-2xl relative overflow-hidden">
-        <div class="absolute -right-8 -top-8 w-32 h-32 bg-gold/5 rounded-full blur-2xl"></div>
         <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-4">Direction Technique</h2>
-        
-        <div class="flex items-center space-x-4 mb-6">
-          <div class="w-16 h-16 rounded-2xl bg-anthracite border-2 border-gold/60 flex items-center justify-center font-bold text-gold text-2xl shadow-lg">
+        <div class="flex items-center space-x-4 mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-anthracite border border-gold/60 flex items-center justify-center font-bold text-gold text-xl">
             MH
           </div>
           <div>
-            <h3 class="font-bold text-xl text-white">Martin Huambachano</h3>
-            <p class="text-xs gold-gradient-text font-semibold">Fondateur & Professeur Principal</p>
+            <h3 class="font-bold text-lg text-white">Martin Huambachano</h3>
+            <p class="text-xs gold-gradient-text font-semibold">Fondateur & Head Coach</p>
           </div>
         </div>
-
-        <!-- CEINTURE MARRON DISPLAY -->
-        <div class="space-y-3">
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-gray-400">Grade Actuel</span>
-            <span class="text-amber-600 font-bold">Ceinture Marron</span>
-          </div>
-          <div class="w-full h-7 rounded-md brown-belt relative flex items-center justify-end pr-3 shadow-inner">
-            <!-- Barrettes noires avec 2 barrettes blanches -->
-            <div class="h-full w-12 bg-black flex items-center justify-center space-x-1 px-1 border-l border-white/20">
-              <div class="w-1.5 h-4 bg-white rounded-sm"></div>
-              <div class="w-1.5 h-4 bg-white rounded-sm"></div>
-            </div>
+        <div class="w-full h-6 rounded brown-belt relative flex items-center justify-end pr-2 shadow-inner">
+          <div class="h-full w-10 bg-black flex items-center justify-center space-x-1 px-1">
+            <div class="w-1 h-3 bg-white rounded-sm"></div>
+            <div class="w-1 h-3 bg-white rounded-sm"></div>
           </div>
         </div>
       </div>
 
-      <!-- APERÇU DASHBOARD ELEVES & PRESENCES -->
-      <div class="card-luxe p-6 rounded-2xl">
-        <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-4">Vue d'ensemble Académie</h2>
-        <div class="grid grid-cols-2 gap-4 text-center">
-          <div class="bg-carbone/60 p-4 rounded-xl border border-white/5">
-            <p class="text-2xl font-black gold-gradient-text">42</p>
-            <p class="text-xs text-gray-400 mt-1">Adhérents Actifs</p>
-          </div>
-          <div class="bg-carbone/60 p-4 rounded-xl border border-white/5">
-            <p class="text-2xl font-black silver-gradient-text">18</p>
-            <p class="text-xs text-gray-400 mt-1">Présents ce soir</p>
-          </div>
+      <!-- PROMPT SELECTION ELEVE -->
+      <div class="card-luxe p-6 rounded-2xl md:col-span-2 flex flex-col justify-between">
+        <div>
+          <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-2">Sélection d'un Éléve pour Analyse</h2>
+          <p class="text-xs text-gray-400 mb-4">Rechercher ou sélectionner un adhérent pour consulter son Radar de Performance et valider ses grades.</p>
         </div>
-        <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center text-xs">
-          <span class="text-gray-400">Prochaine Session :</span>
-          <span class="text-gold font-semibold">19h30 — BJJ Gi (Adultes)</span>
-        </div>
-      </div>
-
-      <!-- STATUS RESEAU & BASE DRIVE -->
-      <div class="card-luxe p-6 rounded-2xl">
-        <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-4">Système & Connectivité</h2>
-        <div class="space-y-3">
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-gray-300">Formulaire Inscription</span>
-            <span class="text-emerald-400 font-semibold flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>En ligne (V7)</span>
-          </div>
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-gray-300">Base Sheets (04_CLUB)</span>
-            <span class="text-emerald-400 font-semibold flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>Connecté</span>
-          </div>
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-gray-300">Module 3 : Radar Perf.</span>
-            <span class="text-gold font-semibold flex items-center"><span class="w-2 h-2 rounded-full bg-gold animate-pulse mr-2"></span>Prêt pour Étape 4</span>
-          </div>
+        <div class="flex flex-wrap gap-3">
+          <select class="bg-carbone border border-gold/30 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-gold flex-1">
+            <option>Jean Dupont — Ceinture Bleue (1 Barrette)</option>
+            <option>Alexandre Silva — Ceinture Blanche (3 Barrettes)</option>
+            <option>Sophie Martin — Ceinture Violette (0 Barrette)</option>
+          </select>
+          <button class="px-5 py-2 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
+            Charger le Profil
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- ÉTAPE 3 : LECTEUR VIDEO MASTERCLASS 4K (STYLE MAAT) -->
-    <section class="card-luxe p-6 rounded-2xl">
-      <div class="flex flex-wrap items-center justify-between mb-6">
-        <div>
-          <h2 class="text-lg font-bold text-white uppercase tracking-wider">Masterclass 4K — Bibliothèque Technique</h2>
-          <p class="text-xs text-gray-400">Espace de perfectionnement vidéo réservé aux élèves de l'Académie</p>
+    <!-- ÉTAPE 4 : RADAR DE PERFORMANCE & SAISIE DES STATISTIQUES -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- GRAPHIC RADAR 360° -->
+      <div class="lg:col-span-7 card-luxe p-6 rounded-2xl flex flex-col justify-between">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <h2 class="text-base font-bold text-white uppercase tracking-wider">Radar de Compétences 360°</h2>
+            <p class="text-xs text-gold">Élève sélectionné : Jean Dupont</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">
+            ANALYSE TACTIQUE
+          </span>
         </div>
-        <span class="px-3 py-1 rounded-full text-xs font-bold bg-gold/10 text-gold border border-gold/30">
-          STUDENT DASHBOARD
-        </span>
+        
+        <div class="relative w-full aspect-square max-h-[380px] mx-auto flex items-center justify-center">
+          <canvas id="performanceRadar"></canvas>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- SAISIE DES STATS DE SPARRING -->
+      <div class="lg:col-span-5 card-luxe p-6 rounded-2xl space-y-4">
+        <h2 class="text-base font-bold text-white uppercase tracking-wider">Saisie des Stats Sparring</h2>
+        <p class="text-xs text-gray-400">Entrez les réussites et soumissions obtenues durant la session :</p>
         
-        <!-- LECTEUR VIDEO FLUIDE -->
-        <div class="lg:col-span-2 space-y-4">
-          <div class="relative w-full aspect-video rounded-xl overflow-hidden border border-gold/30 bg-black shadow-2xl">
-            <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?controls=1" title="BJJ Masterclass" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          </div>
-          <div>
-            <h3 class="text-base font-bold text-white">Module #04 — X-Guard Sweep to Back Take</h3>
-            <p class="text-xs text-gold">Instructeur : Prof. Martin Huambachano</p>
-          </div>
-        </div>
-
-        <!-- SELECTION DES MODULES & FICHE TECHNIQUE -->
-        <div class="space-y-4">
-          <h4 class="text-xs font-bold text-silver uppercase tracking-wider">Programme du Module</h4>
+        <div class="space-y-3 max-h-[320px] overflow-y-auto pr-1">
           
-          <div class="space-y-2">
-            <button class="w-full text-left p-3 rounded-xl bg-gold/10 border border-gold/40 flex items-center justify-between">
-              <div>
-                <p class="text-xs font-bold text-gold">1. Guard Retention & Frame</p>
-                <p class="text-[10px] text-gray-400">04:15 • Fondamentaux</p>
-              </div>
-              <span class="text-xs text-gold">▶</span>
-            </button>
-
-            <button class="w-full text-left p-3 rounded-xl bg-carbone border border-white/5 flex items-center justify-between hover:border-gold/20 transition">
-              <div>
-                <p class="text-xs font-bold text-white">2. X-Guard Entry & Balance</p>
-                <p class="text-[10px] text-gray-400">06:30 • Avancé</p>
-              </div>
-              <span class="text-xs text-gray-500">▶</span>
-            </button>
-
-            <button class="w-full text-left p-3 rounded-xl bg-carbone border border-white/5 flex items-center justify-between hover:border-gold/20 transition">
-              <div>
-                <p class="text-xs font-bold text-white">3. Leg Locks & Heel Hooks Safety</p>
-                <p class="text-[10px] text-gray-400">08:45 • Master</p>
-              </div>
-              <span class="text-xs text-gray-500">▶</span>
-            </button>
+          <!-- Ligne Soumissions -->
+          <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+            <div>
+              <p class="font-bold text-white">Soumissions (Taps)</p>
+              <p class="text-[10px] text-gray-400">Réussies vs Subies</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <input type="number" value="4" class="w-12 bg-anthracite border border-gold/40 text-center rounded p-1 text-gold font-bold">
+              <span class="text-gray-500">/</span>
+              <input type="number" value="1" class="w-12 bg-anthracite border border-white/10 text-center rounded p-1 text-gray-400">
+            </div>
           </div>
 
-          <!-- FICHE TECHNIQUE ET CONTRE-ATTAQUES -->
-          <div class="bg-carbone/80 p-4 rounded-xl border border-white/10 text-xs space-y-2">
-            <p class="font-bold text-gold uppercase text-[11px]">💡 Points Clés de la Fiche :</p>
-            <ul class="list-disc list-inside text-gray-300 space-y-1 text-[11px]">
-              <li>Créer de l'espace avec le genou bouclier.</li>
-              <li>Connecter le crochet sous la cuisse opposée.</li>
-              <li>Déséquilibrer vers l'arrière avant la bascule.</li>
-            </ul>
+          <!-- Ligne Renversements -->
+          <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+            <div>
+              <p class="font-bold text-white">Renversements (Sweeps)</p>
+              <p class="text-[10px] text-gray-400">Réussis vs Subis</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <input type="number" value="6" class="w-12 bg-anthracite border border-gold/40 text-center rounded p-1 text-gold font-bold">
+              <span class="text-gray-500">/</span>
+              <input type="number" value="2" class="w-12 bg-anthracite border border-white/10 text-center rounded p-1 text-gray-400">
+            </div>
           </div>
+
+          <!-- Ligne Amenés au sol -->
+          <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+            <div>
+              <p class="font-bold text-white">Amenés au Sol (Takedowns)</p>
+              <p class="text-[10px] text-gray-400">Réussis vs Subis</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <input type="number" value="3" class="w-12 bg-anthracite border border-gold/40 text-center rounded p-1 text-gold font-bold">
+              <span class="text-gray-500">/</span>
+              <input type="number" value="0" class="w-12 bg-anthracite border border-white/10 text-center rounded p-1 text-gray-400">
+            </div>
+          </div>
+
+          <!-- Ligne Passages de Garde -->
+          <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+            <div>
+              <p class="font-bold text-white">Passages de Garde</p>
+              <p class="text-[10px] text-gray-400">Réussis vs Subis</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <input type="number" value="5" class="w-12 bg-anthracite border border-gold/40 text-center rounded p-1 text-gold font-bold">
+              <span class="text-gray-500">/</span>
+              <input type="number" value="2" class="w-12 bg-anthracite border border-white/10 text-center rounded p-1 text-gray-400">
+            </div>
+          </div>
+
         </div>
 
+        <button class="w-full py-2.5 rounded-xl bg-gold/20 border border-gold text-gold font-bold text-xs hover:bg-gold hover:text-black transition">
+          💾 Mettre à jour le Radar du Joueur
+        </button>
+      </div>
+
+    </div>
+
+    <!-- MODULE DE VALIDATION LIBRE DES BARRETTES / CEINTURES (PROFESSEUR) -->
+    <section class="card-luxe p-6 rounded-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="text-base font-bold text-white uppercase tracking-wider">Validation des Grades & Barrettes (Espace Professeur)</h2>
+          <p class="text-xs text-gray-400">Attribuez librement des barrettes ou promouvez l'élève à la ceinture supérieure</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <button class="p-4 rounded-xl bg-carbone border border-white/10 text-center hover:border-gold transition">
+          <p class="text-xs text-gray-400 mb-1">Ajouter Barrette</p>
+          <p class="text-lg font-bold text-gold">+ 1 Barrette</p>
+        </button>
+        <button class="p-4 rounded-xl bg-carbone border border-white/10 text-center hover:border-gold transition">
+          <p class="text-xs text-gray-400 mb-1">Retirer Barrette</p>
+          <p class="text-lg font-bold text-gray-400">- 1 Barrette</p>
+        </button>
+        <button class="p-4 rounded-xl bg-blue-900/30 border border-blue-500/40 text-center hover:border-blue-400 transition">
+          <p class="text-xs text-blue-300 mb-1">Promotion Grade</p>
+          <p class="text-base font-bold text-blue-400">Ceinture Bleue</p>
+        </button>
+        <button class="p-4 rounded-xl bg-purple-900/30 border border-purple-500/40 text-center hover:border-purple-400 transition">
+          <p class="text-xs text-purple-300 mb-1">Promotion Grade</p>
+          <p class="text-base font-bold text-purple-400">Ceinture Violette</p>
+        </button>
       </div>
     </section>
 
   </main>
 
-  <!-- FOOTER -->
   <footer class="w-full max-w-7xl mx-auto text-center text-xs text-gray-500 py-6 mt-8 border-t border-white/5">
     Soul System Jiu Jitsu © 2026 — Executive Application v2.0
   </footer>
+
+  <!-- INITIALISATION DU CHART RADAR -->
+  <script>
+    const ctx = document.getElementById('performanceRadar').getContext('2d');
+    new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: [
+          'Soumissions', 
+          'Renversements', 
+          'Passages', 
+          'Amenés au sol', 
+          'Contrôle Latéral', 
+          'Montée / Dos', 
+          'Sorties', 
+          'Guard Retention'
+        ],
+        datasets: [{
+          label: 'Profil Élève',
+          data: [80, 75, 85, 60, 70, 90, 65, 80],
+          backgroundColor: 'rgba(212, 175, 55, 0.25)',
+          borderColor: '#D4AF37',
+          pointBackgroundColor: '#FFF099',
+          pointBorderColor: '#AA820A',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        scales: {
+          r: {
+            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+            pointLabels: {
+              color: '#CBD5E1',
+              font: { size: 10, weight: 'bold' }
+            },
+            ticks: { display: false },
+            suggestedMin: 0,
+            suggestedMax: 100
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  </script>
 
 </body>
 </html>
