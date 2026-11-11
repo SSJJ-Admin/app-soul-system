@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Soul System App</title>
   
-  <!-- CONFIGURATION PWA (ICÔNE ET NOM EXACT "Soul System App") -->
+  <!-- CONFIGURATION PWA (ICÔNE SANS DÉFORMATION SUR IPHONE & ANDROID) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Soul System App">
@@ -80,24 +80,26 @@
       border: 1px solid #8D6E63;
     }
 
-    /* FIX DEFINITIF LOGO PNG TRANSPARENT PROPORTIONNEL SANS DEFORMATION */
+    /* PRESERVATION STRICTE DES PROPORTIONS DU PNG TRANSPARENT */
     .brand-logo-img {
-      height: 52px !important;
+      max-height: 52px;
       width: auto !important;
-      max-width: 220px !important;
-      object-fit: contain !important;
-      aspect-ratio: auto !important;
-      background: transparent !important;
+      height: auto !important;
+      object-fit: contain;
+      aspect-ratio: auto;
+      display: block;
     }
   </style>
 </head>
 
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-  <!-- EN-TÊTE AVEC LE LOGO PNG NET ET TRANSPARENT -->
+  <!-- EN-TÊTE AVEC AFICHE DU LOGO TRANSPARENT SANS DÉFORMATION -->
   <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4 rounded-2xl card-luxe mb-6">
     <div class="flex items-center space-x-4">
-      <img src="./Logo.png" alt="Soul System App" class="brand-logo-img filter drop-shadow hover:opacity-90 transition" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000';">
+      <div class="flex items-center justify-center p-1">
+        <img src="./Logo.png" alt="Soul System App" class="brand-logo-img filter drop-shadow-md" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000';">
+      </div>
       <div>
         <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System App</h1>
         <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
@@ -218,7 +220,6 @@
           </div>
 
           <div class="space-y-2.5 max-h-[400px] overflow-y-auto pr-1 text-xs">
-            
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">1. Amenés au Sol (Takedowns)</span>
               <div class="flex space-x-2">
@@ -298,7 +299,6 @@
                 <input type="number" id="subLoss" value="1" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
-
           </div>
 
           <button onclick="enregistrerStatsSparring()" class="w-full py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
@@ -383,7 +383,7 @@
 
     </div>
 
-    <!-- ONGLET 3 : MON PROFIL ET GESTION LIBRE DES GRADES -->
+    <!-- ONGLET 3 : MON PROFIL ET GESTION DES GRADES -->
     <div id="sectionMonProfil" class="hidden card-luxe p-6 rounded-2xl space-y-6">
       <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4">
         <div>
