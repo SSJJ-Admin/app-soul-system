@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Soul System Jiu Jitsu — Executive Academy</title>
+  <title>Soul System Jiu Jitsu — Executive Club</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -11,13 +11,18 @@
       theme: {
         extend: {
           colors: {
-            carbone: '#0A0B0D',
+            carbone: '#090A0C',
             anthracite: '#121418',
-            cardbg: '#16191E',
+            cardbg: '#181A1F',
             gold: {
-              light: '#F4D068',
+              light: '#F3E5AB',
               DEFAULT: '#D4AF37',
-              dark: '#9A760B',
+              dark: '#AA820A',
+            },
+            silver: {
+              light: '#F8FAFC',
+              DEFAULT: '#CBD5E1',
+              dark: '#64748B'
             }
           }
         }
@@ -25,200 +30,221 @@
     }
   </script>
   <style>
-    /* Texture Carbone Tissée Haute DÉFINITION */
+    /* FOND CARBONE LUXE AVEC REFLETS ARGENT & OR */
     body {
-      background-color: #0A0B0D;
+      background-color: #08090B;
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 60%),
-        linear-gradient(27deg, #0F1115 5px, transparent 5px),
-        linear-gradient(207deg, #0F1115 5px, transparent 5px),
-        linear-gradient(117deg, #0F1115 5px, transparent 5px),
-        linear-gradient(297deg, #0F1115 5px, transparent 5px);
-      background-size: 100% 100%, 12px 12px, 12px 12px, 12px 12px, 12px 12px;
-      background-position: 0 0, 0 0, 6px 6px, 6px 0, 0 6px;
+        radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(203, 213, 225, 0.05) 0%, transparent 40%),
+        linear-gradient(45deg, #111317 25%, transparent 25%), 
+        linear-gradient(-45deg, #111317 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #111317 75%),
+        linear-gradient(-45deg, transparent 75%, #111317 75%);
+      background-size: 100% 100%, 100% 100%, 8px 8px, 8px 8px, 8px 8px, 8px 8px;
       color: #E2E8F0;
       font-family: system-ui, -apple-system, sans-serif;
     }
 
     .gold-gradient-text {
-      background: linear-gradient(135deg, #FFF099 0%, #D4AF37 50%, #9A760B 100%);
+      background: linear-gradient(135deg, #FFF099 0%, #D4AF37 50%, #AA820A 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .gold-border {
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    .silver-gradient-text {
+      background: linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 50%, #64748B 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .gold-glow {
-      box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.2);
-    }
-
-    .glass-card {
+    .card-luxe {
       background: rgba(18, 20, 24, 0.85);
       backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    }
+
+    /* BADGE CEINTURE MARRON */
+    .brown-belt {
+      background: linear-gradient(90deg, #3E2723 0%, #5D4037 70%, #111 70%, #111 100%);
+      border: 1px solid #8D6E63;
     }
   </style>
 </head>
+
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-  <!-- EN-TÊTE HAUTE GAMME -->
-  <header class="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between p-5 rounded-2xl glass-card gold-border gold-glow mb-8">
-    <div class="flex items-center space-x-4 mb-4 md:mb-0">
-      <img src="https://lh3.googleusercontent.com/d/1daK1EnKZNnBTN5XQ8d_ZLyRyOt2vBAxL" alt="Soul System JJ" class="h-14 w-auto object-contain filter drop-shadow">
+  <!-- TOP BAR & BRANDING LUXE -->
+  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4 rounded-2xl card-luxe mb-8">
+    <div class="flex items-center space-x-4">
+      <img src="https://lh3.googleusercontent.com/d/1daK1EnKZNnBTN5XQ8d_ZLyRyOt2vBAxL" alt="Soul System JJ" class="h-14 w-auto object-contain filter drop-shadow-md">
       <div>
         <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
-        <p class="text-xs text-gray-400 tracking-wider">EXECUTIVE ACADEMY & PERFORMANCE</p>
+        <p class="text-xs text-silver tracking-wider uppercase">Executive Academy & Coaching</p>
       </div>
     </div>
     
-    <!-- MENU DE NAVIGATION DASHBOARD -->
-    <nav class="flex items-center space-x-2 bg-black/40 p-1.5 rounded-xl gold-border">
-      <button class="px-4 py-2 rounded-lg text-xs font-bold bg-gold text-black shadow-lg">● Student Dashboard</button>
-      <button class="px-4 py-2 rounded-lg text-xs font-bold text-gray-400 hover:text-gold transition">Coach & Admin</button>
-    </nav>
+    <div class="flex items-center space-x-4 mt-3 md:mt-0">
+      <div class="text-right">
+        <p class="text-xs text-gray-400">Statut Compte</p>
+        <p class="text-xs font-bold text-gold">HEAD COACH / PROFESSEUR</p>
+      </div>
+      <div class="w-10 h-10 rounded-full border border-gold/40 flex items-center justify-center bg-gold/10 text-gold font-bold">
+        MH
+      </div>
+    </div>
   </header>
 
-  <main class="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+  <!-- DASHBOARD PRINCIPAL -->
+  <main class="w-full max-w-7xl mx-auto space-y-8">
     
-    <!-- COLONNE GAUCHE : PROFIL & PROGRESSION CEINTURE -->
-    <section class="space-y-6">
+    <!-- SECTION HEAD COACH PROFIL -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       
-      <!-- CARTE ADHÉRENT ET CEINTURE -->
-      <div class="glass-card p-6 rounded-2xl gold-border relative overflow-hidden">
-        <div class="flex items-center justify-between mb-4">
-          <span class="text-xs font-bold tracking-widest text-gold uppercase">Profil Élève</span>
-          <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">SAISON 2026-2027</span>
-        </div>
-
+      <!-- PROFIL PROFESSEUR (MARTIN HUAMBACHANO) -->
+      <div class="card-luxe p-6 rounded-2xl relative overflow-hidden">
+        <div class="absolute -right-8 -top-8 w-32 h-32 bg-gold/5 rounded-full blur-2xl"></div>
+        <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-4">Direction Technique</h2>
+        
         <div class="flex items-center space-x-4 mb-6">
-          <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-gold-dark to-gold flex items-center justify-center font-black text-black text-2xl shadow-xl border-2 border-black">
+          <div class="w-16 h-16 rounded-2xl bg-anthracite border-2 border-gold/60 flex items-center justify-center font-bold text-gold text-2xl shadow-lg">
             MH
           </div>
           <div>
-            <h2 class="font-extrabold text-xl text-white">Martin Huambachano</h2>
-            <p class="text-xs text-gray-400">Section : Adultes — Compétition</p>
+            <h3 class="font-bold text-xl text-white">Martin Huambachano</h3>
+            <p class="text-xs gold-gradient-text font-semibold">Fondateur & Professeur Principal</p>
           </div>
         </div>
 
-        <!-- REPRÉSENTATION VISUELLE CEINTURE BJJ -->
-        <div class="mb-6 bg-black/60 p-4 rounded-xl border border-gray-800">
-          <div class="text-xs text-gray-400 mb-2 flex justify-between">
-            <span>Grade Actuel</span>
-            <span class="text-white font-bold">Ceinture Bleue</span>
+        <!-- CEINTURE MARRON DISPLAY -->
+        <div class="space-y-3">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-gray-400">Grade Actuel</span>
+            <span class="text-amber-600 font-bold">Ceinture Marron</span>
           </div>
-          <!-- VISUEL BANDE CEINTURE BLEUE DE JIU JITSU -->
-          <div class="w-full h-10 bg-blue-700 rounded-md shadow-inner flex items-center justify-end px-3 relative overflow-hidden border border-blue-500/40">
-            <!-- BANDE NOIRE DE BARRETTES -->
-            <div class="w-20 h-full bg-black flex items-center justify-around px-1.5 border-l-2 border-black">
-              <div class="w-2 h-7 bg-white rounded-sm shadow"></div>
-              <div class="w-2 h-7 bg-white rounded-sm shadow"></div>
-              <div class="w-2 h-7 bg-gray-800/40 rounded-sm"></div>
-              <div class="w-2 h-7 bg-gray-800/40 rounded-sm"></div>
+          <div class="w-full h-7 rounded-md brown-belt relative flex items-center justify-end pr-3 shadow-inner">
+            <!-- Barrettes noires avec 2 barrettes blanches -->
+            <div class="h-full w-12 bg-black flex items-center justify-center space-x-1 px-1 border-l border-white/20">
+              <div class="w-1.5 h-4 bg-white rounded-sm"></div>
+              <div class="w-1.5 h-4 bg-white rounded-sm"></div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- BARRE DE PROGRESSION EN % -->
-        <div class="space-y-2">
-          <div class="flex justify-between text-xs font-semibold">
-            <span class="text-gray-400">Progression vers Ceinture Violette</span>
-            <span class="text-gold font-bold">65%</span>
+      <!-- APERÇU DASHBOARD ELEVES & PRESENCES -->
+      <div class="card-luxe p-6 rounded-2xl">
+        <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-4">Vue d'ensemble Académie</h2>
+        <div class="grid grid-cols-2 gap-4 text-center">
+          <div class="bg-carbone/60 p-4 rounded-xl border border-white/5">
+            <p class="text-2xl font-black gold-gradient-text">42</p>
+            <p class="text-xs text-gray-400 mt-1">Adhérents Actifs</p>
           </div>
-          <div class="w-full bg-black/80 rounded-full h-3 gold-border p-0.5 overflow-hidden">
-            <div class="bg-gradient-to-r from-gold-dark via-gold to-gold-light h-full rounded-full shadow-lg" style="width: 65%"></div>
+          <div class="bg-carbone/60 p-4 rounded-xl border border-white/5">
+            <p class="text-2xl font-black silver-gradient-text">18</p>
+            <p class="text-xs text-gray-400 mt-1">Présents ce soir</p>
           </div>
-          <p class="text-[11px] text-gray-400 mt-2">
-            📊 <strong>26 / 40 cours</strong> effectués pour valider la 3<sup>ème</sup> barrette.
-          </p>
+        </div>
+        <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center text-xs">
+          <span class="text-gray-400">Prochaine Session :</span>
+          <span class="text-gold font-semibold">19h30 — BJJ Gi (Adultes)</span>
         </div>
       </div>
 
-      <!-- CARTE STATISTIQUES ASSIDUITÉ -->
-      <div class="glass-card p-6 rounded-2xl gold-border">
-        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Challenge Assiduité (Mois)</h3>
-        <div class="flex items-center justify-between bg-black/40 p-4 rounded-xl border border-gray-800 mb-4">
+      <!-- STATUS RESEAU & BASE DRIVE -->
+      <div class="card-luxe p-6 rounded-2xl">
+        <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-4">Système & Connectivité</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-gray-300">Formulaire Inscription</span>
+            <span class="text-emerald-400 font-semibold flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>En ligne (V7)</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-gray-300">Base Sheets (04_CLUB)</span>
+            <span class="text-emerald-400 font-semibold flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>Connecté</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-gray-300">Module 3 : Radar Perf.</span>
+            <span class="text-gold font-semibold flex items-center"><span class="w-2 h-2 rounded-full bg-gold animate-pulse mr-2"></span>Prêt pour Étape 4</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 : LECTEUR VIDEO MASTERCLASS 4K (STYLE MAAT) -->
+    <section class="card-luxe p-6 rounded-2xl">
+      <div class="flex flex-wrap items-center justify-between mb-6">
+        <div>
+          <h2 class="text-lg font-bold text-white uppercase tracking-wider">Masterclass 4K — Bibliothèque Technique</h2>
+          <p class="text-xs text-gray-400">Espace de perfectionnement vidéo réservé aux élèves de l'Académie</p>
+        </div>
+        <span class="px-3 py-1 rounded-full text-xs font-bold bg-gold/10 text-gold border border-gold/30">
+          STUDENT DASHBOARD
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- LECTEUR VIDEO FLUIDE -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="relative w-full aspect-video rounded-xl overflow-hidden border border-gold/30 bg-black shadow-2xl">
+            <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?controls=1" title="BJJ Masterclass" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
           <div>
-            <div class="text-2xl font-black gold-gradient-text">#2 ÉLÈVE DU MOIS</div>
-            <div class="text-xs text-gray-400">14 cours suivis ce mois-ci</div>
+            <h3 class="text-base font-bold text-white">Module #04 — X-Guard Sweep to Back Take</h3>
+            <p class="text-xs text-gold">Instructeur : Prof. Martin Huambachano</p>
           </div>
-          <div class="text-3xl">🏆</div>
         </div>
-        <div class="text-xs text-center text-gold font-semibold bg-gold/10 py-2 rounded-lg border border-gold/20">
-          🔥 Éligible à la prochaine session de grade !
-        </div>
-      </div>
 
-    </section>
+        <!-- SELECTION DES MODULES & FICHE TECHNIQUE -->
+        <div class="space-y-4">
+          <h4 class="text-xs font-bold text-silver uppercase tracking-wider">Programme du Module</h4>
+          
+          <div class="space-y-2">
+            <button class="w-full text-left p-3 rounded-xl bg-gold/10 border border-gold/40 flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-gold">1. Guard Retention & Frame</p>
+                <p class="text-[10px] text-gray-400">04:15 • Fondamentaux</p>
+              </div>
+              <span class="text-xs text-gold">▶</span>
+            </button>
 
-    <!-- COLONNE DROITE & CENTRE : MASTERCLASS VIDÉO 4K (STYLE MAAT) -->
-    <section class="lg:col-span-2 space-y-6">
-      
-      <div class="glass-card p-6 rounded-2xl gold-border">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-gray-800 gap-2">
-          <div>
-            <span class="text-xs font-bold text-gold uppercase tracking-widest">Masterclass Vidéo 4K</span>
-            <h2 class="text-xl font-extrabold text-white">Module Technique : Guard Retention & Re-guarding</h2>
+            <button class="w-full text-left p-3 rounded-xl bg-carbone border border-white/5 flex items-center justify-between hover:border-gold/20 transition">
+              <div>
+                <p class="text-xs font-bold text-white">2. X-Guard Entry & Balance</p>
+                <p class="text-[10px] text-gray-400">06:30 • Avancé</p>
+              </div>
+              <span class="text-xs text-gray-500">▶</span>
+            </button>
+
+            <button class="w-full text-left p-3 rounded-xl bg-carbone border border-white/5 flex items-center justify-between hover:border-gold/20 transition">
+              <div>
+                <p class="text-xs font-bold text-white">3. Leg Locks & Heel Hooks Safety</p>
+                <p class="text-[10px] text-gray-400">08:45 • Master</p>
+              </div>
+              <span class="text-xs text-gray-500">▶</span>
+            </button>
           </div>
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/30">
-            ● 4K ULTRA HD
-          </span>
-        </div>
 
-        <!-- LECTEUR VIDÉO INTERACTIF -->
-        <div class="relative aspect-video bg-black rounded-xl overflow-hidden border border-gray-800 shadow-2xl mb-6 group">
-          <iframe 
-            class="w-full h-full" 
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=1" 
-            title="Masterclass Jiu Jitsu" 
-            allowfullscreen>
-          </iframe>
-        </div>
-
-        <!-- SÉLECTEUR DE MODULES TECHNIQUES -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-          <button class="p-3 rounded-xl bg-gold/10 border border-gold text-left transition hover:bg-gold/20">
-            <div class="text-xs text-gold font-bold">MODULE 1</div>
-            <div class="text-sm font-bold text-white">Guard Retention</div>
-            <div class="text-[10px] text-gray-400 mt-1">12 min • Niveau Intermédiaire</div>
-          </button>
-          <button class="p-3 rounded-xl bg-black/40 border border-gray-800 text-left hover:border-gold/50 transition">
-            <div class="text-xs text-gray-400 font-bold">MODULE 2</div>
-            <div class="text-sm font-bold text-white">X-Guard Sweep</div>
-            <div class="text-[10px] text-gray-400 mt-1">18 min • Avancé</div>
-          </button>
-          <button class="p-3 rounded-xl bg-black/40 border border-gray-800 text-left hover:border-gold/50 transition">
-            <div class="text-xs text-gray-400 font-bold">MODULE 3</div>
-            <div class="text-sm font-bold text-white">Leg Locks Attacks</div>
-            <div class="text-[10px] text-gray-400 mt-1">15 min • Expert</div>
-          </button>
-        </div>
-
-        <!-- FICHE TECHNIQUE DÉTAILLÉE SOUS LA VIDÉO -->
-        <div class="bg-black/50 p-5 rounded-xl border border-gray-800 space-y-4">
-          <h3 class="text-sm font-bold text-white flex items-center">
-            <span class="w-2 h-2 rounded-full bg-gold mr-2"></span> Points Clés de la Technique
-          </h3>
-          <ul class="text-xs text-gray-300 space-y-2 list-disc pl-5">
-            <li><strong>Cadres (Frames) :</strong> Maintenir le contrôle de la clavicule et du biceps adverse dès la tentative de passage.</li>
-            <li><strong>Mobilité des Hanches :</strong> Crevettage immédiat avant que l'adversaire n'établisse le contrôle latéral.</li>
-            <li><strong>Re-guarding :</strong> Insertion du genou en boucle (*Knee Shield*) pour recréer la distance.</li>
-          </ul>
-          <div class="pt-2 border-t border-gray-800 text-xs">
-            <span class="text-gold font-bold">💡 Contre-Attaque recommandée :</span> 
-            <span class="text-gray-300">Si l'adversaire presse vers l'avant, basculer immédiatement en Spindle Sweep ou Omoplata.</span>
+          <!-- FICHE TECHNIQUE ET CONTRE-ATTAQUES -->
+          <div class="bg-carbone/80 p-4 rounded-xl border border-white/10 text-xs space-y-2">
+            <p class="font-bold text-gold uppercase text-[11px]">💡 Points Clés de la Fiche :</p>
+            <ul class="list-disc list-inside text-gray-300 space-y-1 text-[11px]">
+              <li>Créer de l'espace avec le genou bouclier.</li>
+              <li>Connecter le crochet sous la cuisse opposée.</li>
+              <li>Déséquilibrer vers l'arrière avant la bascule.</li>
+            </ul>
           </div>
         </div>
 
       </div>
-
     </section>
 
   </main>
 
-  <footer class="w-full max-w-7xl mx-auto text-center text-xs text-gray-500 py-4 border-t border-gray-800/60">
-    Soul System Jiu Jitsu Executive Club © 2026 — Design Carbone & Or Luxe v2.1
+  <!-- FOOTER -->
+  <footer class="w-full max-w-7xl mx-auto text-center text-xs text-gray-500 py-6 mt-8 border-t border-white/5">
+    Soul System Jiu Jitsu © 2026 — Executive Application v2.0
   </footer>
 
 </body>
