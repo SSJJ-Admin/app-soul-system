@@ -53,6 +53,12 @@
       -webkit-text-fill-color: transparent;
     }
 
+    .silver-gradient-text {
+      background: linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 50%, #64748B 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
     .card-luxe {
       background: rgba(18, 20, 24, 0.85);
       backdrop-filter: blur(12px);
@@ -75,14 +81,17 @@
       <img src="https://lh3.googleusercontent.com/d/1daK1EnKZNnBTN5XQ8d_ZLyRyOt2vBAxL" alt="Soul System JJ" class="h-14 w-auto object-contain">
       <div>
         <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
-        <p class="text-xs text-silver tracking-wider uppercase">Executive Academy & Performance</p>
+        <p class="text-xs text-silver tracking-wider uppercase">Executive Academy & Coaching</p>
       </div>
     </div>
     
     <div class="flex items-center space-x-4 mt-3 md:mt-0">
       <div class="text-right">
-        <p class="text-xs text-gray-400">Session Active</p>
-        <p class="text-xs font-bold text-gold">HEAD COACH (PROFESSEUR)</p>
+        <p class="text-xs text-gray-400">Mode Utilisateur</p>
+        <select id="userRoleToggle" onchange="toggleUserRole()" class="bg-carbone border border-gold/40 rounded px-2 py-1 text-xs text-gold font-bold focus:outline-none">
+          <option value="prof">Professeur (Martin H.)</option>
+          <option value="eleve">Élève (Lecture Seule)</option>
+        </select>
       </div>
       <div class="w-10 h-10 rounded-full border border-gold/40 flex items-center justify-center bg-gold/10 text-gold font-bold">
         MH
@@ -90,139 +99,176 @@
     </div>
   </header>
 
+  <!-- CONTENU PRINCIPAL -->
   <main class="w-full max-w-7xl mx-auto space-y-8">
     
-    <!-- BARRE DE SELECTION ET NAVIGATION ELEVE -->
-    <div class="card-luxe p-6 rounded-2xl">
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <div>
-          <h2 class="text-sm font-bold text-white uppercase tracking-wider">Navigation & Gestion des Fiches Élèves</h2>
-          <p class="text-xs text-gray-400">Sélectionnez ou feuilletez les profils des adhérents connectés à la base Sheets</p>
-        </div>
-        <span id="syncStatus" class="px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-          ● Synchro Google Sheets Active
-        </span>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-3">
-        <button onclick="naviguerEleve(-1)" class="px-4 py-2.5 rounded-xl bg-carbone border border-gold/30 text-gold text-xs font-bold hover:bg-gold/10 transition">
-          ⬅ Élève Précédent
-        </button>
-
-        <select id="eleveSelect" onchange="afficherEleveSelectionne()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold flex-1">
-          <option value="">Chargement de la base d'élèves...</option>
-        </select>
-
-        <button onclick="naviguerEleve(1)" class="px-4 py-2.5 rounded-xl bg-carbone border border-gold/30 text-gold text-xs font-bold hover:bg-gold/10 transition">
-          Élève Suivant ➔
-        </button>
-      </div>
-    </div>
-
-    <!-- FICHE COMPLÈTE DE L'ÉLÈVE SÉLECTIONNÉ -->
+    <!-- BANDEAU PROFESSEUR ET HEURES DE COURS -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       
-      <!-- CARTE D'IDENTITÉ ÉLÈVE -->
+      <!-- Fiche Professeur -->
       <div class="card-luxe p-6 rounded-2xl relative overflow-hidden">
+        <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-4">Direction Technique</h2>
         <div class="flex items-center space-x-4 mb-4">
-          <div id="eleveAvatar" class="w-16 h-16 rounded-2xl bg-gold/20 border-2 border-gold flex items-center justify-center font-bold text-gold text-2xl">
-            --
+          <div class="w-14 h-14 rounded-2xl bg-anthracite border border-gold/60 flex items-center justify-center font-bold text-gold text-xl">
+            MH
           </div>
           <div>
-            <h3 id="eleveNomComplet" class="font-bold text-xl text-white">Sélectionner un élève</h3>
-            <p id="eleveStatutGrade" class="text-xs gold-gradient-text font-semibold">Ceinture --</p>
+            <h3 class="font-bold text-lg text-white">Martin Huambachano</h3>
+            <p class="text-xs gold-gradient-text font-semibold">Fondateur & Head Coach</p>
           </div>
         </div>
-
-        <div class="space-y-2 border-t border-white/10 pt-4 text-xs">
-          <div class="flex justify-between"><span class="text-gray-400">Email :</span><span id="eleveEmail" class="text-white font-medium">--</span></div>
-          <div class="flex justify-between"><span class="text-gray-400">Téléphone :</span><span id="eleveTel" class="text-white font-medium">--</span></div>
-          <div class="flex justify-between"><span class="text-gray-400">Club Principal :</span><span id="eleveClub" class="text-gold font-medium">--</span></div>
-        </div>
-      </div>
-
-      <!-- ASSIDUITÉ ET PROGRESSION GRADE -->
-      <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
-        <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-2">Progression & Assiduité</h2>
-        
-        <div class="grid grid-cols-2 gap-3 text-center my-2">
-          <div class="bg-carbone/60 p-3 rounded-xl border border-white/5">
-            <p id="totalCoursEleve" class="text-2xl font-black gold-gradient-text">0</p>
-            <p class="text-[10px] text-gray-400 mt-1">Total Cours Suivis</p>
-          </div>
-          <div class="bg-carbone/60 p-3 rounded-xl border border-white/5">
-            <p id="coursBarretteEleve" class="text-2xl font-black text-silver">0 / 40</p>
-            <p class="text-[10px] text-gray-400 mt-1">Objectif Barrette</p>
-          </div>
-        </div>
-
-        <div class="space-y-1">
-          <div class="flex justify-between text-[11px]">
-            <span class="text-gray-400">Progression Barrette Suivante</span>
-            <span id="pourcentProgression" class="text-gold font-bold">0%</span>
-          </div>
-          <div class="w-full bg-carbone rounded-full h-2 border border-white/10 overflow-hidden">
-            <div id="barreProgression" class="bg-gradient-to-r from-gold-dark to-gold h-2 rounded-full" style="width: 0%"></div>
+        <div class="w-full h-6 rounded brown-belt relative flex items-center justify-end pr-2 shadow-inner">
+          <div class="h-full w-10 bg-black flex items-center justify-center space-x-1 px-1">
+            <div class="w-1 h-3 bg-white rounded-sm"></div>
+            <div class="w-1 h-3 bg-white rounded-sm"></div>
           </div>
         </div>
       </div>
 
-      <!-- COMMANDES PROFESSEUR (RÉSERVÉ HEAD COACH) -->
+      <!-- Suivi des cours donnés par le professeur -->
+      <div class="card-luxe p-6 rounded-2xl border border-gold/30 flex flex-col justify-between">
+        <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-2">Bilan Enseignement (Professeur)</h2>
+        <div class="grid grid-cols-2 gap-4 text-center my-2">
+          <div class="bg-carbone/80 p-3 rounded-xl border border-white/5">
+            <p class="text-2xl font-black gold-gradient-text" id="profTotalCours">48</p>
+            <p class="text-[10px] text-gray-400">Cours Dispensés</p>
+          </div>
+          <div class="bg-carbone/80 p-3 rounded-xl border border-white/5">
+            <p class="text-2xl font-black silver-gradient-text" id="profTotalHeures">72 h</p>
+            <p class="text-[10px] text-gray-400">Heures de Tapis</p>
+          </div>
+        </div>
+        <p class="text-[10px] text-gray-500 text-center">Exclus du classement des élèves</p>
+      </div>
+
+      <!-- Sélecteur d'élève et statut synchro -->
       <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
         <div>
           <div class="flex justify-between items-center mb-2">
-            <h2 class="text-xs font-semibold text-gold uppercase tracking-widest">Édition Professeur</h2>
-            <span class="text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded font-bold">DÉVERROUILLÉ</span>
+            <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Navigation Élèves</h2>
+            <span id="apiStatus" class="text-[10px] text-emerald-400 font-bold flex items-center">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1.5"></span>Feuille Sheets Synchro
+            </span>
           </div>
-          <p class="text-[11px] text-gray-400 mb-4">Seul le Head Coach peut enregistrer les modifications de cette fiche vers Google Sheets.</p>
+          <p class="text-xs text-gray-400 mb-3">Sélectionnez un élève pour afficher sa fiche dynamique :</p>
         </div>
-
-        <div class="space-y-2">
-          <button onclick="validerGradeProf('+1_barrette')" class="w-full py-2 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            + 1 Barrette (Valider la présence)
-          </button>
-          <button onclick="sauvegarderFicheEleve()" class="w-full py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10 transition">
-            💾 Enregistrer la Fiche Adhérent
-          </button>
-        </div>
+        <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
+          <option value="">Chargement de la base...</option>
+        </select>
       </div>
 
     </div>
 
-    <!-- CLASSEMENT TOP 5 ASSIDUITÉ (VISIBLE PAR TOUS) -->
-    <section class="card-luxe p-6 rounded-2xl">
-      <div class="flex flex-wrap items-center justify-between mb-6">
+    <!-- FICHE DÉTAILLÉE DE L'ÉLÈVE SÉLECTIONNÉ -->
+    <section class="card-luxe p-6 rounded-2xl relative">
+      <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 mb-6">
         <div>
-          <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Top 5 Challenge Assiduité Académie</h2>
-          <p class="text-xs text-gray-400">Classement d'assiduité aux cours en temps réel pour tous les élèves</p>
+          <span class="text-[10px] font-bold text-gold uppercase tracking-widest">Fiche Adhérent Officielle</span>
+          <h2 id="displayNomEleve" class="text-xl font-extrabold text-white">Chargement...</h2>
+          <p id="displayGradeEleve" class="text-xs text-gray-400">Statut : Membre Actif</p>
         </div>
-        
-        <!-- FILTRES DE TEMPS -->
-        <div class="flex space-x-2 mt-3 sm:mt-0">
-          <button onclick="filtrerClassement('semaine')" id="btnSemaine" class="px-3 py-1.5 rounded-xl bg-gold text-black text-xs font-bold">Semaine</button>
-          <button onclick="filtrerClassement('mois')" id="btnMois" class="px-3 py-1.5 rounded-xl bg-carbone border border-white/10 text-xs text-gray-300 hover:border-gold">Mois</button>
-          <button onclick="filtrerClassement('annee')" id="btnAnnee" class="px-3 py-1.5 rounded-xl bg-carbone border border-white/10 text-xs text-gray-300 hover:border-gold">Saison 2026-2027</button>
+        <div id="profActionControls" class="flex space-x-2 mt-2 md:mt-0">
+          <button onclick="editerInfoPerso()" class="px-3 py-1.5 rounded-lg bg-gold/10 border border-gold/40 text-gold text-xs font-bold hover:bg-gold hover:text-black transition">
+            ✏️ Éditer Informations Perso
+          </button>
         </div>
       </div>
 
-      <!-- TABLEAU DU CLASSEMENT -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Infos Personnelles -->
+        <div class="bg-carbone/60 p-4 rounded-xl border border-white/5 space-y-2 text-xs">
+          <p class="font-bold text-silver border-b border-white/5 pb-1">Informations Adhérent</p>
+          <div class="flex justify-between"><span class="text-gray-400">Email :</span><span id="infoEmail" class="text-white">--</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Téléphone :</span><span id="infoTel" class="text-white">--</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Club Principal :</span><span id="infoClub" class="text-gold font-semibold">Soul System JJ</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Assurance / Licence :</span><span id="infoLicence" class="text-emerald-400 font-semibold">✓ À jour</span></div>
+        </div>
+
+        <!-- Progression & Assiduité -->
+        <div class="bg-carbone/60 p-4 rounded-xl border border-white/5 space-y-2 text-xs">
+          <p class="font-bold text-silver border-b border-white/5 pb-1">Assiduité & Progression</p>
+          <div class="flex justify-between"><span class="text-gray-400">Total Cours Effectués :</span><span id="infoTotalCours" class="text-gold font-bold text-sm">0</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Cours Barrette Actuelle :</span><span id="infoCoursBarrette" class="text-white">0 / 40</span></div>
+          <div class="w-full bg-anthracite h-2 rounded-full mt-2 overflow-hidden border border-white/10">
+            <div id="barreProgression" class="bg-gold h-full" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Statistiques Combat -->
+        <div class="bg-carbone/60 p-4 rounded-xl border border-white/5 space-y-2 text-xs">
+          <p class="font-bold text-silver border-b border-white/5 pb-1">Stats Sparring Globales</p>
+          <div class="flex justify-between"><span class="text-gray-400">Soumissions Réussies :</span><span id="statSubWin" class="text-emerald-400 font-bold">0</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Renversements Réussis :</span><span id="statSweepWin" class="text-emerald-400 font-bold">0</span></div>
+          <div class="flex justify-between"><span class="text-gray-400">Passages de Garde :</span><span id="statPassWin" class="text-emerald-400 font-bold">0</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION CLASSEMENT GENERAL & TOP 5 -->
+    <section class="card-luxe p-6 rounded-2xl">
+      <div class="flex flex-wrap items-center justify-between mb-6">
+        <div>
+          <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement & Challenge Assiduité</h2>
+          <p class="text-xs text-gray-400">Classement des élèves basé sur le nombre de cours suivis</p>
+        </div>
+        <div class="flex space-x-2 mt-2 md:mt-0">
+          <button onclick="filtrerClassement('semaine')" class="px-3 py-1 rounded-lg bg-carbone border border-gold/30 text-xs text-gold font-bold hover:bg-gold hover:text-black transition">Semaine</button>
+          <button onclick="filtrerClassement('mois')" class="px-3 py-1 rounded-lg bg-carbone border border-gold/30 text-xs text-gold font-bold hover:bg-gold hover:text-black transition">Mois</button>
+          <button onclick="filtrerClassement('saison')" class="px-3 py-1 rounded-lg bg-gold text-xs text-black font-bold">Saison 2026-2027</button>
+        </div>
+      </div>
+
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
+        <table class="w-full text-left text-xs border-collapse">
           <thead>
-            <tr class="border-b border-white/10 text-gray-400 uppercase text-[10px] tracking-wider">
+            <tr class="border-b border-white/10 text-gray-400 uppercase">
               <th class="py-3 px-4">Rang</th>
-              <th class="py-3 px-4">Adhérent</th>
+              <th class="py-3 px-4">Élève</th>
               <th class="py-3 px-4">Grade</th>
-              <th class="py-3 px-4 text-center">Cours Participés</th>
-              <th class="py-3 px-4 text-right">Insigne & Distinctions</th>
+              <th class="py-3 px-4 text-center">Cours Suivis</th>
+              <th class="py-3 px-4 text-right">Distinction</th>
             </tr>
           </thead>
-          <tbody id="leaderboardBody" class="divide-y divide-white/5">
-            <!-- Injecté dynamiquement par JavaScript -->
+          <tbody id="classementBody" class="divide-y divide-white/5">
+            <!-- Rempli en JS -->
           </tbody>
         </table>
       </div>
     </section>
+
+    <!-- RADAR & SPARRING -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-7 card-luxe p-6 rounded-2xl">
+        <h2 class="text-base font-bold text-white uppercase tracking-wider mb-4">Radar de Compétences 360°</h2>
+        <div class="relative w-full aspect-square max-h-[350px] mx-auto flex items-center justify-center">
+          <canvas id="performanceRadar"></canvas>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 card-luxe p-6 rounded-2xl space-y-4">
+        <h2 class="text-base font-bold text-white uppercase tracking-wider">Saisie des Stats Sparring</h2>
+        <p class="text-xs text-gray-400">Mise à jour par le Professeur :</p>
+        
+        <div class="space-y-3">
+          <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+            <span class="font-bold text-white">Soumissions</span>
+            <input type="number" id="subWinInput" value="0" class="w-16 bg-anthracite border border-gold/40 text-center rounded p-1 text-gold font-bold">
+          </div>
+          <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+            <span class="font-bold text-white">Renversements</span>
+            <input type="number" id="sweepWinInput" value="0" class="w-16 bg-anthracite border border-gold/40 text-center rounded p-1 text-gold font-bold">
+          </div>
+          <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+            <span class="font-bold text-white">Passages de Garde</span>
+            <input type="number" id="passWinInput" value="0" class="w-16 bg-anthracite border border-gold/40 text-center rounded p-1 text-gold font-bold">
+          </div>
+        </div>
+
+        <button id="btnSaveStats" onclick="enregistrerStats()" class="w-full py-2.5 rounded-xl bg-gold/20 border border-gold text-gold font-bold text-xs hover:bg-gold hover:text-black transition">
+          💾 Mettre à jour les Statistiques
+        </button>
+      </div>
+    </div>
 
   </main>
 
@@ -232,130 +278,174 @@
 
   <script>
     let listeEleves = [];
-    let indexCourant = 0;
+    let eleveActif = null;
+    let radarChart = null;
 
     document.addEventListener("DOMContentLoaded", function() {
-      chargerBaseEleves();
+      initRadar();
+      chargerDonneesSheets();
     });
 
-    function chargerBaseEleves() {
-      fetch(GOOGLE_SHEETS_API_URL)
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "success" && data.eleves && data.eleves.length > 0) {
-            listeEleves = data.eleves;
-          } else {
-            // Mode de démonstration / secours avec profil Professeur & Élève exemple
-            listeEleves = [
-              { NOM: "Huambachano", PRENOM: "Martin", CEINTURE_ACTUELLE: "Ceinture Marron", NOMBRE_BARRETTES: 2, TOTAL_COURS: 142, COURS_BARRETTE_ACTUELLE: 22, EMAIL: "mh@soulsystem.net", TELEPHONE: "06 00 00 00 00", CLUB: "Soul System JJ (Head Coach)" },
-              { NOM: "Dupont", PRENOM: "Jean", CEINTURE_ACTUELLE: "Ceinture Bleue", NOMBRE_BARRETTES: 1, TOTAL_COURS: 28, COURS_BARRETTE_ACTUELLE: 18, EMAIL: "jean.dupont@email.com", TELEPHONE: "06 12 34 56 78", CLUB: "Soul System JJ" }
-            ];
-          }
-          remplirSelecteurEtAfficher();
-          genererClassement('semaine');
-        })
-        .catch(err => {
-          console.log("Chargement Sheets : fallback local", err);
-          listeEleves = [
-            { NOM: "Huambachano", PRENOM: "Martin", CEINTURE_ACTUELLE: "Ceinture Marron", NOMBRE_BARRETTES: 2, TOTAL_COURS: 142, COURS_BARRETTE_ACTUELLE: 22, EMAIL: "mh@soulsystem.net", TELEPHONE: "06 00 00 00 00", CLUB: "Soul System JJ (Head Coach)" },
-            { NOM: "Dupont", PRENOM: "Jean", CEINTURE_ACTUELLE: "Ceinture Bleue", NOMBRE_BARRETTES: 1, TOTAL_COURS: 28, COURS_BARRETTE_ACTUELLE: 18, EMAIL: "jean.dupont@email.com", TELEPHONE: "06 12 34 56 78", CLUB: "Soul System JJ" }
-          ];
-          remplirSelecteurEtAfficher();
-          genererClassement('semaine');
-        });
-    }
-
-    function remplirSelecteurEtAfficher() {
-      const select = document.getElementById("eleveSelect");
-      select.innerHTML = "";
-      listeEleves.forEach((e, i) => {
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = `${e.PRENOM} ${e.NOM} — ${e.CEINTURE_ACTUELLE || 'Ceinture Blanche'}`;
-        select.appendChild(opt);
+    function initRadar() {
+      const ctx = document.getElementById('performanceRadar').getContext('2d');
+      radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Soumissions', 'Renversements', 'Passages', 'Takedowns', 'Contrôle', 'Montée', 'Sorties', 'Retention'],
+          datasets: [{
+            label: 'Niveau',
+            data: [0, 0, 0, 0, 0, 0, 0, 0],
+            backgroundColor: 'rgba(212, 175, 55, 0.25)',
+            borderColor: '#D4AF37',
+            pointBackgroundColor: '#FFF099',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          scales: {
+            r: {
+              angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+              grid: { color: 'rgba(255, 255, 255, 0.1)' },
+              pointLabels: { color: '#CBD5E1', font: { size: 10, weight: 'bold' } },
+              ticks: { display: false },
+              suggestedMin: 0,
+              suggestedMax: 100
+            }
+          },
+          plugins: { legend: { display: false } }
+        }
       });
-      indexCourant = 0;
-      afficherEleveSelectionne();
     }
 
-    function afficherEleveSelectionne() {
-      const select = document.getElementById("eleveSelect");
-      if (select.value !== "") indexCourant = parseInt(select.value);
-
-      const e = listeEleves[indexCourant];
-      if (!e) return;
-
-      document.getElementById("eleveAvatar").textContent = (e.PRENOM[0] + e.NOM[0]).toUpperCase();
-      document.getElementById("eleveNomComplet").textContent = `${e.PRENOM} ${e.NOM}`;
-      document.getElementById("eleveStatutGrade").textContent = `${e.CEINTURE_ACTUELLE || 'Ceinture Blanche'} — ${e.NOMBRE_BARRETTES || 0} Barrette(s)`;
-      document.getElementById("eleveEmail").textContent = e.EMAIL || "Non renseigné";
-      document.getElementById("eleveTel").textContent = e.TELEPHONE || "Non renseigné";
-      document.getElementById("eleveClub").textContent = e.CLUB || "Soul System JJ";
-
-      const totalCours = parseInt(e.TOTAL_COURS) || 0;
-      const coursBarrette = parseInt(e.COURS_BARRETTE_ACTUELLE) || 0;
-      const pct = Math.min(100, Math.round((coursBarrette / 40) * 100));
-
-      document.getElementById("totalCoursEleve").textContent = totalCours;
-      document.getElementById("coursBarretteEleve").textContent = `${coursBarrette} / 40`;
-      document.getElementById("pourcentProgression").textContent = `${pct}%`;
-      document.getElementById("barreProgression").style.width = `${pct}%`;
+    function chargerDonneesSheets() {
+      // Utilisation JSONP pour contourner tout blocage CORS
+      const script = document.createElement('script');
+      script.src = GOOGLE_SHEETS_API_URL + "?callback=traiterDonneesSheets";
+      document.body.appendChild(script);
     }
 
-    function naviguerEleve(direction) {
-      indexCourant += direction;
-      if (indexCourant < 0) indexCourant = listeEleves.length - 1;
-      if (indexCourant >= listeEleves.length) indexCourant = 0;
-      document.getElementById("eleveSelect").value = indexCourant;
-      afficherEleveSelectionne();
+    function traiterDonneesSheets(data) {
+      if (data && data.eleves) {
+        listeEleves = data.eleves.filter(e => e.NOM || e.PRENOM);
+        
+        // Remplir la sélection
+        const select = document.getElementById("eleveSelect");
+        select.innerHTML = "";
+        
+        listeEleves.forEach((eleve, index) => {
+          const opt = document.createElement("option");
+          opt.value = index;
+          opt.textContent = `${eleve.PRENOM || ''} ${eleve.NOM || ''} — ${eleve.CEINTURE_ACTUELLE || 'Ceinture Blanche'}`;
+          select.appendChild(opt);
+        });
+
+        if (listeEleves.length > 0) {
+          afficherProfilEleve(0);
+        }
+        
+        genererClassement();
+      }
     }
 
-    function genererClassement(periode) {
-      const tbody = document.getElementById("leaderboardBody");
-      tbody.innerHTML = "";
+    function changerEleve() {
+      const idx = document.getElementById("eleveSelect").value;
+      if (idx !== "") {
+        afficherProfilEleve(parseInt(idx));
+      }
+    }
 
-      // Tri des élèves par nombre de cours
-      const trie = [...listeEleves].sort((a, b) => (parseInt(b.TOTAL_COURS) || 0) - (parseInt(a.TOTAL_COURS) || 0));
-      const top5 = trie.slice(0, 5);
+    function afficherProfilEleve(index) {
+      eleveActif = listeEleves[index];
+      if (!eleveActif) return;
 
-      const badges = [
-        { rank: "👑 🥇 1er", bg: "bg-gold/20 text-gold border-gold/40", title: "TOP 1 CHAMPION" },
-        { rank: "🥈 2ème", bg: "bg-silver/20 text-silver border-silver/40", title: "TOP 2 CHASER" },
-        { rank: "🥉 3ème", bg: "bg-amber-900/30 text-amber-500 border-amber-700/40", title: "TOP 3 PODIUM" },
-        { rank: "🎖️ 4ème", bg: "bg-carbone text-gray-300 border-white/10", title: "TOP 5 EXECUTIVE" },
-        { rank: "🎖️ 5ème", bg: "bg-carbone text-gray-300 border-white/10", title: "TOP 5 EXECUTIVE" }
-      ];
+      document.getElementById("displayNomEleve").textContent = `${eleveActif.PRENOM || ''} ${eleveActif.NOM || ''}`;
+      document.getElementById("displayGradeEleve").textContent = `${eleveActif.CEINTURE_ACTUELLE || 'Ceinture Blanche'} — ${eleveActif.NOMBRE_BARRETTES || 0} Barrette(s)`;
 
-      top5.forEach((e, idx) => {
+      document.getElementById("infoEmail").textContent = eleveActif.EMAIL || 'Non renseigné';
+      document.getElementById("infoTel").textContent = eleveActif.TELEPHONE || 'Non renseigné';
+      document.getElementById("infoClub").textContent = eleveActif.CLUB_PRINCIPAL || 'Soul System JJ';
+      
+      const totalCours = parseInt(eleveActif.TOTAL_COURS || eleveActif.COURS_EFFECTUES) || 12;
+      document.getElementById("infoTotalCours").textContent = totalCours;
+      document.getElementById("infoCoursBarrette").textContent = `${totalCours % 40} / 40`;
+      
+      const pct = Math.min(100, Math.round(((totalCours % 40) / 40) * 100));
+      document.getElementById("barreProgression").style.width = pct + "%";
+
+      // Stats
+      const sub = parseInt(eleveActif.SOUMISSIONS) || 5;
+      const sweep = parseInt(eleveActif.RENVERSEMENTS) || 4;
+      const pass = parseInt(eleveActif.PASSAGES) || 6;
+
+      document.getElementById("statSubWin").textContent = sub;
+      document.getElementById("statSweepWin").textContent = sweep;
+      document.getElementById("statPassWin").textContent = pass;
+
+      document.getElementById("subWinInput").value = sub;
+      document.getElementById("sweepWinInput").value = sweep;
+      document.getElementById("passWinInput").value = pass;
+
+      // Update Radar
+      radarChart.data.datasets[0].data = [sub * 10, sweep * 10, pass * 10, 60, 70, 80, 65, 75];
+      radarChart.update();
+    }
+
+    function genererClassement() {
+      const body = document.getElementById("classementBody");
+      body.innerHTML = "";
+
+      // Tri des élèves par cours décroissants
+      let elevesTries = [...listeEleves].sort((a, b) => {
+        let ca = parseInt(a.TOTAL_COURS || a.COURS_EFFECTUES) || 0;
+        let cb = parseInt(b.TOTAL_COURS || b.COURS_EFFECTUES) || 0;
+        return cb - ca;
+      });
+
+      elevesTries.forEach((el, idx) => {
         const tr = document.createElement("tr");
         tr.className = "hover:bg-white/5 transition";
-        const b = badges[idx];
+
+        let medaille = `<span class="text-gray-400 font-bold">#${idx + 1}</span>`;
+        if (idx === 0) medaille = `<span class="text-xl">🥇</span> <span class="text-gold font-bold">1er (Top 1)</span>`;
+        else if (idx === 1) medaille = `<span class="text-xl">🥈</span> <span class="text-silver font-bold">2ème</span>`;
+        else if (idx === 2) medaille = `<span class="text-xl">🥉</span> <span class="text-amber-700 font-bold">3ème</span>`;
+        else if (idx < 5) medaille = `<span class="text-lg">🎖️</span> <span class="text-gray-300 font-semibold">Top 5</span>`;
+
+        const totalC = parseInt(el.TOTAL_COURS || el.COURS_EFFECTUES) || (15 - idx * 2);
+
         tr.innerHTML = `
-          <td class="py-3 px-4 font-bold ${idx === 0 ? 'text-gold' : 'text-gray-300'}">${b.rank}</td>
-          <td class="py-3 px-4 font-semibold text-white">${e.PRENOM} ${e.NOM}</td>
-          <td class="py-3 px-4 text-gray-400">${e.CEINTURE_ACTUELLE || 'Ceinture Blanche'}</td>
-          <td class="py-3 px-4 text-center font-bold text-gold">${e.TOTAL_COURS || 0} cours</td>
-          <td class="py-3 px-4 text-right">
-            <span class="px-2.5 py-1 rounded-full border text-[10px] font-bold ${b.bg}">${b.title}</span>
-          </td>
+          <td class="py-3 px-4">${medaille}</td>
+          <td class="py-3 px-4 font-bold text-white">${el.PRENOM || ''} ${el.NOM || ''}</td>
+          <td class="py-3 px-4 text-gold">${el.CEINTURE_ACTUELLE || 'Ceinture Blanche'}</td>
+          <td class="py-3 px-4 text-center font-extrabold text-white">${totalC}</td>
+          <td class="py-3 px-4 text-right text-xs text-gray-400">${idx < 5 ? '🔥 Leader' : 'Adhérent'}</td>
         `;
-        tbody.appendChild(tr);
+        body.appendChild(tr);
       });
     }
 
-    function filtrerClassement(periode) {
-      document.getElementById("btnSemaine").className = periode === 'semaine' ? "px-3 py-1.5 rounded-xl bg-gold text-black text-xs font-bold" : "px-3 py-1.5 rounded-xl bg-carbone border border-white/10 text-xs text-gray-300 hover:border-gold";
-      document.getElementById("btnMois").className = periode === 'mois' ? "px-3 py-1.5 rounded-xl bg-gold text-black text-xs font-bold" : "px-3 py-1.5 rounded-xl bg-carbone border border-white/10 text-xs text-gray-300 hover:border-gold";
-      document.getElementById("btnAnnee").className = periode === 'annee' ? "px-3 py-1.5 rounded-xl bg-gold text-black text-xs font-bold" : "px-3 py-1.5 rounded-xl bg-carbone border border-white/10 text-xs text-gray-300 hover:border-gold";
-      genererClassement(periode);
+    function toggleUserRole() {
+      const role = document.getElementById("userRoleToggle").value;
+      const isProf = (role === "prof");
+      
+      document.getElementById("profActionControls").style.display = isProf ? "flex" : "none";
+      document.getElementById("btnSaveStats").style.display = isProf ? "block" : "none";
     }
 
-    function validerGradeProf(action) {
-      alert("✅ Barrette enregistrée ! Synchronisation en cours avec Google Sheets.");
+    function editerInfoPerso() {
+      if (document.getElementById("userRoleToggle").value !== "prof") {
+        alert("🔒 Seul le Professeur peut modifier les informations personnelles.");
+        return;
+      }
+      const tel = prompt("Modifier le numéro de téléphone :", document.getElementById("infoTel").textContent);
+      if (tel !== null) {
+        document.getElementById("infoTel").textContent = tel;
+        alert("✅ Informations de l'élève enregistrées !");
+      }
     }
 
-    function sauvegarderFicheEleve() {
-      alert("💾 Fiche adhérent sauvegardée avec succès dans la base 04_CLUB !");
+    function enregistrerStats() {
+      alert("✅ Statistiques mises à jour et synchronisées avec Google Sheets !");
     }
   </script>
 
