@@ -8,6 +8,9 @@
   <!-- Chart.js pour le Radar de Performance -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    // URL DE L'API GOOGLE SHEETS
+    const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbz8NPvlTaWe2zB4FPQZScEDYrVu0aVuJXX5IguXPUgAqALQO4IlRbaadHN4f_efURjt/exec";
+
     tailwind.config = {
       darkMode: 'class',
       theme: {
@@ -119,26 +122,29 @@
         </div>
       </div>
 
-      <!-- PROMPT SELECTION ELEVE -->
+      <!-- SELECTION ELEVE & INTEGRATION API -->
       <div class="card-luxe p-6 rounded-2xl md:col-span-2 flex flex-col justify-between">
         <div>
-          <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-2">Sélection d'un Éléve pour Analyse</h2>
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection d'un Adhérent</h2>
+            <span id="api-status" class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              ● Synchronisé Sheets
+            </span>
+          </div>
           <p class="text-xs text-gray-400 mb-4">Rechercher ou sélectionner un adhérent pour consulter son Radar de Performance et valider ses grades.</p>
         </div>
         <div class="flex flex-wrap gap-3">
-          <select class="bg-carbone border border-gold/30 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-gold flex-1">
-            <option>Jean Dupont — Ceinture Bleue (1 Barrette)</option>
-            <option>Alexandre Silva — Ceinture Blanche (3 Barrettes)</option>
-            <option>Sophie Martin — Ceinture Violette (0 Barrette)</option>
+          <select id="select-eleve" class="bg-carbone border border-gold/30 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-gold flex-1">
+            <option>Chargement des élèves...</option>
           </select>
-          <button class="px-5 py-2 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            Charger le Profil
+          <button onclick="chargerEleves()" class="px-5 py-2 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
+            🔄 Rafraîchir
           </button>
         </div>
       </div>
     </div>
 
-    <!-- ÉTAPE 4 : RADAR DE PERFORMANCE & SAISIE DES STATISTIQUES -->
+    <!-- RADAR DE PERFORMANCE & SAISIE DES STATISTIQUES -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       
       <!-- GRAPHIC RADAR 360° -->
@@ -146,7 +152,7 @@
         <div class="flex justify-between items-center mb-4">
           <div>
             <h2 class="text-base font-bold text-white uppercase tracking-wider">Radar de Compétences 360°</h2>
-            <p class="text-xs text-gold">Élève sélectionné : Jean Dupont</p>
+            <p class="text-xs text-gold" id="eleve-nom-display">Adhérent sélectionné : Jean Dupont</p>
           </div>
           <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">
             ANALYSE TACTIQUE
@@ -165,7 +171,6 @@
         
         <div class="space-y-3 max-h-[320px] overflow-y-auto pr-1">
           
-          <!-- Ligne Soumissions -->
           <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
             <div>
               <p class="font-bold text-white">Soumissions (Taps)</p>
@@ -178,7 +183,6 @@
             </div>
           </div>
 
-          <!-- Ligne Renversements -->
           <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
             <div>
               <p class="font-bold text-white">Renversements (Sweeps)</p>
@@ -191,7 +195,6 @@
             </div>
           </div>
 
-          <!-- Ligne Amenés au sol -->
           <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
             <div>
               <p class="font-bold text-white">Amenés au Sol (Takedowns)</p>
@@ -204,7 +207,6 @@
             </div>
           </div>
 
-          <!-- Ligne Passages de Garde -->
           <div class="bg-carbone/80 p-3 rounded-xl border border-white/5 flex items-center justify-between text-xs">
             <div>
               <p class="font-bold text-white">Passages de Garde</p>
@@ -219,14 +221,14 @@
 
         </div>
 
-        <button class="w-full py-2.5 rounded-xl bg-gold/20 border border-gold text-gold font-bold text-xs hover:bg-gold hover:text-black transition">
-          💾 Mettre à jour le Radar du Joueur
+        <button onclick="enregistrerStats()" class="w-full py-2.5 rounded-xl bg-gold/20 border border-gold text-gold font-bold text-xs hover:bg-gold hover:text-black transition">
+          💾 Mettre à jour le Radar dans Sheets
         </button>
       </div>
 
     </div>
 
-    <!-- MODULE DE VALIDATION LIBRE DES BARRETTES / CEINTURES (PROFESSEUR) -->
+    <!-- VALIDATION LIBRE DES BARRETTES / CEINTURES -->
     <section class="card-luxe p-6 rounded-2xl">
       <div class="flex justify-between items-center mb-4">
         <div>
@@ -236,11 +238,11 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <button class="p-4 rounded-xl bg-carbone border border-white/10 text-center hover:border-gold transition">
+        <button onclick="modifierBarrette(1)" class="p-4 rounded-xl bg-carbone border border-white/10 text-center hover:border-gold transition">
           <p class="text-xs text-gray-400 mb-1">Ajouter Barrette</p>
           <p class="text-lg font-bold text-gold">+ 1 Barrette</p>
         </button>
-        <button class="p-4 rounded-xl bg-carbone border border-white/10 text-center hover:border-gold transition">
+        <button onclick="modifierBarrette(-1)" class="p-4 rounded-xl bg-carbone border border-white/10 text-center hover:border-gold transition">
           <p class="text-xs text-gray-400 mb-1">Retirer Barrette</p>
           <p class="text-lg font-bold text-gray-400">- 1 Barrette</p>
         </button>
@@ -261,22 +263,14 @@
     Soul System Jiu Jitsu © 2026 — Executive Application v2.0
   </footer>
 
-  <!-- INITIALISATION DU CHART RADAR -->
+  <!-- CHARTS & LOGIQUE APP SCRIPT -->
   <script>
+    // Initialisation du Radar
     const ctx = document.getElementById('performanceRadar').getContext('2d');
-    new Chart(ctx, {
+    const performanceChart = new Chart(ctx, {
       type: 'radar',
       data: {
-        labels: [
-          'Soumissions', 
-          'Renversements', 
-          'Passages', 
-          'Amenés au sol', 
-          'Contrôle Latéral', 
-          'Montée / Dos', 
-          'Sorties', 
-          'Guard Retention'
-        ],
+        labels: ['Soumissions', 'Renversements', 'Passages', 'Amenés au sol', 'Contrôle Latéral', 'Montée / Dos', 'Sorties', 'Guard Retention'],
         datasets: [{
           label: 'Profil Élève',
           data: [80, 75, 85, 60, 70, 90, 65, 80],
@@ -292,20 +286,43 @@
           r: {
             angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
             grid: { color: 'rgba(255, 255, 255, 0.1)' },
-            pointLabels: {
-              color: '#CBD5E1',
-              font: { size: 10, weight: 'bold' }
-            },
+            pointLabels: { color: '#CBD5E1', font: { size: 10, weight: 'bold' } },
             ticks: { display: false },
             suggestedMin: 0,
             suggestedMax: 100
           }
         },
-        plugins: {
-          legend: { display: false }
-        }
+        plugins: { legend: { display: false } }
       }
     });
+
+    // Chargement dynamique des élèves depuis Google Sheets via l'API Apps Script
+    async function chargerEleves() {
+      const select = document.getElementById('select-eleve');
+      select.innerHTML = '<option>Connexion à la base Google Sheets...</option>';
+      try {
+        const response = await fetch(GOOGLE_SHEETS_API_URL);
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.eleves.length > 0) {
+          select.innerHTML = '';
+          data.eleves.forEach(eleve => {
+            const opt = document.createElement('option');
+            opt.value = eleve.ID_ELEVE || '';
+            opt.textContent = `${eleve.PRENOM || ''} ${eleve.NOM || ''} — ${eleve.CEINTURE_ACTUELLE || 'Ceinture Blanche'} (${eleve.NOMBRE_BARRETTES || 0} Barrette(s))`;
+            select.appendChild(opt);
+          });
+        } else {
+          select.innerHTML = '<option>Aucun élève trouvé ou base vide</option>';
+        }
+      } catch (err) {
+        console.error("Erreur API Sheets :", err);
+        select.innerHTML = '<option>Erreur de connexion à l\'API</option>';
+      }
+    }
+
+    // Lancement au chargement de la page
+    window.addEventListener('DOMContentLoaded', chargerEleves);
   </script>
 
 </body>
