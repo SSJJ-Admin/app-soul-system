@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Soul System Jiu Jitsu — Executive App</title>
   
+  <!-- CONFIGURATION PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Soul System">
@@ -24,8 +25,16 @@
             carbone: '#08090B',
             anthracite: '#121418',
             cardbg: '#181A1F',
-            gold: { light: '#F3E5AB', DEFAULT: '#D4AF37', dark: '#AA820A' },
-            silver: { light: '#F8FAFC', DEFAULT: '#CBD5E1', dark: '#64748B' }
+            gold: {
+              light: '#F3E5AB',
+              DEFAULT: '#D4AF37',
+              dark: '#AA820A',
+            },
+            silver: {
+              light: '#F8FAFC',
+              DEFAULT: '#CBD5E1',
+              dark: '#64748B'
+            }
           }
         }
       }
@@ -45,17 +54,26 @@
       color: #E2E8F0;
       font-family: system-ui, -apple-system, sans-serif;
     }
+
     .gold-gradient-text {
       background: linear-gradient(135deg, #FFF099 0%, #D4AF37 50%, #AA820A 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
+    .silver-gradient-text {
+      background: linear-gradient(135deg, #FFFFFF 0%, #CBD5E1 50%, #64748B 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
     .card-luxe {
       background: rgba(18, 20, 24, 0.85);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(212, 175, 55, 0.2);
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
     }
+
     .brown-belt {
       background: linear-gradient(90deg, #3E2723 0%, #5D4037 70%, #111 70%, #111 100%);
       border: 1px solid #8D6E63;
@@ -65,198 +83,302 @@
 
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-  <!-- TOP BAR -->
+  <!-- EN-TÊTE ET BRANDING -->
   <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4 rounded-2xl card-luxe mb-6">
     <div class="flex items-center space-x-4">
       <img src="https://lh3.googleusercontent.com/d/1daK1EnKZNnBTN5XQ8d_ZLyRyOt2vBAxL" alt="Soul System JJ" class="h-14 w-auto object-contain">
       <div>
         <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
-        <p class="text-xs text-silver tracking-wider uppercase">Executive Club & Academy</p>
+        <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
       </div>
     </div>
     
     <div class="flex items-center space-x-4 mt-3 md:mt-0">
       <div class="text-right">
-        <p class="text-xs text-gray-400">Rôle Compte</p>
+        <p class="text-xs text-gray-400">Compte Connecté</p>
         <select id="userRoleToggle" onchange="changerRoleCompte()" class="bg-carbone border border-gold/40 rounded px-2.5 py-1 text-xs text-gold font-bold focus:outline-none">
           <option value="prof">Professeur (Martin Huambachano)</option>
-          <option value="eleve">Élève (Lecture Seule)</option>
+          <option value="eleve">Élève (Vue Restreinte)</option>
         </select>
       </div>
-      <div class="relative cursor-pointer" onclick="basculerOnglet('monprofil')">
-        <img id="headerAvatar" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-11 h-11 rounded-full border-2 border-gold object-cover">
+      <div class="relative group cursor-pointer" onclick="basculerOnglet('monprofil')">
+        <img id="headerAvatar" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-11 h-11 rounded-full border-2 border-gold object-cover shadow-lg">
         <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-carbone rounded-full"></span>
       </div>
     </div>
   </header>
 
+  <!-- NOTIFICATIONS HEAD COACH -->
+  <div id="coachNotificationBox" class="w-full max-w-7xl mx-auto mb-6 bg-gold/10 border border-gold/40 p-4 rounded-2xl flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <span class="text-2xl">🔔</span>
+      <div>
+        <h3 class="text-xs font-bold text-gold uppercase tracking-wider">Notification Barrettes (Exclusif Professeur)</h3>
+        <p id="notificationText" class="text-xs text-gray-300">2 élèves sont éligibles pour un passage de barrette.</p>
+      </div>
+    </div>
+    <button onclick="alert('Module de validation directe actif')" class="px-3 py-1.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light">
+      Valider les Barrettes
+    </button>
+  </div>
+
   <main class="w-full max-w-7xl mx-auto space-y-8">
     
-    <!-- NAVIGATION BAR -->
+    <!-- BARRE DE NAVIGATION -->
     <div class="flex flex-wrap gap-2 border-b border-white/10 pb-3">
-      <button onclick="basculerOnglet('dashboard')" id="tabDash" class="px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs">📊 Radar & Stats Sparring</button>
-      <button onclick="basculerOnglet('planning')" id="tabPlan" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">📅 Planning & Inscriptions</button>
-      <button onclick="basculerOnglet('monprofil')" id="tabProf" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">👤 Mes Infos & Grade</button>
-      <button onclick="basculerOnglet('classement')" id="tabClass" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">🏆 Classement Club</button>
+      <button onclick="basculerOnglet('dashboard')" id="tabDash" class="px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs">📊 Dashboard & Performance</button>
+      <button onclick="basculerOnglet('agenda')" id="tabAgenda" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">📅 Planning & Réservations</button>
+      <button onclick="basculerOnglet('monprofil')" id="tabProf" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">👤 Mes Informations Personnelles</button>
+      <button onclick="basculerOnglet('classement')" id="tabClass" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">🏆 Classement Général</button>
     </div>
 
-    <!-- ONGLET 1 : DASHBOARD & SAISIE COMPLÈTE DES 10 AXES SPARRING -->
+    <!-- ONGLET 1 : DASHBOARD & SAISIE TACTIQUE DES 10 AXES -->
     <div id="sectionDashboard" class="space-y-8">
       
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- GRAPH RADAR D'ÉVOLUTION SUR 10 AXES -->
-        <div class="lg:col-span-7 card-luxe p-6 rounded-2xl flex flex-col justify-between">
-          <div class="flex flex-wrap justify-between items-center mb-4">
+      <!-- ENTÊTE DE NAVIGATION ÉLÈVE ET HEURES PROFESSEUR -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="card-luxe p-6 rounded-2xl">
+          <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-4">Profil Head Coach</h2>
+          <div class="flex items-center space-x-4 mb-4">
+            <img id="profCardAvatar" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-14 h-14 rounded-2xl border border-gold/60 object-cover">
             <div>
-              <h2 class="text-base font-bold text-white uppercase tracking-wider">Radar de Compétences (10 Axes)</h2>
-              <p class="text-xs text-gold">Comparatif d'Évolution Mensuelle</p>
+              <h3 id="displayProfNom" class="font-bold text-lg text-white">Martin Huambachano</h3>
+              <p id="displayProfGrade" class="text-xs gold-gradient-text font-semibold">Ceinture Marron — 2 Barrettes</p>
             </div>
-            <select id="periodeRadarSelect" onchange="changerMoisRadar()" class="bg-carbone border border-gold/30 rounded px-2.5 py-1 text-xs text-gray-300 mt-2 md:mt-0">
-              <option value="actuel">Mois Actuel (Novembre 2026)</option>
-              <option value="precedent">Mois Précédent (Octobre 2026)</option>
-              <option value="comparatif">⚡ Voir la Progression (Superposé)</option>
-            </select>
           </div>
-          
-          <div class="relative w-full aspect-square max-h-[380px] mx-auto flex items-center justify-center">
-            <canvas id="performanceRadar"></canvas>
+          <div class="w-full h-6 rounded brown-belt relative flex items-center justify-end pr-2">
+            <div class="h-full w-10 bg-black flex items-center justify-center space-x-1 px-1">
+              <div class="w-1 h-3 bg-white rounded-sm"></div>
+              <div class="w-1 h-3 bg-white rounded-sm"></div>
+            </div>
           </div>
         </div>
 
-        <!-- FORMULAIRE DE SAISIE DES 10 MOUVEMENTS -->
-        <div class="lg:col-span-5 card-luxe p-6 rounded-2xl space-y-4">
-          <h2 class="text-base font-bold text-white uppercase tracking-wider">Saisie Technique Sparring</h2>
-          <p class="text-xs text-gray-400">Entrez le nombre de réussites / subies durant vos sessions :</p>
-          
-          <div class="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+        <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
+          <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-2">Volume Horaire Enseigné (Professeur)</h2>
+          <div class="grid grid-cols-2 gap-4 text-center my-2">
+            <div class="bg-carbone/80 p-3 rounded-xl border border-white/5">
+              <p class="text-2xl font-black gold-gradient-text">68</p>
+              <p class="text-[10px] text-gray-400">Cours Donnés</p>
+            </div>
+            <div class="bg-carbone/80 p-3 rounded-xl border border-white/5">
+              <p class="text-2xl font-black silver-gradient-text">102 h</p>
+              <p class="text-[10px] text-gray-400">Total Heures Tapis</p>
+            </div>
+          </div>
+          <p class="text-[10px] text-gray-500 text-center">Calculé automatiquement</p>
+        </div>
+
+        <div id="boxSelectEleve" class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-2">Sélection Élève (Professeur)</h2>
+            <p class="text-xs text-gray-400 mb-3">Sélectionnez un adhérent pour consulter ou modifier sa fiche :</p>
+          </div>
+          <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
+            <option value="">Chargement de la base...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- RADAR COMPÉTENCES & SAISIE EXHAUSTIVE DES 10 STATS -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- RADAR ET HISTORIQUE MENSUEL -->
+        <div class="lg:col-span-6 card-luxe p-6 rounded-2xl flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h2 class="text-base font-bold text-white uppercase tracking-wider">Radar de Compétences</h2>
+              <p class="text-xs text-gold">Profil : <span id="radarCurrentStudent">Martin Huambachano</span></p>
+            </div>
+            <!-- COMPARATEUR MENSUEL -->
+            <select id="monthFilter" onchange="changerMoisStats()" class="bg-carbone border border-gold/30 rounded-lg px-2.5 py-1 text-xs text-silver font-bold">
+              <option value="current">Novembre 2026 (Actuel)</option>
+              <option value="prev">Octobre 2026</option>
+              <option value="prev2">Septembre 2026</option>
+            </select>
+          </div>
+
+          <div class="relative w-full aspect-square max-h-[380px] mx-auto flex items-center justify-center">
+            <canvas id="performanceRadar"></canvas>
+          </div>
+          <p class="text-[10px] text-center text-gray-400 mt-2">💡 Comparez vos réussites d'un mois sur l'autre pour valider vos progrès.</p>
+        </div>
+
+        <!-- FORMULAIRE COMPLET DES 10 POINTS STATISTIQUES (RÉUSSIS / SUBIS) -->
+        <div class="lg:col-span-6 card-luxe p-6 rounded-2xl space-y-4">
+          <div class="flex justify-between items-center">
+            <h2 class="text-base font-bold text-white uppercase tracking-wider">Stats Sparring (10 Axes)</h2>
+            <span class="text-[10px] text-gray-400">Format : <b class="text-gold">Réussis</b> / <b class="text-gray-400">Subis</b></span>
+          </div>
+
+          <div class="space-y-2 max-h-[420px] overflow-y-auto pr-2 text-xs">
             
-            <!-- 10 AXES SPARRING COMPLETS -->
             <script>
-              const axesSparring = [
-                { id: "td", label: "Amenés au sol (Takedowns)" },
-                { id: "pull", label: "Tirages de garde (Guard Pulls)" },
+              const statsConfig = [
+                { id: "td", label: "Amenés au sol" },
+                { id: "pull", label: "Tirages de garde" },
                 { id: "pass", label: "Passages de garde" },
                 { id: "mount", label: "Positions montées" },
                 { id: "side", label: "Contrôles latéraux" },
                 { id: "ns", label: "Nord-Sud" },
-                { id: "guardCtrl", label: "Contrôles depuis une garde" },
-                { id: "esc", label: "Sorties (Escapes)" },
-                { id: "sweep", label: "Renversements (Sweeps)" },
-                { id: "sub", label: "Soumissions (Submissions)" }
+                { id: "guard", label: "Contrôles depuis une garde" },
+                { id: "exit", label: "Sorties" },
+                { id: "sweep", label: "Renversements" },
+                { id: "sub", label: "Soumissions" }
               ];
-              
-              axesSparring.forEach(a => {
-                document.write(`
-                  <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex items-center justify-between text-xs">
-                    <span class="font-bold text-white">${a.label}</span>
-                    <div class="flex items-center space-x-1.5">
-                      <input type="number" id="${a.id}Win" value="3" class="w-11 bg-anthracite border border-emerald-500/40 text-center rounded p-1 text-emerald-400 font-bold" title="Réussis">
-                      <span class="text-gray-500">/</span>
-                      <input type="number" id="${a.id}Loss" value="1" class="w-11 bg-anthracite border border-rose-500/40 text-center rounded p-1 text-rose-400 font-bold" title="Subis">
-                    </div>
-                  </div>
-                `);
-              });
             </script>
+
+            <!-- Génération dynamique des 10 lignes -->
+            <div id="statsInputsContainer" class="space-y-2">
+              <!-- Injecté dynamiquement par JS -->
+            </div>
 
           </div>
 
-          <button onclick="enregistrerStatsSparring()" class="w-full py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            💾 Enregistrer mes Statistiques
+          <button id="btnSaveStats" onclick="enregistrerStats()" class="w-full py-2.5 rounded-xl bg-gold/20 border border-gold text-gold font-bold text-xs hover:bg-gold hover:text-black transition">
+            💾 Sauvegarder & Mettre à jour l'évolution mensuelle
           </button>
         </div>
 
       </div>
     </div>
 
-    <!-- ONGLET 2 : PLANNING, SÉMINAIRES & INSCRIPTIONS EN LIGNE -->
-    <div id="sectionPlanning" class="hidden card-luxe p-6 rounded-2xl space-y-6">
+    <!-- ONGLET 2 : PLANNING, COURS, STAGES & MASTERCLASSES (RÉSERVATION ÉLÈVES) -->
+    <div id="sectionAgenda" class="hidden space-y-6">
       
-      <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4">
-        <div>
-          <h2 class="text-lg font-bold text-white uppercase tracking-wider">Planning des Cours & Événements</h2>
-          <p class="text-xs text-gray-400">Inscrivez-vous aux cours, stages, séminaires et masterclasses</p>
+      <!-- BOUTON CRÉATION D'ÉVÉNEMENT (HEAD COACH ONLY) -->
+      <div id="coachCreateEventBox" class="card-luxe p-6 rounded-2xl">
+        <h2 class="text-base font-bold text-white uppercase tracking-wider mb-4">➕ Créer une Session (Professeur uniquement)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
+          <div>
+            <label class="text-gray-400 font-semibold">Type de session</label>
+            <select id="newEventType" class="w-full bg-carbone border border-white/10 rounded-lg p-2 text-white font-bold mt-1">
+              <option value="Cours Régulier">Cours Régulier</option>
+              <option value="Stage">Stage Technique</option>
+              <option value="Séminaire">Séminaire</option>
+              <option value="Masterclass">Masterclass 4K</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-gray-400 font-semibold">Thème / Intitulé</label>
+            <input type="text" id="newEventTitle" placeholder="Ex: Leg Locks & Heel Hooks" class="w-full bg-carbone border border-white/10 rounded-lg p-2 text-white mt-1">
+          </div>
+          <div>
+            <label class="text-gray-400 font-semibold">Date</label>
+            <input type="date" id="newEventDate" class="w-full bg-carbone border border-white/10 rounded-lg p-2 text-white mt-1">
+          </div>
+          <div>
+            <label class="text-gray-400 font-semibold">Horaires</label>
+            <input type="text" id="newEventTime" placeholder="19h30 - 21h00" class="w-full bg-carbone border border-white/10 rounded-lg p-2 text-white mt-1">
+          </div>
+          <div class="flex items-end">
+            <button onclick="creerEvenement()" class="w-full py-2 bg-gold text-black font-bold rounded-lg hover:bg-gold-light">
+              Publier au Planning
+            </button>
+          </div>
         </div>
-        <button id="btnNewSession" onclick="ouvrirModalCreation()" class="px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light">
-          ➕ Créer une Session / Stage (Prof)
-        </button>
       </div>
 
-      <!-- LISTE DES COURS DU PLANNING -->
-      <div id="sessionsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Généré dynamiquement en JS -->
+      <!-- LISTE DES COURS & STAGES À VENIR -->
+      <div class="card-luxe p-6 rounded-2xl space-y-4">
+        <h2 class="text-lg font-bold text-white uppercase tracking-wider">📅 Sessions & Stages à venir</h2>
+        <div id="eventsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Injecté par JS -->
+        </div>
       </div>
     </div>
 
-    <!-- ONGLET 3 : INFORMATIONS PERSONNELLES & GESTION DES GRADES -->
+    <!-- ONGLET 3 : MES INFORMATIONS PERSONNELLES (ÉDITABLE) -->
     <div id="sectionMonProfil" class="hidden card-luxe p-6 rounded-2xl space-y-6">
       <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4">
         <div>
-          <h2 class="text-lg font-bold text-white uppercase tracking-wider">Profil Personnel & Grade</h2>
-          <p class="text-xs text-gray-400">Mise à jour directe de votre fiche et de votre statut</p>
+          <h2 class="text-lg font-bold text-white uppercase tracking-wider">Mes Informations Personnelles</h2>
+          <p class="text-xs text-gray-400">Informations synchronisées avec `base_adhérents_2026_2027`</p>
         </div>
+        <span class="px-3 py-1 rounded-full text-xs font-bold bg-gold/10 text-gold border border-gold/30">
+          PROFIL SOUL SYSTEM
+        </span>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- PHOTO DE PROFIL ET UPLOAD -->
         <div class="flex flex-col items-center justify-center space-y-3 bg-carbone/60 p-4 rounded-xl border border-white/5">
-          <img id="profilePhotoDisplay" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-28 h-28 rounded-2xl border-2 border-gold object-cover">
-          <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold text-xs font-bold">
-            📷 Modifier la Photo
-            <input type="file" accept="image/*" class="hidden" onchange="uploadPhotoProfil(event)">
+          <img id="profilePhotoDisplay" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-28 h-28 rounded-2xl border-2 border-gold object-cover shadow-xl">
+          <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold text-xs font-bold hover:bg-gold hover:text-black transition">
+            📷 Importer une Photo
+            <input type="file" id="photoUploader" accept="image/*" class="hidden" onchange="uploadPhotoProfil(event)">
           </label>
         </div>
 
+        <!-- FORMULAIRE INFORMATIONS PERSONNELLES ET GRADE -->
         <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           <div>
             <label class="text-gray-400 font-semibold">Nom & Prénom</label>
             <input type="text" id="fieldNomPrenom" value="Martin Huambachano" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
+
+          <!-- OPTION DE MODIFICATION DE LA CEINTURE ET DES BARRETTES -->
           <div>
             <label class="text-gray-400 font-semibold">Ceinture Actuelle</label>
             <select id="fieldCeinture" class="w-full bg-carbone border border-gold/40 rounded-lg p-2.5 text-gold font-bold mt-1">
-              <option value="Blanche">Ceinture Blanche</option>
-              <option value="Bleue">Ceinture Bleue</option>
-              <option value="Violette">Ceinture Violette</option>
-              <option value="Marron" selected>Ceinture Marron</option>
-              <option value="Noire">Ceinture Noire</option>
+              <option value="Ceinture Blanche">Ceinture Blanche</option>
+              <option value="Ceinture Bleue">Ceinture Bleue</option>
+              <option value="Ceinture Violette">Ceinture Violette</option>
+              <option value="Ceinture Marron" selected>Ceinture Marron</option>
+              <option value="Ceinture Noire">Ceinture Noire</option>
             </select>
           </div>
+
           <div>
             <label class="text-gray-400 font-semibold">Nombre de Barrettes</label>
             <select id="fieldBarrettes" class="w-full bg-carbone border border-gold/40 rounded-lg p-2.5 text-gold font-bold mt-1">
-              <option value="0">0 Barrette</option>
-              <option value="1">1 Barrette</option>
-              <option value="2" selected>2 Barrettes</option>
-              <option value="3">3 Barrettes</option>
-              <option value="4">4 Barrettes</option>
+              <option value="0 Barrette">0 Barrette</option>
+              <option value="1 Barrette">1 Barrette</option>
+              <option value="2 Barrettes" selected>2 Barrettes</option>
+              <option value="3 Barrettes">3 Barrettes</option>
+              <option value="4 Barrettes">4 Barrettes</option>
             </select>
           </div>
+
           <div>
             <label class="text-gray-400 font-semibold">Adresse Email</label>
             <input type="email" id="fieldEmail" value="mh@soulsystem.net" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
+
           <div>
-            <label class="text-gray-400 font-semibold">Téléphone</label>
+            <label class="text-gray-400 font-semibold">Numéro de Téléphone</label>
             <input type="text" id="fieldTel" value="+33 6 12 34 56 78" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
+
           <div>
             <label class="text-gray-400 font-semibold">Licence / Assurance JJB</label>
             <input type="text" id="fieldLicence" value="LIC-2026-88942" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-emerald-400 font-bold mt-1">
           </div>
+
           <div>
-            <label class="text-gray-400 font-semibold">Personne à Contacter en cas d'urgence</label>
+            <label class="text-gray-400 font-semibold">Adresse Postale</label>
+            <input type="text" id="fieldAdresse" value="12 Avenue des Arts, 75008 Paris" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+          </div>
+
+          <div>
+            <label class="text-gray-400 font-semibold">Personne de Contact (Urgence)</label>
             <input type="text" id="fieldUrgence" value="Marie Huambachano (+33 6 98 76 54 32)" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
+
           <div>
             <label class="text-gray-400 font-semibold">Club Principal</label>
-            <input type="text" value="Soul System Jiu Jitsu" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1" readonly>
+            <input type="text" id="fieldClub" value="Soul System Jiu Jitsu" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
+          </div>
+
+          <div>
+            <label class="text-gray-400 font-semibold">Date d'Inscription au Club</label>
+            <input type="text" id="fieldDateInscr" value="01/09/2023" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gray-300 mt-1">
           </div>
         </div>
       </div>
 
       <div class="flex justify-end pt-4 border-t border-white/10">
-        <button onclick="sauvegarderProfil()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light">
+        <button onclick="enregistrerProfilPerso()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
           💾 Mettre à jour Mes Informations
         </button>
       </div>
@@ -264,58 +386,84 @@
 
     <!-- ONGLET 4 : CLASSEMENT GENERAL -->
     <div id="sectionClassement" class="hidden card-luxe p-6 rounded-2xl">
-      <h2 class="text-lg font-bold text-white uppercase tracking-wider mb-4">🏆 Classement d'Assiduité du Club</h2>
-      <table class="w-full text-left text-xs">
-        <thead>
-          <tr class="border-b border-white/10 text-gray-400">
-            <th class="py-2">Rang</th>
-            <th class="py-2">Élève</th>
-            <th class="py-2">Grade</th>
-            <th class="py-2 text-center">Cours Suivis</th>
-          </tr>
-        </thead>
-        <tbody id="classementBody" class="divide-y divide-white/5"></tbody>
-      </table>
+      <div class="flex flex-wrap items-center justify-between mb-6">
+        <div>
+          <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement & Challenge Assiduité</h2>
+          <p class="text-xs text-gray-400">Classement officiel de la Saison 2026-2027</p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-white/10 text-gray-400 uppercase">
+              <th class="py-3 px-4">Rang</th>
+              <th class="py-3 px-4">Élève</th>
+              <th class="py-3 px-4">Grade</th>
+              <th class="py-3 px-4 text-center">Cours Suivis</th>
+              <th class="py-3 px-4 text-right">Badge</th>
+            </tr>
+          </thead>
+          <tbody id="classementBody" class="divide-y divide-white/5">
+            <!-- Injecté dynamic en JS -->
+          </tbody>
+        </table>
+      </div>
     </div>
 
   </main>
 
+  <footer class="w-full max-w-7xl mx-auto text-center text-xs text-gray-500 py-6 mt-8 border-t border-white/5">
+    Soul System Jiu Jitsu © 2026 — Executive PWA Application
+  </footer>
+
   <script>
     let radarChart = null;
-    let sessionsList = [
-      { id: 1, type: "Cours Gi", theme: "Passages en Pression & Stack Pass", date: "Vendredi 13 Nov.", horaire: "19h30 - 21h00", inscrits: 14 },
-      { id: 2, type: "Masterclass 4K", theme: "Leg Locks & Heel Hooks Safety", date: "Samedi 14 Nov.", horaire: "10h00 - 12h00", inscrits: 22 },
-      { id: 3, type: "Stage d'Automne", theme: "X-Guard to Back Take Master", date: "Dimanche 22 Nov.", horaire: "14h00 - 17h00", inscrits: 30 }
+    let eventsList = [
+      { id: 1, type: "Cours Régulier", title: "Passages de Garde & Pression", date: "2026-11-12", time: "19h30 - 21h00", places: 16, inscrits: 12 },
+      { id: 2, type: "Stage", title: "Leg Locks & Heel Hooks Masterclass", date: "2026-11-20", time: "14h00 - 17h00", places: 20, inscrits: 15 }
     ];
 
     document.addEventListener("DOMContentLoaded", function() {
+      renderStatsInputs();
       initRadar();
-      renderPlanning();
+      renderEvents();
+      genererClassementMock();
     });
+
+    function renderStatsInputs() {
+      const container = document.getElementById("statsInputsContainer");
+      container.innerHTML = "";
+
+      statsConfig.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex items-center justify-between";
+        div.innerHTML = `
+          <span class="font-bold text-white">${item.label}</span>
+          <div class="flex items-center space-x-2">
+            <input type="number" id="${item.id}_win" value="5" class="w-12 bg-anthracite border border-gold/40 text-center rounded p-1 text-gold font-bold">
+            <span class="text-gray-500">/</span>
+            <input type="number" id="${item.id}_loss" value="2" class="w-12 bg-anthracite border border-white/10 text-center rounded p-1 text-gray-400">
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
 
     function initRadar() {
       const ctx = document.getElementById('performanceRadar').getContext('2d');
       radarChart = new Chart(ctx, {
         type: 'radar',
         data: {
-          labels: ['Amenés Sol', 'Tirages Garde', 'Passages', 'Montée', 'C. Latéral', 'Nord-Sud', 'C. Garde', 'Sorties', 'Sweeps', 'Submissions'],
-          datasets: [
-            {
-              label: 'Mois Actuel (Novembre)',
-              data: [80, 60, 85, 70, 75, 65, 90, 80, 75, 85],
-              backgroundColor: 'rgba(212, 175, 55, 0.25)',
-              borderColor: '#D4AF37',
-              borderWidth: 2
-            },
-            {
-              label: 'Mois Précédent (Octobre)',
-              data: [65, 50, 70, 60, 60, 50, 75, 70, 60, 70],
-              backgroundColor: 'rgba(203, 213, 225, 0.15)',
-              borderColor: '#CBD5E1',
-              borderWidth: 1.5,
-              borderDash: [4, 4]
-            }
-          ]
+          labels: ['Amenés sol', 'Tirages', 'Passages', 'Montée', 'C. Latéraux', 'Nord-Sud', 'C. Garde', 'Sorties', 'Renversements', 'Soumissions'],
+          datasets: [{
+            label: 'Réussites (Actuel)',
+            data: [70, 60, 80, 75, 85, 65, 70, 60, 75, 90],
+            backgroundColor: 'rgba(212, 175, 55, 0.25)',
+            borderColor: '#D4AF37',
+            pointBackgroundColor: '#FFF099',
+            borderWidth: 2
+          }]
         },
         options: {
           scales: {
@@ -328,78 +476,133 @@
               suggestedMax: 100
             }
           },
-          plugins: { legend: { display: true, labels: { color: '#E2E8F0', font: { size: 10 } } } }
+          plugins: { legend: { display: false } }
         }
       });
     }
 
-    function renderPlanning() {
-      const container = document.getElementById("sessionsContainer");
-      container.innerHTML = "";
-      sessionsList.forEach(s => {
-        const div = document.createElement("div");
-        div.className = "bg-carbone/80 p-4 rounded-xl border border-gold/30 flex flex-col justify-between space-y-3";
-        div.innerHTML = `
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gold/20 text-gold">${s.type}</span>
-              <span class="text-xs text-gray-400">👥 ${s.inscrits} Inscrits</span>
-            </div>
-            <h3 class="font-bold text-white text-sm mt-2">${s.theme}</h3>
-            <p class="text-xs text-gold font-semibold mt-1">📅 ${s.date} • ⏰ ${s.horaire}</p>
-          </div>
-          <button onclick="sInscrire(${s.id})" class="w-full py-2 rounded-lg bg-gold text-black font-bold text-xs hover:bg-gold-light">
-            ✓ S'inscrire à cette session
-          </button>
-        `;
-        container.appendChild(div);
-      });
+    function changerMoisStats() {
+      const month = document.getElementById("monthFilter").value;
+      if (month === "prev") {
+        radarChart.data.datasets[0].data = [50, 40, 60, 55, 70, 50, 60, 45, 60, 70];
+      } else {
+        radarChart.data.datasets[0].data = [70, 60, 80, 75, 85, 65, 70, 60, 75, 90];
+      }
+      radarChart.update();
     }
 
-    function sInscrire(id) {
-      const s = sessionsList.find(x => x.id === id);
-      if (s) {
-        s.inscrits++;
-        renderPlanning();
-        alert(`✅ Inscription confirmée pour la session : ${s.theme}`);
-      }
-    }
-
-    function ouvrirModalCreation() {
-      const type = prompt("Type d'événement (Cours Gi, NoGi, Stage, Masterclass) :", "Stage Technique");
-      const theme = prompt("Thème du cours / stage :", "Passages de garde & Renversements");
-      const date = prompt("Date (ex: Samedi 28 Nov.) :", "Samedi 28 Nov.");
-      const horaire = prompt("Horaire (ex: 14h00 - 16h30) :", "14h00 - 16h30");
-
-      if (type && theme) {
-        sessionsList.push({ id: Date.now(), type, theme, date, horaire, inscrits: 1 });
-        renderPlanning();
-        alert("✅ Session ajoutée au planning général de l'Académie !");
-      }
+    function enregistrerStats() {
+      alert("✅ Les 10 critères de sparring ont été enregistrés et l'évolution mensuelle a été mise à jour !");
     }
 
     function basculerOnglet(nom) {
-      ["Dashboard", "Planning", "MonProfil", "Classement"].forEach(n => {
-        document.getElementById("section" + n).classList.add("hidden");
-        document.getElementById("tab" + n.substring(0, 4)).className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
-      });
-      
-      const tabMap = { dashboard: "Dash", planning: "Plan", monprofil: "Prof", classement: "Class" };
-      document.getElementById("section" + nom.charAt(0).toUpperCase() + nom.slice(1)).classList.remove("hidden");
-      document.getElementById("tab" + tabMap[nom]).className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+      document.getElementById("sectionDashboard").classList.add("hidden");
+      document.getElementById("sectionAgenda").classList.add("hidden");
+      document.getElementById("sectionMonProfil").classList.add("hidden");
+      document.getElementById("sectionClassement").classList.add("hidden");
+
+      document.getElementById("tabDash").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      document.getElementById("tabAgenda").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      document.getElementById("tabProf").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      document.getElementById("tabClass").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+
+      if (nom === 'dashboard') {
+        document.getElementById("sectionDashboard").classList.remove("hidden");
+        document.getElementById("tabDash").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+      } else if (nom === 'agenda') {
+        document.getElementById("sectionAgenda").classList.remove("hidden");
+        document.getElementById("tabAgenda").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+      } else if (nom === 'monprofil') {
+        document.getElementById("sectionMonProfil").classList.remove("hidden");
+        document.getElementById("tabProf").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+      } else if (nom === 'classement') {
+        document.getElementById("sectionClassement").classList.remove("hidden");
+        document.getElementById("tabClass").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+      }
     }
 
     function changerRoleCompte() {
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
-      document.getElementById("btnNewSession").style.display = isProf ? 'block' : 'none';
+      const role = document.getElementById("userRoleToggle").value;
+      const isProf = (role === 'prof');
+      document.getElementById("coachNotificationBox").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("boxSelectEleve").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("coachCreateEventBox").style.display = isProf ? 'block' : 'none';
     }
 
-    function enregistrerStatsSparring() {
-      alert("💾 Vos 10 statistiques de sparring ont été enregistrées avec succès !");
+    function renderEvents() {
+      const box = document.getElementById("eventsList");
+      box.innerHTML = "";
+
+      eventsList.forEach(ev => {
+        const card = document.createElement("div");
+        card.className = "bg-carbone/80 p-4 rounded-xl border border-white/10 space-y-2 text-xs flex justify-between items-center";
+        card.innerHTML = `
+          <div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">${ev.type}</span>
+            <h3 class="font-bold text-white text-sm mt-1">${ev.title}</h3>
+            <p class="text-gray-400">📅 ${ev.date} • 🕒 ${ev.time}</p>
+            <p class="text-gray-500 text-[10px] mt-1">Inscrits : ${ev.inscrits} / ${ev.places} places</p>
+          </div>
+          <button onclick="inscrireEleveEvent(${ev.id})" class="px-4 py-2 rounded-lg bg-gold text-black font-bold hover:bg-gold-light">
+            S'inscrire
+          </button>
+        `;
+        box.appendChild(card);
+      });
     }
 
-    function sauvegarderProfil() {
-      alert("✅ Votre profil personnel et votre grade ont été mis à jour !");
+    function creerEvenement() {
+      const type = document.getElementById("newEventType").value;
+      const title = document.getElementById("newEventTitle").value || "Nouvelle Session";
+      const date = document.getElementById("newEventDate").value || "2026-11-25";
+      const time = document.getElementById("newEventTime").value || "19h30 - 21h00";
+
+      eventsList.push({ id: Date.now(), type, title, date, time, places: 20, inscrits: 1 });
+      renderEvents();
+      alert("✅ Session publiée au planning de l'académie !");
+    }
+
+    function inscrireEleveEvent(id) {
+      const ev = eventsList.find(e => e.id === id);
+      if (ev) {
+        ev.inscrits++;
+        renderEvents();
+        alert("🎉 Votre inscription à la session '" + ev.title + "' a été confirmée !");
+      }
+    }
+
+    function uploadPhotoProfil(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById("profilePhotoDisplay").src = e.target.result;
+          document.getElementById("headerAvatar").src = e.target.result;
+          document.getElementById("profCardAvatar").src = e.target.result;
+          alert("📸 Photo de profil mise à jour !");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function enregistrerProfilPerso() {
+      const nom = document.getElementById("fieldNomPrenom").value;
+      const ceinture = document.getElementById("fieldCeinture").value;
+      const barrettes = document.getElementById("fieldBarrettes").value;
+
+      document.getElementById("displayProfNom").textContent = nom;
+      document.getElementById("displayProfGrade").textContent = ceinture + " — " + barrettes;
+
+      alert("✅ Vos informations personnelles et votre grade ont été mis à jour avec succès !");
+    }
+
+    function genererClassementMock() {
+      const body = document.getElementById("classementBody");
+      body.innerHTML = `
+        <tr class="hover:bg-white/5"><td class="py-3 px-4">🥇 <b class="text-gold">1er</b></td><td class="py-3 px-4 font-bold text-white">Jean Dupont</td><td class="py-3 px-4 text-gold">Ceinture Bleue</td><td class="py-3 px-4 text-center font-bold">42</td><td class="py-3 px-4 text-right">🔥 Top 1</td></tr>
+        <tr class="hover:bg-white/5"><td class="py-3 px-4">🥈 <b class="text-silver">2ème</b></td><td class="py-3 px-4 font-bold text-white">Sophie Martin</td><td class="py-3 px-4 text-gold">Ceinture Violette</td><td class="py-3 px-4 text-center font-bold">38</td><td class="py-3 px-4 text-right">Top 5</td></tr>
+        <tr class="hover:bg-white/5"><td class="py-3 px-4">🥉 <b class="text-amber-700">3ème</b></td><td class="py-3 px-4 font-bold text-white">Alexandre Silva</td><td class="py-3 px-4 text-gold">Ceinture Blanche</td><td class="py-3 px-4 text-center font-bold">31</td><td class="py-3 px-4 text-right">Top 5</td></tr>
+      `;
     }
   </script>
 
