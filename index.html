@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Soul System Jiu Jitsu — Executive App</title>
+  <title>Soul System App</title>
   
-  <!-- CONFIGURATION PWA HAUTE DEFINITION (ICÔNE IPHONE / ANDROID) -->
+  <!-- CONFIGURATION PWA (ICÔNE ET NOM EXACT "Soul System App") -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Soul System">
+  <meta name="apple-mobile-web-app-title" content="Soul System App">
   <link rel="apple-touch-icon" href="./Logo.png">
   <link rel="icon" type="image/png" href="./Logo.png">
-  <link rel="manifest" href="data:application/manifest+json;utf8,{\"name\":\"Soul System JJ\",\"short_name\":\"SoulSystem\",\"start_url\":\"/\",\"display\":\"standalone\",\"background_color\":\"#08090B\",\"theme_color\":\"#D4AF37\",\"icons\":[{\"src\":\"./Logo.png\",\"sizes\":\"512x512\",\"type\":\"image/png\"}]}">
+  <link rel="manifest" href="data:application/manifest+json;utf8,{\"name\":\"Soul System App\",\"short_name\":\"Soul System App\",\"start_url\":\"/\",\"display\":\"standalone\",\"background_color\":\"#08090B\",\"theme_color\":\"#D4AF37\",\"icons\":[{\"src\":\"./Logo.png\",\"sizes\":\"512x512\",\"type\":\"image/png\"}]}">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -79,17 +79,27 @@
       background: linear-gradient(90deg, #3E2723 0%, #5D4037 70%, #111 70%, #111 100%);
       border: 1px solid #8D6E63;
     }
+
+    /* AJUSTEMENT DU LOGO : EMPÊCHE DE DÉFORMER OU D'ÉCRASER L'IMAGE */
+    .logo-container img {
+      max-height: 56px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
   </style>
 </head>
 
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-  <!-- EN-TÊTE AVEC LE VRAI LOGO INTÉGRÉ -->
+  <!-- EN-TÊTE AVEC AFICHE NON ÉCRASÉE DU LOGO -->
   <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4 rounded-2xl card-luxe mb-6">
     <div class="flex items-center space-x-4">
-      <img src="./Logo.png" alt="Soul System JJ" class="h-14 w-auto object-contain filter drop-shadow-lg" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000';">
+      <div class="logo-container bg-carbone/40 p-1.5 rounded-xl border border-gold/20 flex items-center justify-center">
+        <img src="./Logo.png" alt="Soul System App" class="h-14 w-auto object-contain" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000';">
+      </div>
       <div>
-        <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
+        <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System App</h1>
         <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
       </div>
     </div>
@@ -490,7 +500,7 @@
   </main>
 
   <footer class="w-full max-w-7xl mx-auto text-center text-xs text-gray-500 py-6 mt-8 border-t border-white/5">
-    Soul System Jiu Jitsu © 2026 — Executive PWA Application
+    Soul System App © 2026 — Executive PWA Application
   </footer>
 
   <script>
