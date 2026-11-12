@@ -5,39 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Soul System JJ</title>
   
-  <!-- CONFIGURATION PWA STRICTEMENT SUR Icon.jpeg (SANS AILES) AVEC CACHE-BUSTER ?v=2 -->
+  <!-- CONFIGURATION PWA : ICÔNE CARRÉE SANS ÉTIREMENT -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Soul System JJ">
-  <link rel="apple-touch-icon" sizes="180x180" href="./Icon.jpeg?v=2">
-  <link rel="apple-touch-icon-precomposed" sizes="180x180" href="./Icon.jpeg?v=2">
-  <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=2">
+  <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="./Icon.jpeg?v=3">
+  <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=3">
 
   <script>
-    // Génération dynamique du manifeste PWA avec chemin absolu vers Icon.jpeg
+    // Générateur automatique d'icône 1:1 (carrée parfaite) sans aucun étirement pour iOS & Android
     (function() {
-      const baseUrl = window.location.origin;
-      const manifest = {
-        name: "Soul System JJ",
-        short_name: "Soul System JJ",
-        start_url: baseUrl + "/",
-        display: "standalone",
-        background_color: "#08090B",
-        theme_color: "#D4AF37",
-        icons: [
-          {
-            src: baseUrl + "/Icon.jpeg?v=2",
-            sizes: "512x512",
-            type: "image/jpeg",
-            purpose: "any maskable"
-          }
-        ]
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = function() {
+        const size = 512;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        // Fond Noir Carbone officiel
+        ctx.fillStyle = "#08090B";
+        ctx.fillRect(0, 0, size, size);
+
+        // Calcul des proportions exactes avec marge élégante (padding 12%)
+        const padding = size * 0.12;
+        const maxDim = size - padding * 2;
+        const ratio = Math.min(maxDim / img.width, maxDim / img.height);
+        const w = img.width * ratio;
+        const h = img.height * ratio;
+        const x = (size - w) / 2;
+        const y = (size - h) / 2;
+
+        ctx.drawImage(img, x, y, w, h);
+        const squareDataUrl = canvas.toDataURL('image/png');
+
+        // Application directe sur l'icône Apple iOS
+        document.getElementById('appleTouchIcon').href = squareDataUrl;
+
+        // Mise à jour du manifeste PWA
+        const baseUrl = window.location.origin;
+        const manifest = {
+          name: "Soul System JJ",
+          short_name: "Soul System JJ",
+          start_url: baseUrl + "/",
+          display: "standalone",
+          background_color: "#08090B",
+          theme_color: "#D4AF37",
+          icons: [
+            {
+              src: squareDataUrl,
+              sizes: "512x512",
+              type: "image/png",
+              purpose: "any maskable"
+            }
+          ]
+        };
+        const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = URL.createObjectURL(blob);
+        document.head.appendChild(link);
       };
-      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-      const link = document.createElement('link');
-      link.rel = 'manifest';
-      link.href = URL.createObjectURL(blob);
-      document.head.appendChild(link);
+      img.src = "./Icon.jpeg?v=3";
     })();
   </script>
 
@@ -108,7 +138,6 @@
       border: 1px solid #8D6E63;
     }
 
-    /* LOGO AVEC AILES INTACT DANS L'EN-TÊTE */
     .logo-header-img {
       height: 56px;
       width: auto;
