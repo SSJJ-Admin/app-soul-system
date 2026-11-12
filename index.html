@@ -191,9 +191,14 @@
         <p id="coachNotifText" class="text-xs text-gray-300">Analyse des quotas d'assiduité en cours...</p>
       </div>
     </div>
-    <button onclick="basculerOnglet('monprofil')" class="px-3 py-1.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light">
-      Gérer les Grades
-    </button>
+    <div class="flex items-center gap-2">
+      <button onclick="ouvrirAppelTatami('Session du Jour')" class="px-3 py-1.5 rounded-xl bg-carbone border border-gold/50 text-gold font-bold text-xs hover:bg-gold/10">
+        🥋 Appel Tatami
+      </button>
+      <button onclick="basculerOnglet('monprofil')" class="px-3 py-1.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light">
+        Gérer les Grades
+      </button>
+    </div>
   </div>
 
   <main class="w-full max-w-7xl mx-auto space-y-8">
@@ -443,7 +448,12 @@
       </div>
 
       <div class="card-luxe p-6 rounded-2xl space-y-4">
-        <h2 class="text-lg font-bold text-white uppercase tracking-wider">Planning Officiel des Sessions</h2>
+        <div class="flex flex-wrap justify-between items-center gap-2">
+          <h2 class="text-lg font-bold text-white uppercase tracking-wider">Planning Officiel des Sessions</h2>
+          <button onclick="ouvrirAppelTatami('Session Libre / Cours du Jour')" class="btnProfOnly px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light transition">
+            🥋 Ouvrir l'Appel Tatami Rapide
+          </button>
+        </div>
         
         <div class="space-y-4">
           <div class="bg-carbone/80 p-5 rounded-xl border border-gold/30 flex flex-wrap justify-between items-center">
@@ -464,7 +474,31 @@
               <button onclick="toggleInscription(this)" class="px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs">
                 S'inscrire
               </button>
-              <button onclick="ouvrirAppelTatami('Session Gi 17 Nov')" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-white/20 text-xs text-white">
+              <button onclick="ouvrirAppelTatami('Cours Gi — Passages de Garde')" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-gold/40 text-xs text-gold font-bold hover:bg-gold/10">
+                🥋 Appel Tatami
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-carbone/80 p-5 rounded-xl border border-white/10 flex flex-wrap justify-between items-center">
+            <div class="space-y-1">
+              <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-silver/10 text-silver border border-silver/30">COURS NO-GI</span>
+                <span class="text-xs text-gray-400">● Jeudi 19 Novembre — 19h30</span>
+              </div>
+              <h3 class="font-extrabold text-base text-white">Lutte, Contrôles & Soumissions No-Gi</h3>
+              <p class="text-xs text-gray-400">Prof. Martin Huambachano • Récurrence Hebdomadaire</p>
+            </div>
+
+            <div class="flex items-center space-x-4 mt-3 md:mt-0">
+              <div class="text-right">
+                <p class="text-xs font-extrabold text-silver">11 / 20 Inscrits</p>
+                <p class="text-[10px] text-gray-400">Places disponibles</p>
+              </div>
+              <button onclick="toggleInscription(this)" class="px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs">
+                S'inscrire
+              </button>
+              <button onclick="ouvrirAppelTatami('Cours No-Gi — Lutte & Soumissions')" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-gold/40 text-xs text-gold font-bold hover:bg-gold/10">
                 🥋 Appel Tatami
               </button>
             </div>
@@ -604,6 +638,51 @@
 
   </main>
 
+  <!-- FENÊTRE MODALE INTERACTIVE : APPEL TATAMI (+1 TOTAL_COURS DANS GOOGLE SHEETS) -->
+  <div id="modalAppelTatami" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="card-luxe w-full max-w-2xl rounded-2xl border border-gold/50 p-6 space-y-5 shadow-2xl">
+      
+      <div class="flex justify-between items-start border-b border-white/10 pb-3">
+        <div>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30 uppercase">Feuille de Présence Tatami</span>
+          <h2 id="modalSessionTitle" class="text-lg font-extrabold text-white mt-1">Appel Tatami</h2>
+          <p class="text-xs text-gray-400">Cochez les élèves présents pour incrémenter automatiquement <strong class="text-gold">+1 cours</strong> dans Google Sheets.</p>
+        </div>
+        <button onclick="fermerAppelTatami()" class="text-gray-400 hover:text-white text-xl font-bold px-2">✕</button>
+      </div>
+
+      <!-- Barre de recherche & actions rapides -->
+      <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+        <input type="text" id="searchAppelInput" onkeyup="filtrerListeAppel()" placeholder="🔍 Rechercher un élève..." class="flex-1 min-w-[180px] bg-carbone border border-white/10 rounded-xl px-3 py-2 text-white focus:border-gold focus:outline-none">
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="toutCocherAppel(true)" class="px-3 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 hover:border-gold font-bold">Tout cocher</button>
+          <button type="button" onclick="toutCocherAppel(false)" class="px-3 py-2 rounded-xl bg-carbone border border-white/10 text-gray-400 hover:text-white">Décocher</button>
+        </div>
+      </div>
+
+      <!-- Liste des élèves à cocher -->
+      <div id="appelElevesList" class="max-h-[340px] overflow-y-auto space-y-2 pr-1">
+        <!-- Injecté dynamiquement -->
+      </div>
+
+      <!-- Pied de modale : Compteur et bouton d'envoi -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10">
+        <p class="text-xs text-gray-300">
+          Présents sélectionnés : <span id="appelSelectedCount" class="text-gold font-extrabold text-sm">0</span> élève(s)
+        </p>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="fermerAppelTatami()" class="px-4 py-2.5 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:text-white">
+            Annuler
+          </button>
+          <button id="btnValiderAppel" type="button" onclick="validerAppelTatamiSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light transition shadow-lg">
+            ✅ Valider les Présences (+1 Cours)
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <footer class="w-full max-w-7xl mx-auto text-center text-xs text-gray-500 py-6 mt-8 border-t border-white/5">
     Soul System Jiu Jitsu © 2026 — Soul System JJ
   </footer>
@@ -707,18 +786,11 @@
         const prevIdx = currentEleveIndex < listeEleves.length ? currentEleveIndex : 0;
         select.innerHTML = "";
         
-        let eligiblesCount = 0;
-
         listeEleves.forEach((eleve, index) => {
           const prenom = getVal(eleve, ['PRENOM', 'Prenom'], '');
           const nom = getVal(eleve, ['NOM', 'Nom'], '');
           const ceinture = getVal(eleve, ['CEINTURE_ACTUELLE', 'CEINTURE', 'Grade'], 'Ceinture Blanche');
           const barrettes = parseInt(getVal(eleve, ['BARRETTES', 'Barrettes', 'STRIPES'], 0)) || 0;
-          const cours = parseInt(getVal(eleve, ['TOTAL_COURS', 'COURS', 'Assiduite'], 0)) || 0;
-
-          if (cours >= (barrettes + 1) * 25 && barrettes < 4) {
-            eligiblesCount++;
-          }
 
           const opt = document.createElement("option");
           opt.value = index;
@@ -727,16 +799,50 @@
         });
 
         select.value = String(prevIdx);
-        document.getElementById("coachNotifText").textContent = eligiblesCount > 0
-          ? `${eligiblesCount} élève(s) ont atteint le quota de cours requis pour une nouvelle barrette.`
-          : "Tous les élèves sont à jour dans leur progression de grade.";
-
+        actualiserAlerteBarrettes();
         genererClassement();
         changerEleve();
       }
     }
 
-    // ENVOI RÉEL (POST) VERS GOOGLE SHEETS
+    function actualiserAlerteBarrettes() {
+      let eligiblesCount = 0;
+      listeEleves.forEach(eleve => {
+        const role = String(getVal(eleve, ['ROLE', 'Role'], '')).toLowerCase();
+        if (role.includes('prof')) return;
+        const barrettes = parseInt(getVal(eleve, ['BARRETTES', 'Barrettes', 'STRIPES'], 0)) || 0;
+        const cours = parseInt(getVal(eleve, ['TOTAL_COURS', 'COURS', 'Assiduite'], 0)) || 0;
+        if (cours >= (barrettes + 1) * 25 && barrettes < 4) {
+          eligiblesCount++;
+        }
+      });
+
+      document.getElementById("coachNotifText").textContent = eligiblesCount > 0
+        ? `${eligiblesCount} élève(s) ont atteint le quota de cours requis pour une nouvelle barrette.`
+        : "Tous les élèves sont à jour dans leur progression de grade.";
+    }
+
+    // ENVOI RÉEL (POST) VERS GOOGLE SHEETS POUR UN ÉLÈVE DONNÉ
+    async function envoyerMiseAJourPourEleve(el, updatesObj) {
+      const payload = {
+        action: "updateEleve",
+        _rowIndex: el._rowIndex || null,
+        email: getVal(el, ['EMAIL', 'Email', 'MAIL'], ''),
+        nom: getVal(el, ['NOM', 'Nom'], ''),
+        prenom: getVal(el, ['PRENOM', 'Prenom'], ''),
+        updates: updatesObj
+      };
+
+      await fetch(GOOGLE_SHEETS_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+
+      Object.assign(el, updatesObj);
+    }
+
     async function envoyerMiseAJourSheets(updatesObj, btnElement, originalText) {
       const el = listeEleves[currentEleveIndex];
       if (!el) {
@@ -753,26 +859,8 @@
         btnElement.textContent = "⏳ Enregistrement dans Google Sheets...";
       }
 
-      const payload = {
-        action: "updateEleve",
-        _rowIndex: el._rowIndex || null,
-        email: getVal(el, ['EMAIL', 'Email', 'MAIL'], ''),
-        nom: getVal(el, ['NOM', 'Nom'], ''),
-        prenom: getVal(el, ['PRENOM', 'Prenom'], ''),
-        updates: updatesObj
-      };
-
       try {
-        await fetch(GOOGLE_SHEETS_API_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-
-        // Mise à jour immédiate en mémoire locale
-        Object.assign(el, updatesObj);
-
+        await envoyerMiseAJourPourEleve(el, updatesObj);
         badge.textContent = "✅ Enregistré dans Sheets";
         badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
         return true;
@@ -786,6 +874,126 @@
           btnElement.disabled = false;
           btnElement.textContent = originalText;
         }
+      }
+    }
+
+    // --- LOGIQUE DE LA MODALE D'APPEL TATAMI ---
+    function ouvrirAppelTatami(nomSession) {
+      if (listeEleves.length === 0) {
+        alert("⏳ Chargement des élèves en cours, veuillez patienter quelques secondes.");
+        return;
+      }
+
+      document.getElementById("modalSessionTitle").textContent = "Appel Tatami — " + nomSession;
+      document.getElementById("searchAppelInput").value = "";
+
+      const listContainer = document.getElementById("appelElevesList");
+      listContainer.innerHTML = "";
+
+      listeEleves.forEach((el, idx) => {
+        const role = String(getVal(el, ['ROLE', 'Role'], '')).toLowerCase();
+        if (role.includes('prof')) return; // On n'incrémente pas les cours suivis du professeur
+
+        const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Élève');
+        const nom = getVal(el, ['NOM', 'Nom'], '');
+        const fullName = `${prenom} ${nom}`.trim();
+        const ceinture = getVal(el, ['CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
+        const barrettes = parseInt(getVal(el, ['BARRETTES', 'Barrettes'], 0)) || 0;
+        const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
+
+        const row = document.createElement("label");
+        row.className = "appel-row flex items-center justify-between p-3 rounded-xl bg-carbone/90 border border-white/10 hover:border-gold/50 cursor-pointer transition select-none";
+        row.setAttribute("data-name", fullName.toLowerCase());
+
+        row.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <input type="checkbox" value="${idx}" onchange="majCompteurAppel()" class="appel-checkbox w-5 h-5 accent-[#D4AF37] rounded cursor-pointer">
+            <div>
+              <p class="text-xs font-bold text-white">${fullName}</p>
+              <p class="text-[10px] text-gold">${ceinture} • ${barrettes} barrette(s)</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="px-2.5 py-1 rounded-lg bg-anthracite border border-white/10 text-[11px] font-bold text-gray-300">
+              ${cours} cours → <span class="text-emerald-400">${cours + 1}</span>
+            </span>
+          </div>
+        `;
+        listContainer.appendChild(row);
+      });
+
+      majCompteurAppel();
+      document.getElementById("modalAppelTatami").classList.remove("hidden");
+    }
+
+    function fermerAppelTatami() {
+      document.getElementById("modalAppelTatami").classList.add("hidden");
+    }
+
+    function filtrerListeAppel() {
+      const q = document.getElementById("searchAppelInput").value.toLowerCase().trim();
+      document.querySelectorAll(".appel-row").forEach(row => {
+        const name = row.getAttribute("data-name") || "";
+        row.style.display = name.includes(q) ? "flex" : "none";
+      });
+    }
+
+    function toutCocherAppel(etat) {
+      document.querySelectorAll(".appel-row").forEach(row => {
+        if (row.style.display !== "none") {
+          const cb = row.querySelector(".appel-checkbox");
+          if (cb) cb.checked = etat;
+        }
+      });
+      majCompteurAppel();
+    }
+
+    function majCompteurAppel() {
+      const checkedCount = document.querySelectorAll(".appel-checkbox:checked").length;
+      document.getElementById("appelSelectedCount").textContent = checkedCount;
+    }
+
+    async function validerAppelTatamiSheets() {
+      const checkedBoxes = Array.from(document.querySelectorAll(".appel-checkbox:checked"));
+      if (checkedBoxes.length === 0) {
+        alert("⚠️ Cochez au moins un élève présent avant de valider.");
+        return;
+      }
+
+      const btn = document.getElementById("btnValiderAppel");
+      const badge = document.getElementById("syncStatusBadge");
+      btn.disabled = true;
+      btn.textContent = `⏳ Mise à jour de ${checkedBoxes.length} élève(s)...`;
+      badge.textContent = "⏳ Enregistrement Appel Tatami...";
+      badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30";
+
+      try {
+        // Envoi séquentiel propre pour éviter tout conflit d'écriture sur Google Sheets
+        for (const cb of checkedBoxes) {
+          const idx = parseInt(cb.value);
+          const el = listeEleves[idx];
+          if (!el) continue;
+
+          const currentCourses = parseInt(getVal(el, ['TOTAL_COURS', 'COURS', 'Assiduite'], 0)) || 0;
+          const newTotal = currentCourses + 1;
+
+          await envoyerMiseAJourPourEleve(el, { TOTAL_COURS: newTotal });
+        }
+
+        actualiserAlerteBarrettes();
+        genererClassement();
+        changerEleve();
+
+        badge.textContent = `✅ +1 cours validé (${checkedBoxes.length} élèves)`;
+        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+
+        fermerAppelTatami();
+        alert(`🥋 Appel Tatami validé ! +1 cours ajouté dans Google Sheets pour ${checkedBoxes.length} élève(s).`);
+      } catch (err) {
+        alert("❌ Une erreur s'est produite lors de l'enregistrement de l'appel : " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "✅ Valider les Présences (+1 Cours)";
       }
     }
 
@@ -971,6 +1179,7 @@
         const nom = getVal(listeEleves[currentEleveIndex], ['NOM', 'Nom'], '');
         if (opt) opt.textContent = `${prenom} ${nom} — Ceinture ${belt} (${stripes} bar.)`;
         previsualiserGradeActif();
+        actualiserAlerteBarrettes();
         genererClassement();
         alert(`✅ Grade enregistré dans Google Sheets : Ceinture ${belt} (${stripes} barrette(s)) !`);
       }
@@ -1030,6 +1239,7 @@
         const barrettes = parseInt(getVal(listeEleves[currentEleveIndex], ['BARRETTES'], 0)) || 0;
         if (opt) opt.textContent = `${updates.PRENOM} ${updates.NOM} — ${ceinture} (${barrettes} bar.)`;
         changerEleve();
+        actualiserAlerteBarrettes();
         genererClassement();
         alert("✅ Fiche personnelle enregistrée dans Google Sheets !");
       }
@@ -1079,10 +1289,6 @@
         btn.textContent = "S'inscrire";
         btn.className = "px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs";
       }
-    }
-
-    function ouvrirAppelTatami(nomSession) {
-      alert("🥋 Espace Appel Tatami pour " + nomSession);
     }
 
     function genererClassement() {
