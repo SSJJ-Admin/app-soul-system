@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Soul System JJ</title>
   
-  <!-- CONFIGURATION PWA : ICÔNE CARRÉE SANS ÉTIREMENT -->
+  <!-- CONFIGURATION PWA : ICÔNE CARRÉE PLEINE TAILLE (100% REMPLISSAGE) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Soul System JJ">
-  <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="./Icon.jpeg?v=3">
-  <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=3">
+  <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="./Icon.jpeg?v=4">
+  <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=4">
 
   <script>
-    // Générateur automatique d'icône 1:1 (carrée parfaite) sans aucun étirement pour iOS & Android
+    // Générateur d'icône 1:1 plein écran (0% de marge pour un logo agrandi au maximum)
     (function() {
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -28,10 +28,8 @@
         ctx.fillStyle = "#08090B";
         ctx.fillRect(0, 0, size, size);
 
-        // Calcul des proportions exactes avec marge élégante (padding 12%)
-        const padding = size * 0.12;
-        const maxDim = size - padding * 2;
-        const ratio = Math.min(maxDim / img.width, maxDim / img.height);
+        // Remplissage maximal sans marge (cover / fit bord à bord)
+        const ratio = Math.min(size / img.width, size / img.height);
         const w = img.width * ratio;
         const h = img.height * ratio;
         const x = (size - w) / 2;
@@ -40,10 +38,8 @@
         ctx.drawImage(img, x, y, w, h);
         const squareDataUrl = canvas.toDataURL('image/png');
 
-        // Application directe sur l'icône Apple iOS
         document.getElementById('appleTouchIcon').href = squareDataUrl;
 
-        // Mise à jour du manifeste PWA
         const baseUrl = window.location.origin;
         const manifest = {
           name: "Soul System JJ",
@@ -67,7 +63,7 @@
         link.href = URL.createObjectURL(blob);
         document.head.appendChild(link);
       };
-      img.src = "./Icon.jpeg?v=3";
+      img.src = "./Icon.jpeg?v=4";
     })();
   </script>
 
@@ -138,32 +134,39 @@
       border: 1px solid #8D6E63;
     }
 
+    /* LOGO GRAND FORMAT HAUTE VISIBILITÉ DANS L'EN-TÊTE */
     .logo-header-img {
-      height: 56px;
+      height: 84px;
       width: auto;
-      max-width: none;
+      max-width: 240px;
       flex-shrink: 0;
       object-fit: contain;
       display: block;
+    }
+    @media (min-width: 768px) {
+      .logo-header-img {
+        height: 104px;
+        max-width: 300px;
+      }
     }
   </style>
 </head>
 
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-  <!-- EN-TÊTE : TITRE "Soul System Jiu Jitsu" & LOGO AVEC AILES -->
-  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4 rounded-2xl card-luxe mb-6">
-    <div class="flex items-center space-x-4">
+  <!-- EN-TÊTE : LOGO GRAND FORMAT & TITRE "Soul System Jiu Jitsu" -->
+  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4 md:p-5 rounded-2xl card-luxe mb-6">
+    <div class="flex items-center space-x-4 md:space-x-6">
       <div class="flex items-center justify-center flex-shrink-0">
-        <img src="./Logo.png" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-lg" onerror="this.onerror=null; this.src='./Icon.jpeg';">
+        <img src="./Logo.png" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-2xl" onerror="this.onerror=null; this.src='./Icon.jpeg';">
       </div>
       <div>
-        <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
-        <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
+        <h1 class="font-extrabold text-xl md:text-2xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
+        <p class="text-xs text-silver tracking-wider uppercase mt-0.5">Executive Club App</p>
       </div>
     </div>
     
-    <div class="flex items-center space-x-4 mt-3 md:mt-0">
+    <div class="flex items-center space-x-4 mt-4 md:mt-0">
       <div class="text-right">
         <p class="text-xs text-gray-400">Rôle Actif</p>
         <select id="userRoleToggle" onchange="changerRoleCompte()" class="bg-carbone border border-gold/40 rounded px-2.5 py-1 text-xs text-gold font-bold focus:outline-none">
