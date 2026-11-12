@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Soul System JJ</title>
   
-  <!-- CONFIGURATION PWA (ICÔNE CARRÉE & NOM EXACT "Soul System JJ") -->
+  <!-- CONFIGURATION PWA : NOM "Soul System JJ" & ICÔNE CARRÉE "Icon.jpeg" -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Soul System JJ">
-  <link rel="apple-touch-icon" href="./Logo.jpg">
-  <link rel="icon" type="image/jpeg" href="./Logo.jpg">
-  <link rel="manifest" href="data:application/manifest+json;utf8,{\"name\":\"Soul System JJ\",\"short_name\":\"Soul System JJ\",\"start_url\":\"/\",\"display\":\"standalone\",\"background_color\":\"#08090B\",\"theme_color\":\"#D4AF37\",\"icons\":[{\"src\":\"./Logo.jpg\",\"sizes\":\"512x512\",\"type\":\"image/jpeg\"}]}">
+  <link rel="apple-touch-icon" href="./Icon.jpeg">
+  <link rel="icon" type="image/jpeg" href="./Icon.jpeg">
+  <link rel="manifest" href="data:application/manifest+json;utf8,{\"name\":\"Soul System JJ\",\"short_name\":\"Soul System JJ\",\"start_url\":\"/\",\"display\":\"standalone\",\"background_color\":\"#08090B\",\"theme_color\":\"#D4AF37\",\"icons\":[{\"src\":\"./Icon.jpeg\",\"sizes\":\"512x512\",\"type\":\"image/jpeg\"}]}">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -79,20 +79,30 @@
       background: linear-gradient(90deg, #3E2723 0%, #5D4037 70%, #111 70%, #111 100%);
       border: 1px solid #8D6E63;
     }
+
+    /* PROTECTION ANTI-DÉFORMATION POUR LE LOGO AVEC AILES */
+    .logo-header-img {
+      height: 56px;
+      width: auto;
+      max-width: none;
+      flex-shrink: 0;
+      object-fit: contain;
+      display: block;
+    }
   </style>
 </head>
 
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-  <!-- EN-TÊTE AVEC LOGO CARRÉ SANS DÉFORMATION -->
+  <!-- EN-TÊTE : TITRE "Soul System Jiu Jitsu" & LOGO AVEC AILES INTACT -->
   <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4 rounded-2xl card-luxe mb-6">
     <div class="flex items-center space-x-4">
-      <div class="w-14 h-14 rounded-xl overflow-hidden border border-gold/40 bg-black flex-shrink-0 shadow-lg">
-        <img src="./Logo.jpg" alt="Soul System JJ" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='./Logo.png';">
+      <div class="flex items-center justify-center flex-shrink-0">
+        <img src="./Logo.png" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-lg" onerror="this.onerror=null; this.src='./Icon.jpeg';">
       </div>
       <div>
-        <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System JJ</h1>
-        <p class="text-xs text-silver tracking-wider uppercase">Executive Club & Academy</p>
+        <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
+        <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
       </div>
     </div>
     
@@ -492,7 +502,7 @@
   </main>
 
   <footer class="w-full max-w-7xl mx-auto text-center text-xs text-gray-500 py-6 mt-8 border-t border-white/5">
-    Soul System JJ © 2026 — Executive PWA Application
+    Soul System Jiu Jitsu © 2026 — Soul System JJ
   </footer>
 
   <script>
