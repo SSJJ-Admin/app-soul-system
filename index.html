@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Soul System JJ</title>
   
-  <!-- CONFIGURATION PWA : ICÔNE PLEIN ÉCRAN SANS MARGE -->
+  <!-- CONFIGURATION PWA : ICÔNE GRAND FORMAT AVEC MARGE DE SÉCURITÉ 5% -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Soul System JJ">
-  <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="./Icon.jpeg?v=4">
-  <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=4">
+  <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="./Icon.jpeg?v=5">
+  <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=5">
 
   <script>
-    // Générateur automatique d'icône 1:1 PLEIN CADRE (0 marge) pour iOS & Android
+    // Générateur automatique d'icône 1:1 équilibrée (marge 5% pour ne pas toucher les bords)
     (function() {
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -28,8 +28,10 @@
         ctx.fillStyle = "#08090B";
         ctx.fillRect(0, 0, size, size);
 
-        // Remplissage maximal plein cadre (mode cover sans déformation)
-        const ratio = Math.max(size / img.width, size / img.height);
+        // Équilibre idéal : 90% de la surface (5% de marge de sécurité de chaque côté)
+        const padding = size * 0.05;
+        const maxDim = size - padding * 2;
+        const ratio = Math.min(maxDim / img.width, maxDim / img.height);
         const w = img.width * ratio;
         const h = img.height * ratio;
         const x = (size - w) / 2;
@@ -63,7 +65,7 @@
         link.href = URL.createObjectURL(blob);
         document.head.appendChild(link);
       };
-      img.src = "./Icon.jpeg?v=4";
+      img.src = "./Icon.jpeg?v=5";
     })();
   </script>
 
@@ -157,7 +159,7 @@
   <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-5 rounded-2xl card-luxe mb-6">
     <div class="flex flex-wrap items-center gap-4 md:gap-6">
       <div class="flex items-center justify-center flex-shrink-0">
-        <img src="./Logo.png?v=4" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-[0_0_15px_rgba(212,175,55,0.35)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
+        <img src="./Logo.png?v=5" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-[0_0_15px_rgba(212,175,55,0.35)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
       </div>
       <div>
         <h1 class="font-extrabold text-xl md:text-2xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
