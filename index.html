@@ -161,7 +161,7 @@
       </div>
       <div>
         <h1 class="font-extrabold text-xl md:text-2xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
-        <div class="flex items-center space-x-2 mt-0.5">
+        <div class="flex flex-wrap items-center gap-2 mt-0.5">
           <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
           <span id="syncStatusBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">⏳ Connexion Sheets...</span>
         </div>
@@ -211,7 +211,7 @@
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <!-- CARTE 1 : PROFIL DYNAMIQUE DE L'ÉLÈVE SÉLECTIONNÉ (OU HEAD COACH) -->
+        <!-- CARTE 1 : PROFIL DYNAMIQUE DE L'ÉLÈVE SÉLECTIONNÉ -->
         <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-3">
@@ -227,10 +227,8 @@
             </div>
           </div>
 
-          <!-- REPRÉSENTATION VISUELLE DE LA CEINTURE & BARRETTES -->
           <div id="beltDisplayActive" class="w-full h-7 rounded belt-blanche relative flex items-center justify-end overflow-hidden shadow-inner">
             <div id="beltTipActive" class="h-full w-16 bg-black flex items-center justify-evenly px-1.5 border-l border-white/20">
-              <!-- Barrettes injectées dynamiquement -->
             </div>
           </div>
         </div>
@@ -303,7 +301,7 @@
           </div>
         </div>
 
-        <!-- FORMULAIRE COMPLET DES 10 POINTS DE SPARRING (REUSSIS / SUBIS) -->
+        <!-- FORMULAIRE COMPLET DES 10 POINTS DE SPARRING -->
         <div class="lg:col-span-6 card-luxe p-6 rounded-2xl space-y-4">
           <div class="flex justify-between items-center border-b border-white/10 pb-2">
             <h2 class="text-base font-bold text-white uppercase tracking-wider">Saisie des 10 Points de Sparring</h2>
@@ -394,15 +392,15 @@
 
           </div>
 
-          <button onclick="enregistrerStatsSparring()" class="w-full py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            💾 Mettre à jour le Radar & Enregistrer
+          <button id="btnSaveSparring" onclick="enregistrerStatsSparring()" class="w-full py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
+            💾 Enregistrer dans Google Sheets (app_club_soul_system_jj)
           </button>
         </div>
 
       </div>
     </div>
 
-    <!-- ONGLET 2 : PLANNING, CREATION D'EVENEMENTS ET VALIDATION SUR TATAMI -->
+    <!-- ONGLET 2 : PLANNING -->
     <div id="sectionPlanning" class="hidden space-y-6">
       
       <div id="boxCreateEvent" class="card-luxe p-6 rounded-2xl space-y-4">
@@ -481,20 +479,20 @@
       <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4">
         <div>
           <h2 class="text-lg font-bold text-white uppercase tracking-wider">Fiche d'Informations Personnelles</h2>
-          <p class="text-xs text-gray-400">Synchronisée avec la fiche du membre sélectionné</p>
+          <p class="text-xs text-gray-400">Toute modification est enregistrée directement dans Google Sheets</p>
         </div>
         <span id="profileRoleBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-gold/10 text-gold border border-gold/30">
           FICHE MEMBRE
         </span>
       </div>
 
-      <div id="boxGradeEditCoach" class="bg-carbone/80 p-4 rounded-xl border border-gold/40 flex flex-wrap justify-between items-center">
+      <div id="boxGradeEditCoach" class="bg-carbone/80 p-4 rounded-xl border border-gold/40 flex flex-wrap justify-between items-center gap-3">
         <div>
           <h3 class="text-xs font-bold text-gold uppercase">Gestion du Grade & Barrettes (Head Coach)</h3>
-          <p class="text-[10px] text-gray-400">Modifie en direct la ceinture de l'élève actif</p>
+          <p class="text-[10px] text-gray-400">Sélectionnez la ceinture et le nombre de barrettes puis validez</p>
         </div>
-        <div class="flex items-center space-x-3 mt-2 md:mt-0 text-xs">
-          <select id="selectCeintureProf" onchange="mettreAJourGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-white font-bold">
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <select id="selectCeintureProf" onchange="previsualiserGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-white font-bold">
             <option value="Blanche">Ceinture Blanche</option>
             <option value="Bleue">Ceinture Bleue</option>
             <option value="Violette">Ceinture Violette</option>
@@ -502,13 +500,17 @@
             <option value="Noire">Ceinture Noire</option>
           </select>
 
-          <select id="selectBarrettesProf" onchange="mettreAJourGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-gold font-bold">
+          <select id="selectBarrettesProf" onchange="previsualiserGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-gold font-bold">
             <option value="0">0 Barrette</option>
             <option value="1">1 Barrette</option>
             <option value="2">2 Barrettes</option>
             <option value="3">3 Barrettes</option>
             <option value="4">4 Barrettes</option>
           </select>
+
+          <button id="btnSaveGrade" onclick="sauvegarderGradeSheets()" class="px-4 py-2 rounded-lg bg-gold text-black font-extrabold hover:bg-gold-light transition">
+            🏆 Valider Grade
+          </button>
         </div>
       </div>
 
@@ -523,8 +525,13 @@
 
         <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           <div>
-            <label class="text-gray-400 font-semibold">Nom & Prénom</label>
-            <input type="text" id="fieldNomPrenom" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            <label class="text-gray-400 font-semibold">Prénom</label>
+            <input type="text" id="fieldPrenom" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+          </div>
+
+          <div>
+            <label class="text-gray-400 font-semibold">Nom</label>
+            <input type="text" id="fieldNom" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
 
           <div>
@@ -543,6 +550,11 @@
           </div>
 
           <div>
+            <label class="text-gray-400 font-semibold">Total Cours Validés</label>
+            <input type="number" id="fieldTotalCours" min="0" value="0" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
+          </div>
+
+          <div>
             <label class="text-gray-400 font-semibold">Adresse Postale</label>
             <input type="text" id="fieldAdresse" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
@@ -555,8 +567,8 @@
       </div>
 
       <div class="flex justify-end pt-4 border-t border-white/10">
-        <button onclick="alert('✅ Informations mises à jour localement !')" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-          💾 Enregistrer les Informations
+        <button id="btnSaveProfil" onclick="sauvegarderProfilSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
+          💾 Enregistrer le Profil dans Google Sheets
         </button>
       </div>
     </div>
@@ -601,7 +613,6 @@
     let currentEleveIndex = 0;
     let radarChart = null;
 
-    // Utilitaire de lecture tolérante des colonnes Google Sheets
     function getVal(obj, keys, fallback = "") {
       if (!obj) return fallback;
       for (const k of keys) {
@@ -669,10 +680,14 @@
 
     function chargerElevesSheets() {
       const badge = document.getElementById("syncStatusBadge");
+      const oldScript = document.getElementById("sheetsJsonpScript");
+      if (oldScript) oldScript.remove();
+
       const script = document.createElement('script');
-      script.src = GOOGLE_SHEETS_API_URL + "?callback=traiterSheetsData";
+      script.id = "sheetsJsonpScript";
+      script.src = GOOGLE_SHEETS_API_URL + "?callback=traiterSheetsData&t=" + Date.now();
       script.onerror = function() {
-        badge.textContent = "⚠️ Hors ligne (Mode Secours)";
+        badge.textContent = "⚠️ Hors ligne";
         badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/30";
       };
       document.body.appendChild(script);
@@ -689,6 +704,7 @@
         document.getElementById("totalElevesCount").textContent = `${listeEleves.length} inscrits`;
 
         const select = document.getElementById("eleveSelect");
+        const prevIdx = currentEleveIndex < listeEleves.length ? currentEleveIndex : 0;
         select.innerHTML = "";
         
         let eligiblesCount = 0;
@@ -710,12 +726,66 @@
           select.appendChild(opt);
         });
 
+        select.value = String(prevIdx);
         document.getElementById("coachNotifText").textContent = eligiblesCount > 0
           ? `${eligiblesCount} élève(s) ont atteint le quota de cours requis pour une nouvelle barrette.`
           : "Tous les élèves sont à jour dans leur progression de grade.";
 
         genererClassement();
-        changerEleve(); // Charge immédiatement le premier élève
+        changerEleve();
+      }
+    }
+
+    // ENVOI RÉEL (POST) VERS GOOGLE SHEETS
+    async function envoyerMiseAJourSheets(updatesObj, btnElement, originalText) {
+      const el = listeEleves[currentEleveIndex];
+      if (!el) {
+        alert("⚠️ Aucun élève sélectionné.");
+        return false;
+      }
+
+      const badge = document.getElementById("syncStatusBadge");
+      badge.textContent = "⏳ Sauvegarde en cours...";
+      badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30";
+
+      if (btnElement) {
+        btnElement.disabled = true;
+        btnElement.textContent = "⏳ Enregistrement dans Google Sheets...";
+      }
+
+      const payload = {
+        action: "updateEleve",
+        _rowIndex: el._rowIndex || null,
+        email: getVal(el, ['EMAIL', 'Email', 'MAIL'], ''),
+        nom: getVal(el, ['NOM', 'Nom'], ''),
+        prenom: getVal(el, ['PRENOM', 'Prenom'], ''),
+        updates: updatesObj
+      };
+
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        // Mise à jour immédiate en mémoire locale
+        Object.assign(el, updatesObj);
+
+        badge.textContent = "✅ Enregistré dans Sheets";
+        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+        return true;
+      } catch (err) {
+        badge.textContent = "❌ Erreur de sauvegarde";
+        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/30";
+        alert("❌ Erreur réseau lors de l'enregistrement : " + err.message);
+        return false;
+      } finally {
+        if (btnElement) {
+          btnElement.disabled = false;
+          btnElement.textContent = originalText;
+        }
       }
     }
 
@@ -735,7 +805,6 @@
       const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS', 'Assiduite'], 0)) || 0;
       const role = getVal(el, ['ROLE', 'Role', 'STATUT'], 'Élève');
 
-      // 1. Mise à jour Carte Identité
       document.getElementById("activeCardName").textContent = fullName;
       document.getElementById("activeCardSub").textContent = `${role} • ${barrettes} Barrette(s)`;
       document.getElementById("activeCardBeltLabel").textContent = ceintureRaw.toLowerCase().includes('ceinture') ? ceintureRaw : `Ceinture ${ceintureRaw}`;
@@ -744,10 +813,8 @@
       document.getElementById("activeCardAvatar").src = avatarUrl;
       document.getElementById("profilePhotoDisplay").src = avatarUrl;
 
-      // 2. Mise à jour Visuelle de la Ceinture & Barrettes
       dessinerCeinture(ceintureRaw, barrettes);
 
-      // 3. Mise à jour Assiduité & Barre de progression
       document.getElementById("activeCardCourses").textContent = cours;
       document.getElementById("activeCardHours").textContent = `${Math.round(cours * 1.5)} h`;
       const cibleProchaineBarrette = (barrettes + 1) * 25;
@@ -755,15 +822,15 @@
       document.getElementById("activeCardProgressText").textContent = `${cours} / ${cibleProchaineBarrette} cours`;
       document.getElementById("activeCardProgressBar").style.width = `${pct}%`;
 
-      // 4. Synchronisation de l'onglet Mon Profil
-      document.getElementById("fieldNomPrenom").value = fullName;
+      document.getElementById("fieldPrenom").value = prenom;
+      document.getElementById("fieldNom").value = nom;
       document.getElementById("fieldEmail").value = getVal(el, ['EMAIL', 'Email', 'MAIL'], '');
       document.getElementById("fieldTel").value = getVal(el, ['TELEPHONE', 'TEL', 'Telephone'], '');
       document.getElementById("fieldLicence").value = getVal(el, ['LICENCE', 'Licence'], 'En cours');
+      document.getElementById("fieldTotalCours").value = cours;
       document.getElementById("fieldAdresse").value = getVal(el, ['ADRESSE', 'Adresse'], '');
       document.getElementById("fieldUrgence").value = getVal(el, ['URGENCE', 'Contact_Urgence'], '');
 
-      // Synchronisation des menus déroulants de grade dans Mon Profil
       const selectBelt = document.getElementById("selectCeintureProf");
       for (let opt of selectBelt.options) {
         if (ceintureRaw.toLowerCase().includes(opt.value.toLowerCase())) {
@@ -773,33 +840,32 @@
       }
       document.getElementById("selectBarrettesProf").value = String(barrettes);
 
-      // 5. Chargement des 10 Statistiques de Sparring depuis Google Sheets
       const p = document.getElementById("periodeSelector").value;
       const suffix = p === 'm1' ? '_M1' : (p === 'cumul' ? '_CUMUL' : '');
       const periodText = p === 'm1' ? 'Mois précédent (M-1)' : (p === 'cumul' ? 'Saison Complète' : 'Mois en Cours');
       document.getElementById("radarPeriodLabel").textContent = `Élève : ${fullName} — ${periodText}`;
 
       const statsMap = [
-        ['tdWin', ['TD_WIN' + suffix, 'TD_WIN', 'AMENES_SOL_R', 'TAKEDOWNS_R']],
-        ['tdLoss', ['TD_LOSS' + suffix, 'TD_LOSS', 'AMENES_SOL_S', 'TAKEDOWNS_S']],
-        ['pullWin', ['PULL_WIN' + suffix, 'PULL_WIN', 'TIRAGE_GARDE_R']],
-        ['pullLoss', ['PULL_LOSS' + suffix, 'PULL_LOSS', 'TIRAGE_GARDE_S']],
-        ['passWin', ['PASS_WIN' + suffix, 'PASS_WIN', 'PASSAGES_R']],
-        ['passLoss', ['PASS_LOSS' + suffix, 'PASS_LOSS', 'PASSAGES_S']],
-        ['mountWin', ['MOUNT_WIN' + suffix, 'MOUNT_WIN', 'MONTEE_R']],
-        ['mountLoss', ['MOUNT_LOSS' + suffix, 'MOUNT_LOSS', 'MONTEE_S']],
-        ['sideWin', ['SIDE_WIN' + suffix, 'SIDE_WIN', 'CONTROLE_LATERAL_R']],
-        ['sideLoss', ['SIDE_LOSS' + suffix, 'SIDE_LOSS', 'CONTROLE_LATERAL_S']],
-        ['nsWin', ['NS_WIN' + suffix, 'NS_WIN', 'NORD_SUD_R']],
-        ['nsLoss', ['NS_LOSS' + suffix, 'NS_LOSS', 'NORD_SUD_S']],
-        ['guardCtrlWin', ['GUARD_CTRL_WIN' + suffix, 'GUARD_CTRL_WIN', 'CONTROLE_GARDE_R']],
-        ['guardCtrlLoss', ['GUARD_CTRL_LOSS' + suffix, 'GUARD_CTRL_LOSS', 'CONTROLE_GARDE_S']],
-        ['escWin', ['ESC_WIN' + suffix, 'ESC_WIN', 'SORTIES_R', 'ESCAPES_R']],
-        ['escLoss', ['ESC_LOSS' + suffix, 'ESC_LOSS', 'SORTIES_S', 'ESCAPES_S']],
-        ['swpWin', ['SWP_WIN' + suffix, 'SWP_WIN', 'SWEEPS_R', 'RENVERSEMENTS_R']],
-        ['swpLoss', ['SWP_LOSS' + suffix, 'SWP_LOSS', 'SWEEPS_S', 'RENVERSEMENTS_S']],
-        ['subWin', ['SUB_WIN' + suffix, 'SUB_WIN', 'SOUMISSIONS_R', 'TAPS_R']],
-        ['subLoss', ['SUB_LOSS' + suffix, 'SUB_LOSS', 'SOUMISSIONS_S', 'TAPS_S']]
+        ['tdWin', ['TD_WIN' + suffix, 'TD_WIN']],
+        ['tdLoss', ['TD_LOSS' + suffix, 'TD_LOSS']],
+        ['pullWin', ['PULL_WIN' + suffix, 'PULL_WIN']],
+        ['pullLoss', ['PULL_LOSS' + suffix, 'PULL_LOSS']],
+        ['passWin', ['PASS_WIN' + suffix, 'PASS_WIN']],
+        ['passLoss', ['PASS_LOSS' + suffix, 'PASS_LOSS']],
+        ['mountWin', ['MOUNT_WIN' + suffix, 'MOUNT_WIN']],
+        ['mountLoss', ['MOUNT_LOSS' + suffix, 'MOUNT_LOSS']],
+        ['sideWin', ['SIDE_WIN' + suffix, 'SIDE_WIN']],
+        ['sideLoss', ['SIDE_LOSS' + suffix, 'SIDE_LOSS']],
+        ['nsWin', ['NS_WIN' + suffix, 'NS_WIN']],
+        ['nsLoss', ['NS_LOSS' + suffix, 'NS_LOSS']],
+        ['guardCtrlWin', ['GUARD_CTRL_WIN' + suffix, 'GUARD_CTRL_WIN']],
+        ['guardCtrlLoss', ['GUARD_CTRL_LOSS' + suffix, 'GUARD_CTRL_LOSS']],
+        ['escWin', ['ESC_WIN' + suffix, 'ESC_WIN']],
+        ['escLoss', ['ESC_LOSS' + suffix, 'ESC_LOSS']],
+        ['swpWin', ['SWP_WIN' + suffix, 'SWP_WIN']],
+        ['swpLoss', ['SWP_LOSS' + suffix, 'SWP_LOSS']],
+        ['subWin', ['SUB_WIN' + suffix, 'SUB_WIN']],
+        ['subLoss', ['SUB_LOSS' + suffix, 'SUB_LOSS']]
       ];
 
       statsMap.forEach(([inputId, colKeys]) => {
@@ -820,7 +886,7 @@
 
       if (lower.includes("noire") || lower.includes("black")) {
         beltEl.className += "belt-noire";
-        tipEl.className += "bg-red-700"; // Embout rouge officiel ceinture noire JJB
+        tipEl.className += "bg-red-700";
       } else if (lower.includes("marron") || lower.includes("brown")) {
         beltEl.className += "belt-marron";
         tipEl.className += "bg-black";
@@ -879,24 +945,94 @@
       changerEleve();
     }
 
-    function mettreAJourGradeActif() {
+    function previsualiserGradeActif() {
       const belt = document.getElementById("selectCeintureProf").value;
       const stripes = parseInt(document.getElementById("selectBarrettesProf").value) || 0;
-
-      if (listeEleves[currentEleveIndex]) {
-        listeEleves[currentEleveIndex].CEINTURE_ACTUELLE = `Ceinture ${belt}`;
-        listeEleves[currentEleveIndex].BARRETTES = stripes;
-        const opt = document.getElementById("eleveSelect").options[currentEleveIndex];
-        const prenom = getVal(listeEleves[currentEleveIndex], ['PRENOM', 'Prenom'], '');
-        const nom = getVal(listeEleves[currentEleveIndex], ['NOM', 'Nom'], '');
-        if (opt) opt.textContent = `${prenom} ${nom} — Ceinture ${belt} (${stripes} bar.)`;
-      }
-
       document.getElementById("activeCardBeltLabel").textContent = `Ceinture ${belt}`;
       const role = listeEleves[currentEleveIndex] ? getVal(listeEleves[currentEleveIndex], ['ROLE', 'Role'], 'Élève') : 'Élève';
       document.getElementById("activeCardSub").textContent = `${role} • ${stripes} Barrette(s)`;
       dessinerCeinture(belt, stripes);
-      genererClassement();
+    }
+
+    async function sauvegarderGradeSheets() {
+      const belt = document.getElementById("selectCeintureProf").value;
+      const stripes = parseInt(document.getElementById("selectBarrettesProf").value) || 0;
+      const btn = document.getElementById("btnSaveGrade");
+
+      const updates = {
+        CEINTURE_ACTUELLE: `Ceinture ${belt}`,
+        BARRETTES: stripes
+      };
+
+      const ok = await envoyerMiseAJourSheets(updates, btn, "🏆 Valider Grade");
+      if (ok) {
+        const opt = document.getElementById("eleveSelect").options[currentEleveIndex];
+        const prenom = getVal(listeEleves[currentEleveIndex], ['PRENOM', 'Prenom'], '');
+        const nom = getVal(listeEleves[currentEleveIndex], ['NOM', 'Nom'], '');
+        if (opt) opt.textContent = `${prenom} ${nom} — Ceinture ${belt} (${stripes} bar.)`;
+        previsualiserGradeActif();
+        genererClassement();
+        alert(`✅ Grade enregistré dans Google Sheets : Ceinture ${belt} (${stripes} barrette(s)) !`);
+      }
+    }
+
+    async function enregistrerStatsSparring() {
+      actualiserRadarDepuisInputs();
+      const btn = document.getElementById("btnSaveSparring");
+      const p = document.getElementById("periodeSelector").value;
+      const suffix = p === 'm1' ? '_M1' : (p === 'cumul' ? '_CUMUL' : '');
+
+      const updates = {};
+      updates['TD_WIN' + suffix] = parseInt(document.getElementById('tdWin').value) || 0;
+      updates['TD_LOSS' + suffix] = parseInt(document.getElementById('tdLoss').value) || 0;
+      updates['PULL_WIN' + suffix] = parseInt(document.getElementById('pullWin').value) || 0;
+      updates['PULL_LOSS' + suffix] = parseInt(document.getElementById('pullLoss').value) || 0;
+      updates['PASS_WIN' + suffix] = parseInt(document.getElementById('passWin').value) || 0;
+      updates['PASS_LOSS' + suffix] = parseInt(document.getElementById('passLoss').value) || 0;
+      updates['MOUNT_WIN' + suffix] = parseInt(document.getElementById('mountWin').value) || 0;
+      updates['MOUNT_LOSS' + suffix] = parseInt(document.getElementById('mountLoss').value) || 0;
+      updates['SIDE_WIN' + suffix] = parseInt(document.getElementById('sideWin').value) || 0;
+      updates['SIDE_LOSS' + suffix] = parseInt(document.getElementById('sideLoss').value) || 0;
+      updates['NS_WIN' + suffix] = parseInt(document.getElementById('nsWin').value) || 0;
+      updates['NS_LOSS' + suffix] = parseInt(document.getElementById('nsLoss').value) || 0;
+      updates['GUARD_CTRL_WIN' + suffix] = parseInt(document.getElementById('guardCtrlWin').value) || 0;
+      updates['GUARD_CTRL_LOSS' + suffix] = parseInt(document.getElementById('guardCtrlLoss').value) || 0;
+      updates['ESC_WIN' + suffix] = parseInt(document.getElementById('escWin').value) || 0;
+      updates['ESC_LOSS' + suffix] = parseInt(document.getElementById('escLoss').value) || 0;
+      updates['SWP_WIN' + suffix] = parseInt(document.getElementById('swpWin').value) || 0;
+      updates['SWP_LOSS' + suffix] = parseInt(document.getElementById('swpLoss').value) || 0;
+      updates['SUB_WIN' + suffix] = parseInt(document.getElementById('subWin').value) || 0;
+      updates['SUB_LOSS' + suffix] = parseInt(document.getElementById('subLoss').value) || 0;
+
+      const ok = await envoyerMiseAJourSheets(updates, btn, "💾 Enregistrer dans Google Sheets (app_club_soul_system_jj)");
+      if (ok) {
+        alert("✅ Les 10 points de sparring ont été enregistrés dans Google Sheets !");
+      }
+    }
+
+    async function sauvegarderProfilSheets() {
+      const btn = document.getElementById("btnSaveProfil");
+      const updates = {
+        PRENOM: document.getElementById("fieldPrenom").value.trim(),
+        NOM: document.getElementById("fieldNom").value.trim(),
+        EMAIL: document.getElementById("fieldEmail").value.trim(),
+        TELEPHONE: document.getElementById("fieldTel").value.trim(),
+        LICENCE: document.getElementById("fieldLicence").value.trim(),
+        TOTAL_COURS: parseInt(document.getElementById("fieldTotalCours").value) || 0,
+        ADRESSE: document.getElementById("fieldAdresse").value.trim(),
+        URGENCE: document.getElementById("fieldUrgence").value.trim()
+      };
+
+      const ok = await envoyerMiseAJourSheets(updates, btn, "💾 Enregistrer le Profil dans Google Sheets");
+      if (ok) {
+        const opt = document.getElementById("eleveSelect").options[currentEleveIndex];
+        const ceinture = getVal(listeEleves[currentEleveIndex], ['CEINTURE_ACTUELLE'], 'Ceinture Blanche');
+        const barrettes = parseInt(getVal(listeEleves[currentEleveIndex], ['BARRETTES'], 0)) || 0;
+        if (opt) opt.textContent = `${updates.PRENOM} ${updates.NOM} — ${ceinture} (${barrettes} bar.)`;
+        changerEleve();
+        genererClassement();
+        alert("✅ Fiche personnelle enregistrée dans Google Sheets !");
+      }
     }
 
     function basculerOnglet(nom) {
@@ -980,11 +1116,6 @@
         `;
         body.appendChild(tr);
       });
-    }
-
-    function enregistrerStatsSparring() {
-      actualiserRadarDepuisInputs();
-      alert("✅ Radar mis à jour pour l'élève actif ! (Prochaine étape : sauvegarde permanente dans Google Sheets)");
     }
 
     function publierEvenement() {
