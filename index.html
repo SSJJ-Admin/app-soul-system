@@ -13,7 +13,6 @@
   <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=5">
 
   <script>
-    // Générateur automatique d'icône 1:1 équilibrée (marge 5% pour ne pas toucher les bords)
     (function() {
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -24,11 +23,9 @@
         canvas.height = size;
         const ctx = canvas.getContext('2d');
 
-        // Fond Noir Carbone officiel
         ctx.fillStyle = "#08090B";
         ctx.fillRect(0, 0, size, size);
 
-        // Équilibre idéal : 90% de la surface (5% de marge de sécurité de chaque côté)
         const padding = size * 0.05;
         const maxDim = size - padding * 2;
         const ratio = Math.min(maxDim / img.width, maxDim / img.height);
@@ -131,12 +128,13 @@
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
     }
 
-    .brown-belt {
-      background: linear-gradient(90deg, #3E2723 0%, #5D4037 70%, #111 70%, #111 100%);
-      border: 1px solid #8D6E63;
-    }
+    /* CEINTURES JJB DYNAMIQUES */
+    .belt-blanche { background: linear-gradient(90deg, #E2E8F0 0%, #FFFFFF 100%); border: 1px solid #94A3B8; }
+    .belt-bleue   { background: linear-gradient(90deg, #1E3A8A 0%, #2563EB 100%); border: 1px solid #60A5FA; }
+    .belt-violette{ background: linear-gradient(90deg, #4C1D95 0%, #7C3AED 100%); border: 1px solid #A78BFA; }
+    .belt-marron  { background: linear-gradient(90deg, #3E2723 0%, #5D4037 100%); border: 1px solid #8D6E63; }
+    .belt-noire   { background: linear-gradient(90deg, #09090B 0%, #18181B 100%); border: 1px solid #D4AF37; }
 
-    /* LOGO GRAND FORMAT HAUTE VISIBILITÉ */
     .logo-header-img {
       height: 92px;
       width: auto;
@@ -155,7 +153,7 @@
 
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-  <!-- EN-TÊTE : LOGO GRAND FORMAT & TITRE "Soul System Jiu Jitsu" -->
+  <!-- EN-TÊTE -->
   <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-5 rounded-2xl card-luxe mb-6">
     <div class="flex flex-wrap items-center gap-4 md:gap-6">
       <div class="flex items-center justify-center flex-shrink-0">
@@ -163,7 +161,10 @@
       </div>
       <div>
         <h1 class="font-extrabold text-xl md:text-2xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
-        <p class="text-xs text-silver tracking-wider uppercase mt-0.5">Executive Club App</p>
+        <div class="flex items-center space-x-2 mt-0.5">
+          <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
+          <span id="syncStatusBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">⏳ Connexion Sheets...</span>
+        </div>
       </div>
     </div>
     
@@ -187,11 +188,11 @@
       <span class="text-2xl">🔔</span>
       <div>
         <h3 class="text-xs font-bold text-gold uppercase tracking-wider">Alerte Éligibilité Passage de Grade (Professeur)</h3>
-        <p class="text-xs text-gray-300">2 élèves ont dépassé leur quota de cours pour leur prochaine barrette.</p>
+        <p id="coachNotifText" class="text-xs text-gray-300">Analyse des quotas d'assiduité en cours...</p>
       </div>
     </div>
-    <button onclick="alert('Ouverture du panneau de validation des barrettes')" class="px-3 py-1.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light">
-      Valider Barrettes
+    <button onclick="basculerOnglet('monprofil')" class="px-3 py-1.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light">
+      Gérer les Grades
     </button>
   </div>
 
@@ -209,42 +210,66 @@
     <div id="sectionDashboard" class="space-y-8">
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="card-luxe p-6 rounded-2xl">
-          <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-4">Head Coach</h2>
-          <div class="flex items-center space-x-4 mb-3">
-            <img id="profCardAvatar" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-14 h-14 rounded-2xl border border-gold/60 object-cover">
-            <div>
-              <h3 class="font-bold text-lg text-white">Martin Huambachano</h3>
-              <p class="text-xs gold-gradient-text font-semibold">Fondateur & Head Coach</p>
+        
+        <!-- CARTE 1 : PROFIL DYNAMIQUE DE L'ÉLÈVE SÉLECTIONNÉ (OU HEAD COACH) -->
+        <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <h2 id="activeCardRoleLabel" class="text-xs font-semibold text-silver uppercase tracking-widest">Fiche Élève Actif</h2>
+              <span id="activeCardBeltLabel" class="text-[11px] font-extrabold text-gold uppercase">Ceinture Blanche</span>
+            </div>
+            <div class="flex items-center space-x-4 mb-4">
+              <img id="activeCardAvatar" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-14 h-14 rounded-2xl border border-gold/60 object-cover">
+              <div>
+                <h3 id="activeCardName" class="font-bold text-lg text-white">Chargement...</h3>
+                <p id="activeCardSub" class="text-xs gold-gradient-text font-semibold">Synchronisation Google Sheets</p>
+              </div>
             </div>
           </div>
-          <div id="beltDisplayProf" class="w-full h-6 rounded brown-belt relative flex items-center justify-end pr-2">
-            <div id="stripesContainerProf" class="h-full w-10 bg-black flex items-center justify-center space-x-1 px-1">
-              <div class="w-1 h-3 bg-white rounded-sm"></div>
-              <div class="w-1 h-3 bg-white rounded-sm"></div>
+
+          <!-- REPRÉSENTATION VISUELLE DE LA CEINTURE & BARRETTES -->
+          <div id="beltDisplayActive" class="w-full h-7 rounded belt-blanche relative flex items-center justify-end overflow-hidden shadow-inner">
+            <div id="beltTipActive" class="h-full w-16 bg-black flex items-center justify-evenly px-1.5 border-l border-white/20">
+              <!-- Barrettes injectées dynamiquement -->
             </div>
           </div>
         </div>
 
+        <!-- CARTE 2 : ASSIDUITÉ & QUOTA PROCHAINE BARRETTE -->
         <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
-          <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-2">Cours Donnés (Professeur)</h2>
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Assiduité & Progression</h2>
+            <span id="activeCardStatusBadge" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold">Actif</span>
+          </div>
           <div class="grid grid-cols-2 gap-4 text-center my-2">
             <div class="bg-carbone/80 p-3 rounded-xl border border-white/5">
-              <p class="text-2xl font-black gold-gradient-text">68</p>
-              <p class="text-[10px] text-gray-400">Cours Dispensés</p>
+              <p id="activeCardCourses" class="text-2xl font-black gold-gradient-text">0</p>
+              <p class="text-[10px] text-gray-400">Cours Validés</p>
             </div>
             <div class="bg-carbone/80 p-3 rounded-xl border border-white/5">
-              <p class="text-2xl font-black silver-gradient-text">102 h</p>
-              <p class="text-[10px] text-gray-400">Total d'Heures</p>
+              <p id="activeCardHours" class="text-2xl font-black silver-gradient-text">0 h</p>
+              <p class="text-[10px] text-gray-400">Volume Horaire</p>
             </div>
           </div>
-          <p class="text-[10px] text-gray-500 text-center">Exclus du classement des élèves</p>
+          <div class="space-y-1">
+            <div class="flex justify-between text-[10px] text-gray-400">
+              <span>Prochaine Barrette</span>
+              <span id="activeCardProgressText" class="text-gold font-bold">0 / 25 cours</span>
+            </div>
+            <div class="w-full bg-carbone rounded-full h-1.5 overflow-hidden border border-white/5">
+              <div id="activeCardProgressBar" class="bg-gold h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
         </div>
 
+        <!-- CARTE 3 : SÉLECTEUR D'ÉLÈVE EN DIRECT -->
         <div id="boxSelectEleve" class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
           <div>
-            <h2 class="text-xs font-semibold text-silver uppercase tracking-widest mb-2">Sélection Élève (Professeur)</h2>
-            <p class="text-xs text-gray-400 mb-3">Navigation immédiate d'un élève à l'autre :</p>
+            <div class="flex justify-between items-center mb-2">
+              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Élève</h2>
+              <span id="totalElevesCount" class="text-[10px] text-gold font-bold">0 inscrits</span>
+            </div>
+            <p class="text-xs text-gray-400 mb-3">Choisissez un membre pour charger sa ceinture et son radar :</p>
           </div>
           <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
             <option value="">Chargement de la base...</option>
@@ -256,10 +281,10 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <div class="lg:col-span-6 card-luxe p-6 rounded-2xl flex flex-col justify-between">
-          <div class="flex justify-between items-center mb-4">
+          <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
             <div>
               <h2 class="text-base font-bold text-white uppercase tracking-wider">Radar de Compétences Sparring</h2>
-              <p id="radarPeriodLabel" class="text-xs text-gold">Période : Mois en Cours (Novembre 2026)</p>
+              <p id="radarPeriodLabel" class="text-xs text-gold">Élève : Sélectionnez un membre — Mois en Cours</p>
             </div>
             <select id="periodeSelector" onchange="changerPeriodeRadar()" class="bg-carbone border border-gold/30 text-xs text-gold rounded px-2 py-1">
               <option value="actuel">Mois en cours</option>
@@ -271,13 +296,18 @@
           <div class="relative w-full aspect-square max-h-[380px] mx-auto flex items-center justify-center">
             <canvas id="performanceRadar"></canvas>
           </div>
+
+          <div class="flex justify-center space-x-6 mt-3 text-[11px]">
+            <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-gold inline-block"></span><span class="text-gray-300 font-semibold">Techniques Réussies (R)</span></span>
+            <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-silver/60 inline-block"></span><span class="text-gray-400 font-semibold">Techniques Subies (S)</span></span>
+          </div>
         </div>
 
         <!-- FORMULAIRE COMPLET DES 10 POINTS DE SPARRING (REUSSIS / SUBIS) -->
         <div class="lg:col-span-6 card-luxe p-6 rounded-2xl space-y-4">
           <div class="flex justify-between items-center border-b border-white/10 pb-2">
             <h2 class="text-base font-bold text-white uppercase tracking-wider">Saisie des 10 Points de Sparring</h2>
-            <span class="text-[10px] text-gray-400">Réussis (R) / Subis (S)</span>
+            <span class="text-[10px] text-gold font-bold">Réussis (Or) / Subis (Gris)</span>
           </div>
 
           <div class="space-y-2.5 max-h-[400px] overflow-y-auto pr-1 text-xs">
@@ -285,80 +315,80 @@
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">1. Amenés au Sol (Takedowns)</span>
               <div class="flex space-x-2">
-                <input type="number" id="tdWin" value="4" class="w-11 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="tdLoss" value="1" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                <input type="number" id="tdWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                <input type="number" id="tdLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
 
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">2. Tirages de Garde (Pull Guard)</span>
               <div class="flex space-x-2">
-                <input type="number" id="pullWin" value="3" class="w-11 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="pullLoss" value="0" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                <input type="number" id="pullWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                <input type="number" id="pullLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
 
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">3. Passages de Garde</span>
               <div class="flex space-x-2">
-                <input type="number" id="passWin" value="6" class="w-11 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="passLoss" value="2" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                <input type="number" id="passWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                <input type="number" id="passLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
 
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">4. Positions Montées</span>
               <div class="flex space-x-2">
-                <input type="number" id="mountWin" value="5" class="w-11 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="mountLoss" value="1" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                <input type="number" id="mountWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                <input type="number" id="mountLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
 
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">5. Contrôles Latéraux</span>
               <div class="flex space-x-2">
-                <input type="number" id="sideWin" value="7" class="w-11 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="sideLoss" value="2" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                <input type="number" id="sideWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                <input type="number" id="sideLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
 
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">6. Nord-Sud (North-South)</span>
               <div class="flex space-x-2">
-                <input type="number" id="nsWin" value="2" class="w-11 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="nsLoss" value="0" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                <input type="number" id="nsWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                <input type="number" id="nsLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
 
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">7. Contrôles depuis une Garde</span>
               <div class="flex space-x-2">
-                <input type="number" id="guardCtrlWin" value="5" class="w-11 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="guardCtrlLoss" value="3" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                <input type="number" id="guardCtrlWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                <input type="number" id="guardCtrlLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
 
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">8. Sorties (Escapes)</span>
               <div class="flex space-x-2">
-                <input type="number" id="escWin" value="4" class="w-11 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="escLoss" value="2" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                <input type="number" id="escWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                <input type="number" id="escLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
 
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">9. Renversements (Sweeps)</span>
               <div class="flex space-x-2">
-                <input type="number" id="swpWin" value="6" class="w-11 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="swpLoss" value="1" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                <input type="number" id="swpWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                <input type="number" id="swpLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
 
             <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
               <span class="font-bold text-white">10. Soumissions (Taps)</span>
               <div class="flex space-x-2">
-                <input type="number" id="subWin" value="8" class="w-11 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="subLoss" value="1" class="w-11 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                <input type="number" id="subWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                <input type="number" id="subLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
               </div>
             </div>
 
@@ -451,31 +481,31 @@
       <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4">
         <div>
           <h2 class="text-lg font-bold text-white uppercase tracking-wider">Fiche d'Informations Personnelles</h2>
-          <p class="text-xs text-gray-400">Registre officiel adhérent & Direction Technique</p>
+          <p class="text-xs text-gray-400">Synchronisée avec la fiche du membre sélectionné</p>
         </div>
-        <span class="px-3 py-1 rounded-full text-xs font-bold bg-gold/10 text-gold border border-gold/30">
-          COMPTE PROFESSEUR
+        <span id="profileRoleBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-gold/10 text-gold border border-gold/30">
+          FICHE MEMBRE
         </span>
       </div>
 
       <div id="boxGradeEditCoach" class="bg-carbone/80 p-4 rounded-xl border border-gold/40 flex flex-wrap justify-between items-center">
         <div>
           <h3 class="text-xs font-bold text-gold uppercase">Gestion du Grade & Barrettes (Head Coach)</h3>
-          <p class="text-[10px] text-gray-400">Mettez à jour votre grade ou celui de l'élève sélectionné</p>
+          <p class="text-[10px] text-gray-400">Modifie en direct la ceinture de l'élève actif</p>
         </div>
         <div class="flex items-center space-x-3 mt-2 md:mt-0 text-xs">
-          <select id="selectCeintureProf" onchange="mettreAJourGradeProf()" class="bg-anthracite border border-gold/40 rounded p-2 text-white font-bold">
+          <select id="selectCeintureProf" onchange="mettreAJourGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-white font-bold">
             <option value="Blanche">Ceinture Blanche</option>
             <option value="Bleue">Ceinture Bleue</option>
             <option value="Violette">Ceinture Violette</option>
-            <option value="Marron" selected>Ceinture Marron</option>
+            <option value="Marron">Ceinture Marron</option>
             <option value="Noire">Ceinture Noire</option>
           </select>
 
-          <select id="selectBarrettesProf" onchange="mettreAJourGradeProf()" class="bg-anthracite border border-gold/40 rounded p-2 text-gold font-bold">
+          <select id="selectBarrettesProf" onchange="mettreAJourGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-gold font-bold">
             <option value="0">0 Barrette</option>
             <option value="1">1 Barrette</option>
-            <option value="2" selected>2 Barrettes</option>
+            <option value="2">2 Barrettes</option>
             <option value="3">3 Barrettes</option>
             <option value="4">4 Barrettes</option>
           </select>
@@ -484,7 +514,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="flex flex-col items-center justify-center space-y-3 bg-carbone/60 p-4 rounded-xl border border-white/5">
-          <img id="profilePhotoDisplay" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-28 h-28 rounded-2xl border-2 border-gold object-cover shadow-xl">
+          <img id="profilePhotoDisplay" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-28 h-28 rounded-2xl border-2 border-gold object-cover shadow-xl">
           <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold text-xs font-bold hover:bg-gold hover:text-black transition">
             📷 Modifier Photo
             <input type="file" accept="image/*" class="hidden" onchange="uploadPhotoProfil(event)">
@@ -494,39 +524,39 @@
         <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           <div>
             <label class="text-gray-400 font-semibold">Nom & Prénom</label>
-            <input type="text" id="fieldNomPrenom" value="Martin Huambachano" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            <input type="text" id="fieldNomPrenom" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
 
           <div>
             <label class="text-gray-400 font-semibold">Adresse Email</label>
-            <input type="email" id="fieldEmail" value="mh@soulsystem.net" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            <input type="email" id="fieldEmail" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
 
           <div>
             <label class="text-gray-400 font-semibold">Numéro de Téléphone</label>
-            <input type="text" id="fieldTel" value="+33 6 12 34 56 78" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            <input type="text" id="fieldTel" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
 
           <div>
             <label class="text-gray-400 font-semibold">Licence / Assurance JJB</label>
-            <input type="text" id="fieldLicence" value="LIC-2026-88942" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-emerald-400 font-bold mt-1">
+            <input type="text" id="fieldLicence" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-emerald-400 font-bold mt-1">
           </div>
 
           <div>
             <label class="text-gray-400 font-semibold">Adresse Postale</label>
-            <input type="text" id="fieldAdresse" value="12 Avenue des Arts, 75008 Paris" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+            <input type="text" id="fieldAdresse" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
 
           <div>
             <label class="text-gray-400 font-semibold">Personne à Contacter en Cas d'Urgence</label>
-            <input type="text" id="fieldUrgence" value="Marie Huambachano (+33 6 98 76 54 32)" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+            <input type="text" id="fieldUrgence" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
         </div>
       </div>
 
       <div class="flex justify-end pt-4 border-t border-white/10">
-        <button onclick="alert('✅ Informations personnelles mises à jour !')" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-          💾 Enregistrer mes Informations
+        <button onclick="alert('✅ Informations mises à jour localement !')" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
+          💾 Enregistrer les Informations
         </button>
       </div>
     </div>
@@ -536,7 +566,7 @@
       <div class="flex flex-wrap items-center justify-between mb-6">
         <div>
           <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement & Challenge Assiduité</h2>
-          <p class="text-xs text-gray-400">Accès public pour tous les membres de l'Académie</p>
+          <p class="text-xs text-gray-400">Données réelles issues de Google Sheets</p>
         </div>
         <div class="flex space-x-2">
           <button class="px-3 py-1 rounded-lg bg-gold text-xs text-black font-bold">Saison 2026-2027</button>
@@ -568,7 +598,23 @@
 
   <script>
     let listeEleves = [];
+    let currentEleveIndex = 0;
     let radarChart = null;
+
+    // Utilitaire de lecture tolérante des colonnes Google Sheets
+    function getVal(obj, keys, fallback = "") {
+      if (!obj) return fallback;
+      for (const k of keys) {
+        if (obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") {
+          return obj[k];
+        }
+        const upper = k.toUpperCase();
+        if (obj[upper] !== undefined && obj[upper] !== null && String(obj[upper]).trim() !== "") {
+          return obj[upper];
+        }
+      }
+      return fallback;
+    }
 
     document.addEventListener("DOMContentLoaded", function() {
       initRadar();
@@ -580,25 +626,40 @@
       radarChart = new Chart(ctx, {
         type: 'radar',
         data: {
-          labels: ['Amenés sol', 'Tirage Garde', 'Passages', 'Montée', 'C. Latéral', 'Nord-Sud', 'C. Garde', 'Sorties', 'Sweeps', 'Soumissions'],
-          datasets: [{
-            label: 'Réussites',
-            data: [40, 30, 60, 50, 70, 20, 50, 40, 60, 80],
-            backgroundColor: 'rgba(212, 175, 55, 0.25)',
-            borderColor: '#D4AF37',
-            pointBackgroundColor: '#FFF099',
-            borderWidth: 2
-          }]
+          labels: [
+            'Amenés sol', 'Tirage Garde', 'Passages', 'Montée', 'C. Latéral',
+            'Nord-Sud', 'C. Garde', 'Sorties', 'Sweeps', 'Soumissions'
+          ],
+          datasets: [
+            {
+              label: 'Réussis (R)',
+              data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              backgroundColor: 'rgba(212, 175, 55, 0.28)',
+              borderColor: '#D4AF37',
+              pointBackgroundColor: '#FFF099',
+              pointBorderColor: '#08090B',
+              borderWidth: 2.5
+            },
+            {
+              label: 'Subis (S)',
+              data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              backgroundColor: 'rgba(203, 213, 225, 0.12)',
+              borderColor: '#94A3B8',
+              pointBackgroundColor: '#CBD5E1',
+              borderWidth: 1.5,
+              borderDash: [4, 4]
+            }
+          ]
         },
         options: {
           scales: {
             r: {
               angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
               grid: { color: 'rgba(255, 255, 255, 0.1)' },
-              pointLabels: { color: '#CBD5E1', font: { size: 9, weight: 'bold' } },
-              ticks: { display: false },
+              pointLabels: { color: '#CBD5E1', font: { size: 10, weight: 'bold' } },
+              ticks: { display: false, stepSize: 2 },
               suggestedMin: 0,
-              suggestedMax: 100
+              suggestedMax: 10
             }
           },
           plugins: { legend: { display: false } }
@@ -607,26 +668,235 @@
     }
 
     function chargerElevesSheets() {
+      const badge = document.getElementById("syncStatusBadge");
       const script = document.createElement('script');
       script.src = GOOGLE_SHEETS_API_URL + "?callback=traiterSheetsData";
+      script.onerror = function() {
+        badge.textContent = "⚠️ Hors ligne (Mode Secours)";
+        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/30";
+      };
       document.body.appendChild(script);
     }
 
     function traiterSheetsData(data) {
-      if (data && data.eleves) {
-        listeEleves = data.eleves.filter(e => e.NOM || e.PRENOM);
+      const badge = document.getElementById("syncStatusBadge");
+      const rawList = Array.isArray(data) ? data : (data && data.eleves ? data.eleves : []);
+      
+      if (rawList.length > 0) {
+        listeEleves = rawList.filter(e => getVal(e, ['NOM', 'PRENOM', 'Nom', 'Prenom']) !== "");
+        badge.textContent = `🟢 Connecté (${listeEleves.length} membres)`;
+        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+        document.getElementById("totalElevesCount").textContent = `${listeEleves.length} inscrits`;
+
         const select = document.getElementById("eleveSelect");
         select.innerHTML = "";
         
+        let eligiblesCount = 0;
+
         listeEleves.forEach((eleve, index) => {
+          const prenom = getVal(eleve, ['PRENOM', 'Prenom'], '');
+          const nom = getVal(eleve, ['NOM', 'Nom'], '');
+          const ceinture = getVal(eleve, ['CEINTURE_ACTUELLE', 'CEINTURE', 'Grade'], 'Ceinture Blanche');
+          const barrettes = parseInt(getVal(eleve, ['BARRETTES', 'Barrettes', 'STRIPES'], 0)) || 0;
+          const cours = parseInt(getVal(eleve, ['TOTAL_COURS', 'COURS', 'Assiduite'], 0)) || 0;
+
+          if (cours >= (barrettes + 1) * 25 && barrettes < 4) {
+            eligiblesCount++;
+          }
+
           const opt = document.createElement("option");
           opt.value = index;
-          opt.textContent = `${eleve.PRENOM || ''} ${eleve.NOM || ''} — ${eleve.CEINTURE_ACTUELLE || 'Ceinture Blanche'}`;
+          opt.textContent = `${prenom} ${nom} — ${ceinture} (${barrettes} bar.)`;
           select.appendChild(opt);
         });
 
+        document.getElementById("coachNotifText").textContent = eligiblesCount > 0
+          ? `${eligiblesCount} élève(s) ont atteint le quota de cours requis pour une nouvelle barrette.`
+          : "Tous les élèves sont à jour dans leur progression de grade.";
+
         genererClassement();
+        changerEleve(); // Charge immédiatement le premier élève
       }
+    }
+
+    function changerEleve() {
+      const select = document.getElementById("eleveSelect");
+      const idx = parseInt(select.value);
+      if (isNaN(idx) || !listeEleves[idx]) return;
+
+      currentEleveIndex = idx;
+      const el = listeEleves[idx];
+
+      const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Membre');
+      const nom = getVal(el, ['NOM', 'Nom'], '');
+      const fullName = `${prenom} ${nom}`.trim();
+      const ceintureRaw = String(getVal(el, ['CEINTURE_ACTUELLE', 'CEINTURE', 'Grade'], 'Blanche'));
+      const barrettes = Math.min(4, Math.max(0, parseInt(getVal(el, ['BARRETTES', 'Barrettes', 'STRIPES'], 0)) || 0));
+      const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS', 'Assiduite'], 0)) || 0;
+      const role = getVal(el, ['ROLE', 'Role', 'STATUT'], 'Élève');
+
+      // 1. Mise à jour Carte Identité
+      document.getElementById("activeCardName").textContent = fullName;
+      document.getElementById("activeCardSub").textContent = `${role} • ${barrettes} Barrette(s)`;
+      document.getElementById("activeCardBeltLabel").textContent = ceintureRaw.toLowerCase().includes('ceinture') ? ceintureRaw : `Ceinture ${ceintureRaw}`;
+      
+      const avatarUrl = getVal(el, ['PHOTO', 'AVATAR'], `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=D4AF37&color=000`);
+      document.getElementById("activeCardAvatar").src = avatarUrl;
+      document.getElementById("profilePhotoDisplay").src = avatarUrl;
+
+      // 2. Mise à jour Visuelle de la Ceinture & Barrettes
+      dessinerCeinture(ceintureRaw, barrettes);
+
+      // 3. Mise à jour Assiduité & Barre de progression
+      document.getElementById("activeCardCourses").textContent = cours;
+      document.getElementById("activeCardHours").textContent = `${Math.round(cours * 1.5)} h`;
+      const cibleProchaineBarrette = (barrettes + 1) * 25;
+      const pct = Math.min(100, Math.round((cours / cibleProchaineBarrette) * 100));
+      document.getElementById("activeCardProgressText").textContent = `${cours} / ${cibleProchaineBarrette} cours`;
+      document.getElementById("activeCardProgressBar").style.width = `${pct}%`;
+
+      // 4. Synchronisation de l'onglet Mon Profil
+      document.getElementById("fieldNomPrenom").value = fullName;
+      document.getElementById("fieldEmail").value = getVal(el, ['EMAIL', 'Email', 'MAIL'], '');
+      document.getElementById("fieldTel").value = getVal(el, ['TELEPHONE', 'TEL', 'Telephone'], '');
+      document.getElementById("fieldLicence").value = getVal(el, ['LICENCE', 'Licence'], 'En cours');
+      document.getElementById("fieldAdresse").value = getVal(el, ['ADRESSE', 'Adresse'], '');
+      document.getElementById("fieldUrgence").value = getVal(el, ['URGENCE', 'Contact_Urgence'], '');
+
+      // Synchronisation des menus déroulants de grade dans Mon Profil
+      const selectBelt = document.getElementById("selectCeintureProf");
+      for (let opt of selectBelt.options) {
+        if (ceintureRaw.toLowerCase().includes(opt.value.toLowerCase())) {
+          selectBelt.value = opt.value;
+          break;
+        }
+      }
+      document.getElementById("selectBarrettesProf").value = String(barrettes);
+
+      // 5. Chargement des 10 Statistiques de Sparring depuis Google Sheets
+      const p = document.getElementById("periodeSelector").value;
+      const suffix = p === 'm1' ? '_M1' : (p === 'cumul' ? '_CUMUL' : '');
+      const periodText = p === 'm1' ? 'Mois précédent (M-1)' : (p === 'cumul' ? 'Saison Complète' : 'Mois en Cours');
+      document.getElementById("radarPeriodLabel").textContent = `Élève : ${fullName} — ${periodText}`;
+
+      const statsMap = [
+        ['tdWin', ['TD_WIN' + suffix, 'TD_WIN', 'AMENES_SOL_R', 'TAKEDOWNS_R']],
+        ['tdLoss', ['TD_LOSS' + suffix, 'TD_LOSS', 'AMENES_SOL_S', 'TAKEDOWNS_S']],
+        ['pullWin', ['PULL_WIN' + suffix, 'PULL_WIN', 'TIRAGE_GARDE_R']],
+        ['pullLoss', ['PULL_LOSS' + suffix, 'PULL_LOSS', 'TIRAGE_GARDE_S']],
+        ['passWin', ['PASS_WIN' + suffix, 'PASS_WIN', 'PASSAGES_R']],
+        ['passLoss', ['PASS_LOSS' + suffix, 'PASS_LOSS', 'PASSAGES_S']],
+        ['mountWin', ['MOUNT_WIN' + suffix, 'MOUNT_WIN', 'MONTEE_R']],
+        ['mountLoss', ['MOUNT_LOSS' + suffix, 'MOUNT_LOSS', 'MONTEE_S']],
+        ['sideWin', ['SIDE_WIN' + suffix, 'SIDE_WIN', 'CONTROLE_LATERAL_R']],
+        ['sideLoss', ['SIDE_LOSS' + suffix, 'SIDE_LOSS', 'CONTROLE_LATERAL_S']],
+        ['nsWin', ['NS_WIN' + suffix, 'NS_WIN', 'NORD_SUD_R']],
+        ['nsLoss', ['NS_LOSS' + suffix, 'NS_LOSS', 'NORD_SUD_S']],
+        ['guardCtrlWin', ['GUARD_CTRL_WIN' + suffix, 'GUARD_CTRL_WIN', 'CONTROLE_GARDE_R']],
+        ['guardCtrlLoss', ['GUARD_CTRL_LOSS' + suffix, 'GUARD_CTRL_LOSS', 'CONTROLE_GARDE_S']],
+        ['escWin', ['ESC_WIN' + suffix, 'ESC_WIN', 'SORTIES_R', 'ESCAPES_R']],
+        ['escLoss', ['ESC_LOSS' + suffix, 'ESC_LOSS', 'SORTIES_S', 'ESCAPES_S']],
+        ['swpWin', ['SWP_WIN' + suffix, 'SWP_WIN', 'SWEEPS_R', 'RENVERSEMENTS_R']],
+        ['swpLoss', ['SWP_LOSS' + suffix, 'SWP_LOSS', 'SWEEPS_S', 'RENVERSEMENTS_S']],
+        ['subWin', ['SUB_WIN' + suffix, 'SUB_WIN', 'SOUMISSIONS_R', 'TAPS_R']],
+        ['subLoss', ['SUB_LOSS' + suffix, 'SUB_LOSS', 'SOUMISSIONS_S', 'TAPS_S']]
+      ];
+
+      statsMap.forEach(([inputId, colKeys]) => {
+        const val = parseInt(getVal(el, colKeys, 0)) || 0;
+        document.getElementById(inputId).value = val;
+      });
+
+      actualiserRadarDepuisInputs();
+    }
+
+    function dessinerCeinture(ceintureStr, nbBarrettes) {
+      const beltEl = document.getElementById("beltDisplayActive");
+      const tipEl = document.getElementById("beltTipActive");
+      const lower = ceintureStr.toLowerCase();
+
+      beltEl.className = "w-full h-7 rounded relative flex items-center justify-end overflow-hidden shadow-inner ";
+      tipEl.className = "h-full w-16 flex items-center justify-evenly px-1.5 border-l border-white/20 ";
+
+      if (lower.includes("noire") || lower.includes("black")) {
+        beltEl.className += "belt-noire";
+        tipEl.className += "bg-red-700"; // Embout rouge officiel ceinture noire JJB
+      } else if (lower.includes("marron") || lower.includes("brown")) {
+        beltEl.className += "belt-marron";
+        tipEl.className += "bg-black";
+      } else if (lower.includes("violet") || lower.includes("purple")) {
+        beltEl.className += "belt-violette";
+        tipEl.className += "bg-black";
+      } else if (lower.includes("bleu") || lower.includes("blue")) {
+        beltEl.className += "belt-bleue";
+        tipEl.className += "bg-black";
+      } else {
+        beltEl.className += "belt-blanche";
+        tipEl.className += "bg-black";
+      }
+
+      tipEl.innerHTML = "";
+      for (let i = 0; i < nbBarrettes; i++) {
+        tipEl.innerHTML += '<div class="w-1.5 h-4 bg-white rounded-xs shadow"></div>';
+      }
+    }
+
+    function actualiserRadarDepuisInputs() {
+      if (!radarChart) return;
+      const wins = [
+        parseInt(document.getElementById('tdWin').value) || 0,
+        parseInt(document.getElementById('pullWin').value) || 0,
+        parseInt(document.getElementById('passWin').value) || 0,
+        parseInt(document.getElementById('mountWin').value) || 0,
+        parseInt(document.getElementById('sideWin').value) || 0,
+        parseInt(document.getElementById('nsWin').value) || 0,
+        parseInt(document.getElementById('guardCtrlWin').value) || 0,
+        parseInt(document.getElementById('escWin').value) || 0,
+        parseInt(document.getElementById('swpWin').value) || 0,
+        parseInt(document.getElementById('subWin').value) || 0
+      ];
+      const losses = [
+        parseInt(document.getElementById('tdLoss').value) || 0,
+        parseInt(document.getElementById('pullLoss').value) || 0,
+        parseInt(document.getElementById('passLoss').value) || 0,
+        parseInt(document.getElementById('mountLoss').value) || 0,
+        parseInt(document.getElementById('sideLoss').value) || 0,
+        parseInt(document.getElementById('nsLoss').value) || 0,
+        parseInt(document.getElementById('guardCtrlLoss').value) || 0,
+        parseInt(document.getElementById('escLoss').value) || 0,
+        parseInt(document.getElementById('swpLoss').value) || 0,
+        parseInt(document.getElementById('subLoss').value) || 0
+      ];
+
+      const maxVal = Math.max(5, ...wins, ...losses);
+      radarChart.options.scales.r.suggestedMax = maxVal + 1;
+      radarChart.data.datasets[0].data = wins;
+      radarChart.data.datasets[1].data = losses;
+      radarChart.update();
+    }
+
+    function changerPeriodeRadar() {
+      changerEleve();
+    }
+
+    function mettreAJourGradeActif() {
+      const belt = document.getElementById("selectCeintureProf").value;
+      const stripes = parseInt(document.getElementById("selectBarrettesProf").value) || 0;
+
+      if (listeEleves[currentEleveIndex]) {
+        listeEleves[currentEleveIndex].CEINTURE_ACTUELLE = `Ceinture ${belt}`;
+        listeEleves[currentEleveIndex].BARRETTES = stripes;
+        const opt = document.getElementById("eleveSelect").options[currentEleveIndex];
+        const prenom = getVal(listeEleves[currentEleveIndex], ['PRENOM', 'Prenom'], '');
+        const nom = getVal(listeEleves[currentEleveIndex], ['NOM', 'Nom'], '');
+        if (opt) opt.textContent = `${prenom} ${nom} — Ceinture ${belt} (${stripes} bar.)`;
+      }
+
+      document.getElementById("activeCardBeltLabel").textContent = `Ceinture ${belt}`;
+      const role = listeEleves[currentEleveIndex] ? getVal(listeEleves[currentEleveIndex], ['ROLE', 'Role'], 'Élève') : 'Élève';
+      document.getElementById("activeCardSub").textContent = `${role} • ${stripes} Barrette(s)`;
+      dessinerCeinture(belt, stripes);
+      genererClassement();
     }
 
     function basculerOnglet(nom) {
@@ -661,7 +931,6 @@
       document.getElementById("boxSelectEleve").style.display = isProf ? 'flex' : 'none';
       document.getElementById("boxCreateEvent").style.display = isProf ? 'block' : 'none';
       document.getElementById("boxGradeEditCoach").style.display = isProf ? 'flex' : 'none';
-      
       document.querySelectorAll(".btnProfOnly").forEach(btn => btn.style.display = isProf ? 'inline-block' : 'none');
     }
 
@@ -677,26 +946,16 @@
     }
 
     function ouvrirAppelTatami(nomSession) {
-      alert("🥋 Espace Appel Tatami pour " + nomSession + " : Cliquez pour valider les présences des élèves inscrits.");
-    }
-
-    function mettreAJourGradeProf() {
-      const belt = document.getElementById("selectCeintureProf").value;
-      const stripes = document.getElementById("selectBarrettesProf").value;
-      
-      const container = document.getElementById("stripesContainerProf");
-      container.innerHTML = "";
-      for (let i = 0; i < parseInt(stripes); i++) {
-        container.innerHTML += '<div class="w-1 h-3 bg-white rounded-sm"></div>';
-      }
-      alert(`🏆 Grade mis à jour : Ceinture ${belt} (${stripes} Barrette(s))`);
+      alert("🥋 Espace Appel Tatami pour " + nomSession);
     }
 
     function genererClassement() {
       const body = document.getElementById("classementBody");
       body.innerHTML = "";
       
-      let elevesTries = [...listeEleves].sort((a, b) => (parseInt(b.TOTAL_COURS) || 0) - (parseInt(a.TOTAL_COURS) || 0));
+      let elevesTries = [...listeEleves]
+        .filter(e => !String(getVal(e, ['ROLE', 'Role'], '')).toLowerCase().includes('prof'))
+        .sort((a, b) => (parseInt(getVal(b, ['TOTAL_COURS', 'COURS'], 0)) || 0) - (parseInt(getVal(a, ['TOTAL_COURS', 'COURS'], 0)) || 0));
 
       elevesTries.forEach((el, idx) => {
         const tr = document.createElement("tr");
@@ -706,47 +965,30 @@
         else if (idx === 1) mark = `🥈 <span class="text-silver font-bold">2ème</span>`;
         else if (idx === 2) mark = `🥉 <span class="text-amber-700 font-bold">3ème</span>`;
 
+        const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Élève');
+        const nom = getVal(el, ['NOM', 'Nom'], '');
+        const ceinture = getVal(el, ['CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
+        const barrettes = parseInt(getVal(el, ['BARRETTES', 'Barrettes'], 0)) || 0;
+        const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
+
         tr.innerHTML = `
           <td class="py-3 px-4">${mark}</td>
-          <td class="py-3 px-4 font-bold text-white">${el.PRENOM || 'Élève'} ${el.NOM || ''}</td>
-          <td class="py-3 px-4 text-gold">${el.CEINTURE_ACTUELLE || 'Ceinture Blanche'}</td>
-          <td class="py-3 px-4 text-center font-extrabold text-white">${parseInt(el.TOTAL_COURS) || (20 - idx * 2)}</td>
-          <td class="py-3 px-4 text-right text-gray-400 text-xs">${idx < 5 ? '🔥 Top 5' : 'Adhérent'}</td>
+          <td class="py-3 px-4 font-bold text-white">${prenom} ${nom}</td>
+          <td class="py-3 px-4 text-gold">${ceinture} (${barrettes} bar.)</td>
+          <td class="py-3 px-4 text-center font-extrabold text-white">${cours}</td>
+          <td class="py-3 px-4 text-right text-gray-400 text-xs">${idx < 3 ? '🔥 Podium' : 'Adhérent'}</td>
         `;
         body.appendChild(tr);
       });
     }
 
     function enregistrerStatsSparring() {
-      radarChart.data.datasets[0].data = [
-        parseInt(document.getElementById('tdWin').value) * 10,
-        parseInt(document.getElementById('pullWin').value) * 10,
-        parseInt(document.getElementById('passWin').value) * 10,
-        parseInt(document.getElementById('mountWin').value) * 10,
-        parseInt(document.getElementById('sideWin').value) * 10,
-        parseInt(document.getElementById('nsWin').value) * 10,
-        parseInt(document.getElementById('guardCtrlWin').value) * 10,
-        parseInt(document.getElementById('escWin').value) * 10,
-        parseInt(document.getElementById('swpWin').value) * 10,
-        parseInt(document.getElementById('subWin').value) * 10
-      ];
-      radarChart.update();
-      alert("✅ Les 10 statistiques de sparring ont été enregistrées et mises à jour sur le radar !");
-    }
-
-    function changerPeriodeRadar() {
-      const p = document.getElementById("periodeSelector").value;
-      if (p === 'm1') {
-        document.getElementById("radarPeriodLabel").textContent = "Période : Mois Précédent (Octobre 2026)";
-      } else if (p === 'cumul') {
-        document.getElementById("radarPeriodLabel").textContent = "Période : Cumul Saison 2026-2027";
-      } else {
-        document.getElementById("radarPeriodLabel").textContent = "Période : Mois en Cours (Novembre 2026)";
-      }
+      actualiserRadarDepuisInputs();
+      alert("✅ Radar mis à jour pour l'élève actif ! (Prochaine étape : sauvegarde permanente dans Google Sheets)");
     }
 
     function publierEvenement() {
-      alert("📅 Nouvelle session créée avec succès et immédiatement visible sur le planning !");
+      alert("📅 Nouvelle session créée !");
     }
 
     function uploadPhotoProfil(event) {
@@ -755,9 +997,8 @@
         const reader = new FileReader();
         reader.onload = function(e) {
           document.getElementById("profilePhotoDisplay").src = e.target.result;
-          document.getElementById("headerAvatar").src = e.target.result;
-          document.getElementById("profCardAvatar").src = e.target.result;
-          alert("📸 Photo de profil mise à jour !");
+          document.getElementById("activeCardAvatar").src = e.target.result;
+          alert("📸 Photo mise à jour !");
         };
         reader.readAsDataURL(file);
       }
