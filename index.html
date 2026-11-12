@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Soul System JJ</title>
   
-  <!-- CONFIGURATION PWA : ICÔNE PLEIN CADRE 100% SANS MARGE -->
+  <!-- CONFIGURATION PWA : ICÔNE AGRANDIE (90% DE SURFACE, 5% DE MARGE) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Soul System JJ">
@@ -13,7 +13,7 @@
   <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=4">
 
   <script>
-    // Générateur d'icône 1:1 plein cadre (zoom maximal sans déformation pour iOS & Android)
+    // Générateur d'icône carrée 1:1 grand format avec marge fine (5%)
     (function() {
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -24,12 +24,14 @@
         canvas.height = size;
         const ctx = canvas.getContext('2d');
 
-        // Fond Noir Carbone pur
+        // Fond Noir Carbone officiel
         ctx.fillStyle = "#08090B";
         ctx.fillRect(0, 0, size, size);
 
-        // Remplissage maximal plein cadre (zéro marge) en conservant les proportions
-        const ratio = Math.max(size / img.width, size / img.height);
+        // Marge fine de 5% pour un remplissage maximal sans toucher les bords
+        const padding = size * 0.05;
+        const maxDim = size - padding * 2;
+        const ratio = Math.min(maxDim / img.width, maxDim / img.height);
         const w = img.width * ratio;
         const h = img.height * ratio;
         const x = (size - w) / 2;
@@ -38,10 +40,8 @@
         ctx.drawImage(img, x, y, w, h);
         const squareDataUrl = canvas.toDataURL('image/png');
 
-        // Application sur l'icône Apple iOS
         document.getElementById('appleTouchIcon').href = squareDataUrl;
 
-        // Mise à jour du manifeste PWA
         const baseUrl = window.location.origin;
         const manifest = {
           name: "Soul System JJ",
@@ -136,18 +136,17 @@
       border: 1px solid #8D6E63;
     }
 
-    /* LOGO GRAND FORMAT SANS DÉFORMATION */
+    /* LOGO GRAND FORMAT AVEC AILES EN MAJESTÉ */
     .logo-header-img {
-      height: 96px;
+      height: 84px;
       width: auto;
       max-width: 100%;
-      flex-shrink: 0;
       object-fit: contain;
       display: block;
     }
     @media (min-width: 768px) {
       .logo-header-img {
-        height: 128px;
+        height: 112px;
       }
     }
   </style>
@@ -156,27 +155,27 @@
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
   <!-- EN-TÊTE : LOGO GRAND FORMAT & TITRE "Soul System Jiu Jitsu" -->
-  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-5 rounded-2xl card-luxe mb-6 gap-4">
-    <div class="flex flex-wrap items-center gap-5">
-      <div class="flex items-center justify-center flex-shrink-0">
-        <img src="./Logo.png" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-2xl" onerror="this.onerror=null; this.src='./Icon.jpeg';">
+  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-4 md:p-6 rounded-2xl card-luxe mb-6 gap-4">
+    <div class="flex flex-wrap items-center gap-4 md:gap-6">
+      <div class="flex items-center justify-center">
+        <img src="./Logo.png?v=4" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-[0_4px_16px_rgba(212,175,55,0.25)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
       </div>
       <div>
-        <h1 class="font-extrabold text-2xl md:text-3xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
-        <p class="text-xs md:text-sm text-silver tracking-wider uppercase mt-1">Executive Club App</p>
+        <h1 class="font-extrabold text-xl md:text-2xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
+        <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
       </div>
     </div>
     
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-4 ml-auto">
       <div class="text-right">
         <p class="text-xs text-gray-400">Rôle Actif</p>
-        <select id="userRoleToggle" onchange="changerRoleCompte()" class="bg-carbone border border-gold/40 rounded px-2.5 py-1.5 text-xs text-gold font-bold focus:outline-none">
+        <select id="userRoleToggle" onchange="changerRoleCompte()" class="bg-carbone border border-gold/40 rounded px-2.5 py-1 text-xs text-gold font-bold focus:outline-none">
           <option value="prof">Professeur (Martin Huambachano)</option>
           <option value="eleve">Élève (Vue Restreinte)</option>
         </select>
       </div>
       <div class="relative group cursor-pointer" onclick="basculerOnglet('monprofil')">
-        <img id="headerAvatar" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-12 h-12 rounded-full border-2 border-gold object-cover shadow-lg">
+        <img id="headerAvatar" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-11 h-11 rounded-full border-2 border-gold object-cover shadow-lg">
       </div>
     </div>
   </header>
