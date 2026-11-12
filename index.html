@@ -183,7 +183,7 @@
   </header>
 
   <!-- NOTIFICATION BARRETTES PROFESSEUR -->
-  <div id="coachNotificationBox" class="w-full max-w-7xl mx-auto mb-6 bg-gold/10 border border-gold/40 p-4 rounded-2xl flex items-center justify-between">
+  <div id="coachNotificationBox" class="w-full max-w-7xl mx-auto mb-6 bg-gold/10 border border-gold/40 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
     <div class="flex items-center space-x-3">
       <span class="text-2xl">🔔</span>
       <div>
@@ -192,7 +192,7 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <button onclick="ouvrirAppelTatami('Session du Jour')" class="px-3 py-1.5 rounded-xl bg-carbone border border-gold/50 text-gold font-bold text-xs hover:bg-gold/10">
+      <button onclick="ouvrirAppelTatami('Session du Jour', [])" class="px-3 py-1.5 rounded-xl bg-carbone border border-gold/50 text-gold font-bold text-xs hover:bg-gold/10">
         🥋 Appel Tatami
       </button>
       <button onclick="basculerOnglet('monprofil')" class="px-3 py-1.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light">
@@ -220,7 +220,7 @@
         <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-3">
-              <h2 id="activeCardRoleLabel" class="text-xs font-semibold text-silver uppercase tracking-widest">Fiche Élève Actif</h2>
+              <h2 id="activeCardRoleLabel" class="text-xs font-semibold text-silver uppercase tracking-widest">Fiche Membre Actif</h2>
               <span id="activeCardBeltLabel" class="text-[11px] font-extrabold text-gold uppercase">Ceinture Blanche</span>
             </div>
             <div class="flex items-center space-x-4 mb-4">
@@ -265,14 +265,14 @@
           </div>
         </div>
 
-        <!-- CARTE 3 : SÉLECTEUR D'ÉLÈVE EN DIRECT -->
+        <!-- CARTE 3 : SÉLECTEUR DE MEMBRE EN DIRECT -->
         <div id="boxSelectEleve" class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-2">
-              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Élève</h2>
+              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre</h2>
               <span id="totalElevesCount" class="text-[10px] text-gold font-bold">0 inscrits</span>
             </div>
-            <p class="text-xs text-gray-400 mb-3">Choisissez un membre pour charger sa ceinture et son radar :</p>
+            <p class="text-xs text-gray-400 mb-3">Membre actif (utilisé pour le radar et les inscriptions cours) :</p>
           </div>
           <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
             <option value="">Chargement de la base...</option>
@@ -287,7 +287,7 @@
           <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
             <div>
               <h2 class="text-base font-bold text-white uppercase tracking-wider">Radar de Compétences Sparring</h2>
-              <p id="radarPeriodLabel" class="text-xs text-gold">Élève : Sélectionnez un membre — Mois en Cours</p>
+              <p id="radarPeriodLabel" class="text-xs text-gold">Membre : Sélectionnez un profil — Mois en Cours</p>
             </div>
             <select id="periodeSelector" onchange="changerPeriodeRadar()" class="bg-carbone border border-gold/30 text-xs text-gold rounded px-2 py-1">
               <option value="actuel">Mois en cours</option>
@@ -405,12 +405,16 @@
       </div>
     </div>
 
-    <!-- ONGLET 2 : PLANNING -->
+    <!-- ONGLET 2 : PLANNING & INSCRIPTIONS EN DIRECT (ONGLET "Sessions") -->
     <div id="sectionPlanning" class="hidden space-y-6">
       
+      <!-- FORMULAIRE CRÉATION DE SESSION (HEAD COACH) -->
       <div id="boxCreateEvent" class="card-luxe p-6 rounded-2xl space-y-4">
-        <h2 class="text-base font-bold text-white uppercase tracking-wider">Créer une Session / Stage / Master Class (Head Coach)</h2>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+        <div class="flex justify-between items-center">
+          <h2 class="text-base font-bold text-white uppercase tracking-wider">Créer une Session / Stage / Master Class (Head Coach)</h2>
+          <span class="text-[10px] text-gold font-bold uppercase">Écriture directe dans l'onglet "Sessions"</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-xs">
           <div>
             <label class="text-gray-400 font-semibold">Type de Session</label>
             <select id="eventType" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
@@ -423,85 +427,53 @@
               <option value="Entraînement">Entraînement Compétition</option>
             </select>
           </div>
-          <div>
+          <div class="md:col-span-2">
             <label class="text-gray-400 font-semibold">Thème de la Session</label>
             <input type="text" id="eventTheme" placeholder="ex: Guard Retention & Leg Locks" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
           <div>
             <label class="text-gray-400 font-semibold">Date & Horaires</label>
-            <input type="text" id="eventDate" placeholder="Mardi 17 Nov — 19h30 / 21h00" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+            <input type="text" id="eventDate" placeholder="Mardi 17 Nov — 19h30" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
           <div>
-            <label class="text-gray-400 font-semibold">Récurrence</label>
-            <select id="eventRecurrence" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gray-300 mt-1">
-              <option value="Ponctuel">Session Ponctuelle</option>
-              <option value="Hebdomadaire">Récurrence Hebdomadaire</option>
-              <option value="Mensuel">Récurrence Mensuelle</option>
-            </select>
+            <label class="text-gray-400 font-semibold">Places Max / Récurrence</label>
+            <div class="flex gap-2 mt-1">
+              <input type="number" id="eventCapacite" value="20" min="2" max="100" class="w-16 bg-carbone border border-gold/40 rounded-lg p-2.5 text-center text-gold font-bold">
+              <select id="eventRecurrence" class="flex-1 bg-carbone border border-white/10 rounded-lg p-2 text-gray-300">
+                <option value="Ponctuel">Ponctuel</option>
+                <option value="Hebdomadaire">Hebdo</option>
+                <option value="Mensuel">Mensuel</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="flex justify-end">
-          <button onclick="publierEvenement()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            ➕ Publier la Session au Planning
+          <button id="btnPublierSession" onclick="publierEvenementSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
+            ➕ Publier la Session dans Google Sheets
           </button>
         </div>
       </div>
 
+      <!-- LISTE DYNAMIQUE DES SESSIONS DU PLANNING -->
       <div class="card-luxe p-6 rounded-2xl space-y-4">
-        <div class="flex flex-wrap justify-between items-center gap-2">
-          <h2 class="text-lg font-bold text-white uppercase tracking-wider">Planning Officiel des Sessions</h2>
-          <button onclick="ouvrirAppelTatami('Session Libre / Cours du Jour')" class="btnProfOnly px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light transition">
-            🥋 Ouvrir l'Appel Tatami Rapide
-          </button>
+        <div class="flex flex-wrap justify-between items-center gap-2 border-b border-white/10 pb-3">
+          <div>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Planning Officiel des Sessions</h2>
+            <p class="text-xs text-gray-400">Inscriptions en direct pour : <strong id="planningActiveMemberName" class="text-gold">Membre actif</strong></p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="chargerElevesSheets()" class="px-3 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 text-xs hover:border-gold">
+              🔄 Actualiser
+            </button>
+            <button onclick="ouvrirAppelTatami('Session Libre / Cours du Jour', [])" class="btnProfOnly px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light transition">
+              🥋 Appel Tatami Rapide
+            </button>
+          </div>
         </div>
         
-        <div class="space-y-4">
-          <div class="bg-carbone/80 p-5 rounded-xl border border-gold/30 flex flex-wrap justify-between items-center">
-            <div class="space-y-1">
-              <div class="flex items-center space-x-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">COURS GI</span>
-                <span class="text-xs text-gray-400">● Mardi 17 Novembre — 19h30</span>
-              </div>
-              <h3 class="font-extrabold text-base text-white">Passages de Garde Moderne & Side Control</h3>
-              <p class="text-xs text-gray-400">Prof. Martin Huambachano • Récurrence Hebdomadaire</p>
-            </div>
-
-            <div class="flex items-center space-x-4 mt-3 md:mt-0">
-              <div class="text-right">
-                <p class="text-xs font-extrabold text-gold">14 / 20 Inscrits</p>
-                <p class="text-[10px] text-gray-400">Places disponibles</p>
-              </div>
-              <button onclick="toggleInscription(this)" class="px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs">
-                S'inscrire
-              </button>
-              <button onclick="ouvrirAppelTatami('Cours Gi — Passages de Garde')" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-gold/40 text-xs text-gold font-bold hover:bg-gold/10">
-                🥋 Appel Tatami
-              </button>
-            </div>
-          </div>
-
-          <div class="bg-carbone/80 p-5 rounded-xl border border-white/10 flex flex-wrap justify-between items-center">
-            <div class="space-y-1">
-              <div class="flex items-center space-x-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-silver/10 text-silver border border-silver/30">COURS NO-GI</span>
-                <span class="text-xs text-gray-400">● Jeudi 19 Novembre — 19h30</span>
-              </div>
-              <h3 class="font-extrabold text-base text-white">Lutte, Contrôles & Soumissions No-Gi</h3>
-              <p class="text-xs text-gray-400">Prof. Martin Huambachano • Récurrence Hebdomadaire</p>
-            </div>
-
-            <div class="flex items-center space-x-4 mt-3 md:mt-0">
-              <div class="text-right">
-                <p class="text-xs font-extrabold text-silver">11 / 20 Inscrits</p>
-                <p class="text-[10px] text-gray-400">Places disponibles</p>
-              </div>
-              <button onclick="toggleInscription(this)" class="px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs">
-                S'inscrire
-              </button>
-              <button onclick="ouvrirAppelTatami('Cours No-Gi — Lutte & Soumissions')" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-gold/40 text-xs text-gold font-bold hover:bg-gold/10">
-                🥋 Appel Tatami
-              </button>
-            </div>
+        <div id="sessionsListContainer" class="space-y-4">
+          <div class="text-center py-8 text-xs text-gray-400">
+            ⏳ Chargement des sessions depuis l'onglet "Sessions" de Google Sheets...
           </div>
         </div>
       </div>
@@ -646,12 +618,11 @@
         <div>
           <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30 uppercase">Feuille de Présence Tatami</span>
           <h2 id="modalSessionTitle" class="text-lg font-extrabold text-white mt-1">Appel Tatami</h2>
-          <p class="text-xs text-gray-400">Cochez les élèves présents pour incrémenter automatiquement <strong class="text-gold">+1 cours</strong> dans Google Sheets.</p>
+          <p class="text-xs text-gray-400">Les élèves inscrits au cours sont pré-cochés. Validez pour ajouter <strong class="text-gold">+1 cours</strong> dans Google Sheets.</p>
         </div>
         <button onclick="fermerAppelTatami()" class="text-gray-400 hover:text-white text-xl font-bold px-2">✕</button>
       </div>
 
-      <!-- Barre de recherche & actions rapides -->
       <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
         <input type="text" id="searchAppelInput" onkeyup="filtrerListeAppel()" placeholder="🔍 Rechercher un élève..." class="flex-1 min-w-[180px] bg-carbone border border-white/10 rounded-xl px-3 py-2 text-white focus:border-gold focus:outline-none">
         <div class="flex items-center gap-2">
@@ -660,12 +631,9 @@
         </div>
       </div>
 
-      <!-- Liste des élèves à cocher -->
       <div id="appelElevesList" class="max-h-[340px] overflow-y-auto space-y-2 pr-1">
-        <!-- Injecté dynamiquement -->
       </div>
 
-      <!-- Pied de modale : Compteur et bouton d'envoi -->
       <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10">
         <p class="text-xs text-gray-300">
           Présents sélectionnés : <span id="appelSelectedCount" class="text-gold font-extrabold text-sm">0</span> élève(s)
@@ -689,6 +657,7 @@
 
   <script>
     let listeEleves = [];
+    let listeSessions = [];
     let currentEleveIndex = 0;
     let radarChart = null;
 
@@ -803,6 +772,213 @@
         genererClassement();
         changerEleve();
       }
+
+      // Traitement de l'onglet "Sessions"
+      if (data && Array.isArray(data.sessions)) {
+        listeSessions = data.sessions;
+      } else {
+        listeSessions = [];
+      }
+      afficherSessionsPlanning();
+    }
+
+    // --- GESTION DYNAMIQUE DU PLANNING (ONGLET "Sessions" DE GOOGLE SHEETS) ---
+    function afficherSessionsPlanning() {
+      const container = document.getElementById("sessionsListContainer");
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      const activeEl = listeEleves[currentEleveIndex];
+      const activeFullName = activeEl
+        ? `${getVal(activeEl, ['PRENOM', 'Prenom'], '')} ${getVal(activeEl, ['NOM', 'Nom'], '')}`.trim()
+        : "";
+
+      document.getElementById("planningActiveMemberName").textContent = activeFullName || "Membre actif";
+
+      if (listeSessions.length === 0) {
+        container.innerHTML = `
+          <div class="bg-carbone/60 border border-white/10 rounded-xl p-6 text-center space-y-2">
+            <p class="text-sm font-bold text-white">Aucune session publiée pour le moment</p>
+            <p class="text-xs text-gray-400">Utilisez le formulaire ci-dessus pour publier un cours dans l'onglet <strong>Sessions</strong> de Google Sheets.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = "";
+
+      listeSessions.forEach((ses, sIdx) => {
+        const id = getVal(ses, ['ID'], 'SES-' + sIdx);
+        const type = getVal(ses, ['TYPE'], 'COURS GI').toUpperCase();
+        const theme = getVal(ses, ['THEME'], 'Session JJB');
+        const dateHeure = getVal(ses, ['DATE_HEURE'], '');
+        const recurrence = getVal(ses, ['RECURRENCE'], 'Ponctuel');
+        const capacite = parseInt(getVal(ses, ['CAPACITE'], 20)) || 20;
+        const inscritsRaw = String(getVal(ses, ['INSCRITS'], '')).trim();
+        const inscritsArr = inscritsRaw ? inscritsRaw.split(",").map(x => x.trim()).filter(Boolean) : [];
+
+        const estInscrit = activeFullName && inscritsArr.some(n => n.toLowerCase() === activeFullName.toLowerCase());
+        const complet = inscritsArr.length >= capacite && !estInscrit;
+
+        const card = document.createElement("div");
+        card.className = "bg-carbone/80 p-5 rounded-xl border border-gold/30 flex flex-wrap justify-between items-center gap-4";
+
+        const inscritsBadges = inscritsArr.length > 0
+          ? `<p class="text-[11px] text-gray-400 mt-1.5">🥋 Inscrits : <span class="text-gray-200">${inscritsArr.join(", ")}</span></p>`
+          : `<p class="text-[11px] text-gray-500 mt-1.5">Aucun inscrit pour le moment — soyez le premier !</p>`;
+
+        card.innerHTML = `
+          <div class="space-y-1 flex-1 min-w-[240px]">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">${type}</span>
+              <span class="text-xs text-gray-400">● ${dateHeure}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400">${recurrence}</span>
+            </div>
+            <h3 class="font-extrabold text-base text-white">${theme}</h3>
+            ${inscritsBadges}
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="text-right mr-1">
+              <p class="text-xs font-extrabold ${complet ? 'text-red-400' : 'text-gold'}">${inscritsArr.length} / ${capacite} Inscrits</p>
+              <p class="text-[10px] text-gray-400">${complet ? 'Complet' : 'Places disponibles'}</p>
+            </div>
+
+            <button onclick="toggleInscriptionSession('${id}', this)" ${complet ? 'disabled' : ''} class="px-4 py-2 rounded-xl font-extrabold text-xs transition ${
+              estInscrit
+                ? 'bg-emerald-500 text-black hover:bg-emerald-400'
+                : (complet ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-gold text-black hover:bg-gold-light')
+            }">
+              ${estInscrit ? '✓ Inscrit (Annuler)' : (complet ? 'Complet' : "S'inscrire")}
+            </button>
+
+            <button onclick='ouvrirAppelTatami(${JSON.stringify(type + " — " + theme)}, ${JSON.stringify(inscritsArr)})' style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-gold/40 text-xs text-gold font-bold hover:bg-gold/10">
+              🥋 Appel Tatami
+            </button>
+
+            <button onclick="supprimerSessionSheets('${id}')" style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-2.5 py-2 rounded-xl bg-carbone border border-red-500/30 text-xs text-red-400 hover:bg-red-500/10" title="Supprimer cette session">
+              🗑️
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function publierEvenementSheets() {
+      const type = document.getElementById("eventType").value;
+      const theme = document.getElementById("eventTheme").value.trim();
+      const dateHeure = document.getElementById("eventDate").value.trim();
+      const recurrence = document.getElementById("eventRecurrence").value;
+      const capacite = parseInt(document.getElementById("eventCapacite").value) || 20;
+
+      if (!theme || !dateHeure) {
+        alert("⚠️ Renseignez au minimum le thème et la date/horaire de la session.");
+        return;
+      }
+
+      const btn = document.getElementById("btnPublierSession");
+      const badge = document.getElementById("syncStatusBadge");
+      btn.disabled = true;
+      btn.textContent = "⏳ Publication dans Google Sheets...";
+      badge.textContent = "⏳ Publication session...";
+
+      const newSession = {
+        ID: "SES-" + Date.now(),
+        TYPE: type,
+        THEME: theme,
+        DATE_HEURE: dateHeure,
+        RECURRENCE: recurrence,
+        CAPACITE: capacite,
+        INSCRITS: ""
+      };
+
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "createSession", session: newSession })
+        });
+
+        listeSessions.push(newSession);
+        afficherSessionsPlanning();
+
+        document.getElementById("eventTheme").value = "";
+        document.getElementById("eventDate").value = "";
+        badge.textContent = "✅ Session publiée";
+        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+        alert("📅 Session publiée dans l'onglet 'Sessions' de Google Sheets !");
+      } catch (err) {
+        alert("❌ Erreur lors de la publication : " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "➕ Publier la Session dans Google Sheets";
+      }
+    }
+
+    async function toggleInscriptionSession(sessionId, btn) {
+      const activeEl = listeEleves[currentEleveIndex];
+      if (!activeEl) {
+        alert("⚠️ Aucun membre sélectionné.");
+        return;
+      }
+
+      const memberName = `${getVal(activeEl, ['PRENOM', 'Prenom'], '')} ${getVal(activeEl, ['NOM', 'Nom'], '')}`.trim();
+      const ses = listeSessions.find(s => String(getVal(s, ['ID'], '')) === String(sessionId));
+      if (!ses) return;
+
+      btn.disabled = true;
+      btn.textContent = "⏳ Sync...";
+
+      // Mise à jour optimiste immédiate
+      const rawInscrits = String(getVal(ses, ['INSCRITS'], '')).trim();
+      let liste = rawInscrits ? rawInscrits.split(",").map(x => x.trim()).filter(Boolean) : [];
+      const pos = liste.findIndex(n => n.toLowerCase() === memberName.toLowerCase());
+      const etaitInscrit = pos !== -1;
+
+      if (etaitInscrit) {
+        liste.splice(pos, 1);
+      } else {
+        liste.push(memberName);
+      }
+      ses.INSCRITS = liste.join(", ");
+
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "toggleInscription",
+            sessionId: sessionId,
+            memberName: memberName
+          })
+        });
+
+        afficherSessionsPlanning();
+        const badge = document.getElementById("syncStatusBadge");
+        badge.textContent = etaitInscrit ? "✅ Désinscription enregistrée" : "✅ Inscription enregistrée";
+        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+      } catch (err) {
+        alert("❌ Erreur réseau lors de l'inscription : " + err.message);
+      }
+    }
+
+    async function supprimerSessionSheets(sessionId) {
+      if (!confirm("Supprimer définitivement cette session du planning Google Sheets ?")) return;
+
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "deleteSession", sessionId: sessionId })
+        });
+
+        listeSessions = listeSessions.filter(s => String(getVal(s, ['ID'], '')) !== String(sessionId));
+        afficherSessionsPlanning();
+      } catch (err) {
+        alert("❌ Erreur lors de la suppression : " + err.message);
+      }
     }
 
     function actualiserAlerteBarrettes() {
@@ -822,7 +998,6 @@
         : "Tous les élèves sont à jour dans leur progression de grade.";
     }
 
-    // ENVOI RÉEL (POST) VERS GOOGLE SHEETS POUR UN ÉLÈVE DONNÉ
     async function envoyerMiseAJourPourEleve(el, updatesObj) {
       const payload = {
         action: "updateEleve",
@@ -877,8 +1052,8 @@
       }
     }
 
-    // --- LOGIQUE DE LA MODALE D'APPEL TATAMI ---
-    function ouvrirAppelTatami(nomSession) {
+    // --- MODALE D'APPEL TATAMI (AVEC PRÉ-COCHAGE DES INSCRITS) ---
+    function ouvrirAppelTatami(nomSession, inscritsArr = []) {
       if (listeEleves.length === 0) {
         alert("⏳ Chargement des élèves en cours, veuillez patienter quelques secondes.");
         return;
@@ -887,12 +1062,13 @@
       document.getElementById("modalSessionTitle").textContent = "Appel Tatami — " + nomSession;
       document.getElementById("searchAppelInput").value = "";
 
+      const inscritsLower = Array.isArray(inscritsArr) ? inscritsArr.map(n => n.toLowerCase().trim()) : [];
       const listContainer = document.getElementById("appelElevesList");
       listContainer.innerHTML = "";
 
       listeEleves.forEach((el, idx) => {
         const role = String(getVal(el, ['ROLE', 'Role'], '')).toLowerCase();
-        if (role.includes('prof')) return; // On n'incrémente pas les cours suivis du professeur
+        if (role.includes('prof')) return;
 
         const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Élève');
         const nom = getVal(el, ['NOM', 'Nom'], '');
@@ -900,16 +1076,20 @@
         const ceinture = getVal(el, ['CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
         const barrettes = parseInt(getVal(el, ['BARRETTES', 'Barrettes'], 0)) || 0;
         const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
+        const estPreInscrit = inscritsLower.includes(fullName.toLowerCase());
 
         const row = document.createElement("label");
-        row.className = "appel-row flex items-center justify-between p-3 rounded-xl bg-carbone/90 border border-white/10 hover:border-gold/50 cursor-pointer transition select-none";
+        row.className = `appel-row flex items-center justify-between p-3 rounded-xl bg-carbone/90 border ${estPreInscrit ? 'border-gold/50' : 'border-white/10'} hover:border-gold/50 cursor-pointer transition select-none`;
         row.setAttribute("data-name", fullName.toLowerCase());
 
         row.innerHTML = `
           <div class="flex items-center space-x-3">
-            <input type="checkbox" value="${idx}" onchange="majCompteurAppel()" class="appel-checkbox w-5 h-5 accent-[#D4AF37] rounded cursor-pointer">
+            <input type="checkbox" value="${idx}" ${estPreInscrit ? 'checked' : ''} onchange="majCompteurAppel()" class="appel-checkbox w-5 h-5 accent-[#D4AF37] rounded cursor-pointer">
             <div>
-              <p class="text-xs font-bold text-white">${fullName}</p>
+              <div class="flex items-center gap-2">
+                <p class="text-xs font-bold text-white">${fullName}</p>
+                ${estPreInscrit ? '<span class="px-1.5 py-0.5 rounded bg-gold/20 text-gold text-[9px] font-bold">INSCRIT</span>' : ''}
+              </div>
               <p class="text-[10px] text-gold">${ceinture} • ${barrettes} barrette(s)</p>
             </div>
           </div>
@@ -968,7 +1148,6 @@
       badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30";
 
       try {
-        // Envoi séquentiel propre pour éviter tout conflit d'écriture sur Google Sheets
         for (const cb of checkedBoxes) {
           const idx = parseInt(cb.value);
           const el = listeEleves[idx];
@@ -1051,7 +1230,7 @@
       const p = document.getElementById("periodeSelector").value;
       const suffix = p === 'm1' ? '_M1' : (p === 'cumul' ? '_CUMUL' : '');
       const periodText = p === 'm1' ? 'Mois précédent (M-1)' : (p === 'cumul' ? 'Saison Complète' : 'Mois en Cours');
-      document.getElementById("radarPeriodLabel").textContent = `Élève : ${fullName} — ${periodText}`;
+      document.getElementById("radarPeriodLabel").textContent = `Membre : ${fullName} — ${periodText}`;
 
       const statsMap = [
         ['tdWin', ['TD_WIN' + suffix, 'TD_WIN']],
@@ -1082,6 +1261,7 @@
       });
 
       actualiserRadarDepuisInputs();
+      afficherSessionsPlanning();
     }
 
     function dessinerCeinture(ceintureStr, nbBarrettes) {
@@ -1274,21 +1454,10 @@
     function changerRoleCompte() {
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
       document.getElementById("coachNotificationBox").style.display = isProf ? 'flex' : 'none';
-      document.getElementById("boxSelectEleve").style.display = isProf ? 'flex' : 'none';
       document.getElementById("boxCreateEvent").style.display = isProf ? 'block' : 'none';
       document.getElementById("boxGradeEditCoach").style.display = isProf ? 'flex' : 'none';
       document.querySelectorAll(".btnProfOnly").forEach(btn => btn.style.display = isProf ? 'inline-block' : 'none');
-    }
-
-    function toggleInscription(btn) {
-      if (btn.textContent.trim() === "S'inscrire") {
-        btn.textContent = "✓ Confirmé";
-        btn.className = "px-4 py-2 rounded-xl bg-emerald-500 text-black font-extrabold text-xs";
-        alert("✅ Votre inscription à la session est confirmée !");
-      } else {
-        btn.textContent = "S'inscrire";
-        btn.className = "px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs";
-      }
+      afficherSessionsPlanning();
     }
 
     function genererClassement() {
@@ -1322,10 +1491,6 @@
         `;
         body.appendChild(tr);
       });
-    }
-
-    function publierEvenement() {
-      alert("📅 Nouvelle session créée !");
     }
 
     function uploadPhotoProfil(event) {
