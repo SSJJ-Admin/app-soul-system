@@ -1367,4 +1367,264 @@
         tipEl.className += "bg-black";
       } else if (lower.includes("bleu") || lower.includes("blue")) {
         beltEl.className += "belt-bleue";
-        tipEl.className +=
+        tipEl.className += "bg-black";
+      } else {
+        beltEl.className += "belt-blanche";
+        tipEl.className += "bg-black";
+      }
+
+      tipEl.innerHTML = "";
+      for (let i = 0; i < nbBarrettes; i++) {
+        tipEl.innerHTML += '<div class="w-1.5 h-4 bg-white rounded-xs shadow"></div>';
+      }
+    }
+
+    function actualiserRadarDepuisInputs() {
+      if (!radarChart) return;
+      const wins = [
+        parseInt(document.getElementById('tdWin').value) || 0,
+        parseInt(document.getElementById('pullWin').value) || 0,
+        parseInt(document.getElementById('passWin').value) || 0,
+        parseInt(document.getElementById('mountWin').value) || 0,
+        parseInt(document.getElementById('sideWin').value) || 0,
+        parseInt(document.getElementById('nsWin').value) || 0,
+        parseInt(document.getElementById('guardCtrlWin').value) || 0,
+        parseInt(document.getElementById('escWin').value) || 0,
+        parseInt(document.getElementById('swpWin').value) || 0,
+        parseInt(document.getElementById('subWin').value) || 0
+      ];
+      const losses = [
+        parseInt(document.getElementById('tdLoss').value) || 0,
+        parseInt(document.getElementById('pullLoss').value) || 0,
+        parseInt(document.getElementById('passLoss').value) || 0,
+        parseInt(document.getElementById('mountLoss').value) || 0,
+        parseInt(document.getElementById('sideLoss').value) || 0,
+        parseInt(document.getElementById('nsLoss').value) || 0,
+        parseInt(document.getElementById('guardCtrlLoss').value) || 0,
+        parseInt(document.getElementById('escLoss').value) || 0,
+        parseInt(document.getElementById('swpLoss').value) || 0,
+        parseInt(document.getElementById('subLoss').value) || 0
+      ];
+
+      const maxVal = Math.max(5, ...wins, ...losses);
+      radarChart.options.scales.r.suggestedMax = maxVal + 1;
+      radarChart.data.datasets[0].data = wins;
+      radarChart.data.datasets[1].data = losses;
+      radarChart.update();
+    }
+
+    function changerPeriodeRadar() {
+      changerEleve();
+    }
+
+    function previsualiserGradeActif() {
+      const belt = document.getElementById("selectCeintureProf").value;
+      const stripes = parseInt(document.getElementById("selectBarrettesProf").value) || 0;
+      document.getElementById("activeCardBeltLabel").textContent = `Ceinture ${belt}`;
+      const role = listeEleves[currentEleveIndex] ? getVal(listeEleves[currentEleveIndex], ['ROLE', 'Role'], 'Élève') : 'Élève';
+      document.getElementById("activeCardSub").textContent = `${role} • ${stripes} Barrette(s)`;
+      dessinerCeinture(belt, stripes);
+    }
+
+    async function sauvegarderGradeSheets() {
+      const belt = document.getElementById("selectCeintureProf").value;
+      const stripes = parseInt(document.getElementById("selectBarrettesProf").value) || 0;
+      const btn = document.getElementById("btnSaveGrade");
+
+      const updates = {
+        CEINTURE_ACTuELLE: `Ceinture ${belt}`,
+        BARRETTES: stripes,
+        NOMBRE_BARRETTES: stripes
+      };
+
+      const ok = await envoyerMiseAJourSheets(updates, btn, "🏆 Valider Grade");
+      if (ok) {
+        const prenom = getVal(listeEleves[currentEleveIndex], ['PRENOM', 'Prenom'], '');
+        const nom = getVal(listeEleves[currentEleveIndex], ['NOM', 'Nom'], '');
+        const newLabel = `${prenom} ${nom} — Ceinture ${belt} (${stripes} bar.)`;
+        if (document.getElementById("eleveSelect").options[currentEleveIndex]) {
+          document.getElementById("eleveSelect").options[currentEleveIndex].textContent = newLabel;
+        }
+        if (document.getElementById("eleveSelectProfil").options[currentEleveIndex]) {
+          document.getElementById("eleveSelectProfil").options[currentEleveIndex].textContent = newLabel;
+        }
+        previsualiserGradeActif();
+        actualiserAlerteBarrettes();
+        genererClassement();
+        alert(`✅ Grade enregistré dans Google Sheets : Ceinture ${belt} (${stripes} barrette(s)) !`);
+      }
+    }
+
+    async function enregistrerStatsSparring() {
+      actualiserRadarDepuisInputs();
+      const btn = document.getElementById("btnSaveSparring");
+      const p = document.getElementById("periodeSelector").value;
+      const suffix = p === 'm1' ? '_M1' : (p === 'cumul' ? '_CUMUL' : '');
+
+      const updates = {};
+      updates['TD_WIN' + suffix] = parseInt(document.getElementById('tdWin').value) || 0;
+      updates['TD_LOSS' + suffix] = parseInt(document.getElementById('tdLoss').value) || 0;
+      updates['PULL_WIN' + suffix] = parseInt(document.getElementById('pullWin').value) || 0;
+      updates['PULL_LOSS' + suffix] = parseInt(document.getElementById('pullLoss').value) || 0;
+      updates['PASS_WIN' + suffix] = parseInt(document.getElementById('passWin').value) || 0;
+      updates['PASS_LOSS' + suffix] = parseInt(document.getElementById('passLoss').value) || 0;
+      updates['MOUNT_WIN' + suffix] = parseInt(document.getElementById('mountWin').value) || 0;
+      updates['MOUNT_LOSS' + suffix] = parseInt(document.getElementById('mountLoss').value) || 0;
+      updates['SIDE_WIN' + suffix] = parseInt(document.getElementById('sideWin').value) || 0;
+      updates['SIDE_LOSS' + suffix] = parseInt(document.getElementById('sideLoss').value) || 0;
+      updates['NS_WIN' + suffix] = parseInt(document.getElementById('nsWin').value) || 0;
+      updates['NS_LOSS' + suffix] = parseInt(document.getElementById('nsLoss').value) || 0;
+      updates['GUARD_CTRL_WIN' + suffix] = parseInt(document.getElementById('guardCtrlWin').value) || 0;
+      updates['GUARD_CTRL_LOSS' + suffix] = parseInt(document.getElementById('guardCtrlLoss').value) || 0;
+      updates['ESC_WIN' + suffix] = parseInt(document.getElementById('escWin').value) || 0;
+      updates['ESC_LOSS' + suffix] = parseInt(document.getElementById('escLoss').value) || 0;
+      updates['SWP_WIN' + suffix] = parseInt(document.getElementById('swpWin').value) || 0;
+      updates['SWP_LOSS' + suffix] = parseInt(document.getElementById('swpLoss').value) || 0;
+      updates['SUB_WIN' + suffix] = parseInt(document.getElementById('subWin').value) || 0;
+      updates['SUB_LOSS' + suffix] = parseInt(document.getElementById('subLoss').value) || 0;
+
+      const ok = await envoyerMiseAJourSheets(updates, btn, "💾 Enregistrer dans Google Sheets (App_Club_Soul_System_JJ)");
+      if (ok) {
+        alert("✅ Les 10 points de sparring ont été enregistrés dans Google Sheets !");
+      }
+    }
+
+    async function sauvegarderProfilSheets() {
+      const btn = document.getElementById("btnSaveProfil");
+      const updates = {
+        PRENOM: document.getElementById("fieldPrenom").value.trim(),
+        NOM: document.getElementById("fieldNom").value.trim(),
+        EMAIL: document.getElementById("fieldEmail").value.trim(),
+        TELEPHONE: document.getElementById("fieldTel").value.trim(),
+        DATE_NAISSANCE: document.getElementById("fieldDateNaissance").value.trim(),
+        LICENCE_CFJJB: document.getElementById("fieldLicence").value.trim(),
+        ADRESSE: document.getElementById("fieldAdresse").value.trim(),
+        URGENCE: document.getElementById("fieldUrgence").value.trim(),
+        ALLERGIES: document.getElementById("fieldAllergies").value.trim(),
+        CLUB_PRECEDENT: document.getElementById("fieldClubPrecedent").value.trim(),
+        TOTAL_COURS: parseInt(document.getElementById("fieldTotalCours").value) || 0
+      };
+
+      const ok = await envoyerMiseAJourSheets(updates, btn, "💾 Enregistrer les Modifications (Professeur)");
+      if (ok) {
+        const ceinture = getVal(listeEleves[currentEleveIndex], ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE'], 'Ceinture Blanche');
+        const barrettes = parseInt(getVal(listeEleves[currentEleveIndex], ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0;
+        const newLabel = `${updates.PRENOM} ${updates.NOM} — ${ceinture} (${barrettes} bar.)`;
+        if (document.getElementById("eleveSelect").options[currentEleveIndex]) {
+          document.getElementById("eleveSelect").options[currentEleveIndex].textContent = newLabel;
+        }
+        if (document.getElementById("eleveSelectProfil").options[currentEleveIndex]) {
+          document.getElementById("eleveSelectProfil").options[currentEleveIndex].textContent = newLabel;
+        }
+        changerEleve();
+        actualiserAlerteBarrettes();
+        genererClassement();
+        alert("✅ Fiche personnelle mise à jour dans Google Sheets !");
+      }
+    }
+
+    function basculerOnglet(nom) {
+      document.getElementById("sectionDashboard").classList.add("hidden");
+      document.getElementById("sectionPlanning").classList.add("hidden");
+      document.getElementById("sectionMonProfil").classList.add("hidden");
+      document.getElementById("sectionClassement").classList.add("hidden");
+
+      document.getElementById("tabDash").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      document.getElementById("tabPlan").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      document.getElementById("tabProf").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      document.getElementById("tabClass").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+
+      if (nom === 'dashboard') {
+        document.getElementById("sectionDashboard").classList.remove("hidden");
+        document.getElementById("tabDash").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+      } else if (nom === 'planning') {
+        document.getElementById("sectionPlanning").classList.remove("hidden");
+        document.getElementById("tabPlan").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+      } else if (nom === 'monprofil') {
+        document.getElementById("sectionMonProfil").classList.remove("hidden");
+        document.getElementById("tabProf").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+      } else if (nom === 'classement') {
+        document.getElementById("sectionClassement").classList.remove("hidden");
+        document.getElementById("tabClass").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+      }
+    }
+
+    // VERROUILLAGE STRICT EN MODE ÉLÈVE : SEUL LE PROFESSEUR PEUT MODIFIER LES PROFILS
+    function changerRoleCompte() {
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      
+      document.getElementById("coachNotificationBox").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("boxCreateEvent").style.display = isProf ? 'block' : 'none';
+      document.getElementById("boxGradeEditCoach").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("boxSaveProfilFooter").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("btnUploadPhotoLabel").style.display = isProf ? 'inline-block' : 'none';
+      document.querySelectorAll(".btnProfOnly").forEach(btn => btn.style.display = isProf ? 'inline-block' : 'none');
+
+      // Verrouille / Déverrouille tous les champs du profil
+      document.querySelectorAll(".profile-editable").forEach(input => {
+        input.disabled = !isProf;
+      });
+
+      const lockBadge = document.getElementById("profileLockBadge");
+      if (isProf) {
+        lockBadge.textContent = "🔓 Édition Professeur Active";
+        lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+      } else {
+        lockBadge.textContent = "🔒 Lecture Seule (Modifications réservées au Professeur)";
+        lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/30";
+      }
+
+      afficherSessionsPlanning();
+    }
+
+    function genererClassement() {
+      const body = document.getElementById("classementBody");
+      body.innerHTML = "";
+      
+      let elevesTries = [...listeEleves]
+        .filter(e => !String(getVal(e, ['ROLE', 'Role'], '')).toLowerCase().includes('prof'))
+        .sort((a, b) => (parseInt(getVal(b, ['TOTAL_COURS', 'COURS'], 0)) || 0) - (parseInt(getVal(a, ['TOTAL_COURS', 'COURS'], 0)) || 0));
+
+      elevesTries.forEach((el, idx) => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-white/5 transition";
+        let mark = `<span class="text-gray-400 font-bold">#${idx + 1}</span>`;
+        if (idx === 0) mark = `🥇 <span class="text-gold font-bold">1er</span>`;
+        else if (idx === 1) mark = `🥈 <span class="text-silver font-bold">2ème</span>`;
+        else if (idx === 2) mark = `🥉 <span class="text-amber-700 font-bold">3ème</span>`;
+
+        const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Élève');
+        const nom = getVal(el, ['NOM', 'Nom'], '');
+        const ceinture = getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
+        const barrettes = parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0;
+        const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
+
+        tr.innerHTML = `
+          <td class="py-3 px-4">${mark}</td>
+          <td class="py-3 px-4 font-bold text-white">${prenom} ${nom}</td>
+          <td class="py-3 px-4 text-gold">${ceinture} (${barrettes} bar.)</td>
+          <td class="py-3 px-4 text-center font-extrabold text-white">${cours}</td>
+          <td class="py-3 px-4 text-right text-gray-400 text-xs">${idx < 3 ? '🔥 Podium' : 'Adhérent'}</td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    function uploadPhotoProfil(event) {
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      if (!isProf) return;
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById("profilePhotoDisplay").src = e.target.result;
+          document.getElementById("activeCardAvatar").src = e.target.result;
+          alert("📸 Photo mise à jour !");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+
+</body>
+</html>
