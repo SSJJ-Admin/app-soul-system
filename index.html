@@ -124,7 +124,7 @@
     .card-luxe {
       background: rgba(18, 20, 24, 0.85);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(212, 175, 55, 0.2);
+      border: 1px solid rgba(212, 175, 55, 0.22);
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
     }
 
@@ -159,25 +159,8 @@
 
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-  <!-- ÉCRAN DE BLOCAGE COMPTE ÉLÈVE (SI ACCES_BLOQUE === 'OUI') -->
-  <div id="blockedAccountOverlay" class="fixed inset-0 z-40 hidden bg-black/95 backdrop-blur-xl flex items-center justify-center p-6">
-    <div class="card-luxe max-w-md w-full rounded-2xl border border-red-500/50 p-8 text-center space-y-4 shadow-2xl">
-      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/10 border border-red-500/40 flex items-center justify-center text-3xl">🔒</div>
-      <h2 class="text-xl font-extrabold text-white uppercase tracking-wider">Accès au Compte Suspendu</h2>
-      <p id="blockedAccountName" class="text-xs text-gold font-bold">Membre</p>
-      <p class="text-xs text-gray-300 leading-relaxed">
-        L'accès à votre espace membre <strong>Soul System Jiu Jitsu</strong> a été temporairement restreint par la direction du club. Veuillez vous rapprocher du professeur sur le tatami pour régulariser votre situation.
-      </p>
-      <div class="pt-3 border-t border-white/10">
-        <button onclick="document.getElementById('userRoleToggle').value='prof'; changerRoleCompte();" class="px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold text-xs font-bold hover:bg-gold/10">
-          🔑 Retourner en Mode Professeur
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- EN-TÊTE -->
-  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-5 rounded-2xl card-luxe mb-6 relative z-50">
+  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-5 rounded-2xl card-luxe mb-6">
     <div class="flex flex-wrap items-center gap-4 md:gap-6">
       <div class="flex items-center justify-center flex-shrink-0">
         <img src="./Logo.png?v=5" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-[0_0_15px_rgba(212,175,55,0.35)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
@@ -186,25 +169,23 @@
         <h1 class="font-extrabold text-xl md:text-2xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
         <div class="flex flex-wrap items-center gap-2 mt-0.5">
           <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
-          <span id="syncStatusBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">⏳ Connexion Sheets...</span>
+          <span id="syncStatusBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">⏳ Connexion...</span>
         </div>
       </div>
     </div>
     
     <div class="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
-      <!-- Sélecteur du compte élève connecté (visible uniquement quand Mode Élève est activé) -->
-      <div id="studentLoginBox" class="hidden text-right">
-        <p class="text-[10px] text-gray-400">Compte Élève Connecté</p>
-        <select id="studentLoginSelect" onchange="changerCompteEleveConnecte(this.value)" class="bg-carbone border border-white/20 rounded px-2.5 py-1 text-xs text-white font-bold focus:outline-none">
-        </select>
-      </div>
-
       <div class="text-right">
         <p class="text-xs text-gray-400">Rôle Actif</p>
-        <select id="userRoleToggle" onchange="changerRoleCompte()" class="bg-carbone border border-gold/40 rounded px-2.5 py-1 text-xs text-gold font-bold focus:outline-none">
-          <option value="prof">Professeur (Martin Huambachano)</option>
-          <option value="eleve">Élève (Espace Personnel)</option>
-        </select>
+        <div class="flex flex-wrap items-center gap-2 mt-0.5">
+          <select id="userRoleToggle" onchange="changerRoleCompte()" class="bg-carbone border border-gold/40 rounded px-2.5 py-1 text-xs text-gold font-bold focus:outline-none">
+            <option value="prof">Professeur (Martin Huambachano)</option>
+            <option value="eleve">Espace Élève</option>
+          </select>
+          <!-- Sélecteur de session élève (visible uniquement lors du basculement en mode Élève) -->
+          <select id="studentSessionSelector" onchange="changerSessionEleve(this.value)" class="hidden bg-carbone border border-white/20 rounded px-2.5 py-1 text-xs text-white font-semibold focus:outline-none">
+          </select>
+        </div>
       </div>
       <div class="relative group cursor-pointer" onclick="basculerOnglet('monprofil')">
         <img id="headerAvatar" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-11 h-11 rounded-full border-2 border-gold object-cover shadow-lg">
@@ -212,16 +193,15 @@
     </div>
   </header>
 
-  <!-- NOTIFICATION ANNIVERSAIRE DU JOUR (PROFESSEUR UNIQUEMENT) -->
-  <div id="birthdayNotificationBox" class="hidden w-full max-w-7xl mx-auto mb-4 bg-gradient-to-r from-gold/20 via-amber-500/15 to-gold/20 border border-gold p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-lg">
-    <div class="flex items-center space-x-3">
-      <span class="text-3xl">🎂</span>
-      <div>
+  <!-- NOTIFICATION ANNIVERSAIRES DU JOUR (PROFESSEUR UNIQUEMENT) -->
+  <div id="birthdayNotificationBox" class="hidden w-full max-w-7xl mx-auto mb-4 bg-gradient-to-r from-gold/20 via-amber-500/15 to-gold/20 border border-gold p-4 rounded-2xl shadow-[0_0_25px_rgba(212,175,55,0.25)]">
+    <div class="flex items-start space-x-3">
+      <span class="text-2xl">🎂</span>
+      <div class="flex-1">
         <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider">Anniversaire(s) du Jour au Club !</h3>
-        <div id="birthdayListText" class="text-xs text-white font-semibold mt-0.5 space-y-0.5"></div>
+        <div id="birthdayListContent" class="text-xs text-white mt-1 space-y-1"></div>
       </div>
     </div>
-    <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-gold text-black uppercase">Soul System JJ</span>
   </div>
 
   <!-- NOTIFICATION BARRETTES PROFESSEUR -->
@@ -243,7 +223,19 @@
     </div>
   </div>
 
-  <main class="w-full max-w-7xl mx-auto space-y-8">
+  <!-- ÉCRAN DE VERROUILLAGE SI LE COMPTE DE L'ÉLÈVE EST INTERDIT PAR LE PROFESSEUR -->
+  <div id="accountBlockedScreen" class="hidden w-full max-w-3xl mx-auto my-8 card-luxe border-2 border-red-500/60 p-8 rounded-2xl text-center space-y-4">
+    <div class="text-5xl">🚫</div>
+    <h2 class="text-xl font-extrabold text-red-400 uppercase tracking-wider">Accès au Compte Suspendu</h2>
+    <p class="text-sm text-gray-300 max-w-lg mx-auto">
+      L'accès à votre espace membre <strong>Soul System Jiu Jitsu</strong> a été temporairement restreint par votre professeur.
+    </p>
+    <p class="text-xs text-gray-400">
+      Veuillez vous rapprocher directement de <strong>Martin Huambachano</strong> au club pour régulariser votre situation.
+    </p>
+  </div>
+
+  <main id="mainAppContainer" class="w-full max-w-7xl mx-auto space-y-8">
     
     <!-- BARRE DE NAVIGATION PRINCIPALE -->
     <div class="flex flex-wrap gap-2 border-b border-white/10 pb-3">
@@ -251,7 +243,6 @@
       <button onclick="basculerOnglet('planning')" id="tabPlan" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">📅 Planning & Inscriptions</button>
       <button onclick="basculerOnglet('monprofil')" id="tabProf" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">👤 Mon Profil & Grades</button>
       <button onclick="basculerOnglet('classement')" id="tabClass" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">🏆 Classement Général</button>
-      <button onclick="basculerOnglet('analytics')" id="tabAnalytics" class="btnProfOnly px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10">📈 Analytics Club (Prof)</button>
     </div>
 
     <!-- ONGLET 1 : DASHBOARD & RADAR COMPLET DES 10 POINTS -->
@@ -259,7 +250,7 @@
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <!-- CARTE 1 : PROFIL DYNAMIQUE DU MEMBRE SÉLECTIONNÉ -->
+        <!-- CARTE 1 : PROFIL DYNAMIQUE DU MEMBRE ACTIF -->
         <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-3">
@@ -270,7 +261,7 @@
               <img id="activeCardAvatar" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-14 h-14 rounded-2xl border border-gold/60 object-cover">
               <div>
                 <h3 id="activeCardName" class="font-bold text-lg text-white">Chargement...</h3>
-                <p id="activeCardSub" class="text-xs gold-gradient-text font-semibold">Synchronisation Google Sheets</p>
+                <p id="activeCardSub" class="text-xs gold-gradient-text font-semibold">Soul System Jiu Jitsu</p>
               </div>
             </div>
           </div>
@@ -308,21 +299,102 @@
           </div>
         </div>
 
-        <!-- CARTE 3 : SÉLECTEUR DE MEMBRE (PROFESSEUR) OU STATUT PRIVÉ (ÉLÈVE) -->
+        <!-- CARTE 3 : SÉLECTEUR DE MEMBRE (PROFESSEUR UNIQUEMENT) -->
         <div id="boxSelectEleve" class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-2">
-              <h2 id="boxSelectTitle" class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre (Professeur)</h2>
+              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre (Coach)</h2>
               <span id="totalElevesCount" class="text-[10px] text-gold font-bold">0 inscrits</span>
             </div>
-            <p id="boxSelectDesc" class="text-xs text-gray-400 mb-3">Sélectionnez votre profil ou celui d'un élève :</p>
+            <p class="text-xs text-gray-400 mb-3">Consultez ou gérez la fiche de n'importe quel adhérent :</p>
           </div>
           <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
             <option value="">Chargement de la base...</option>
           </select>
-          <div id="studentPrivateNotice" class="hidden bg-carbone/80 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-gray-300">
-            🔒 Espace personnel privé actif
+        </div>
+
+        <!-- CARTE 3 ALTERNATIVE (ÉLÈVE UNIQUEMENT) : STATUT INSCRIPTION COURS -->
+        <div id="boxStudentCourseStatus" class="hidden card-luxe p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Statut Adhérent</h2>
+              <span id="studentCourseAccessBadge" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold">Inscriptions Ouvertes</span>
+            </div>
+            <p id="studentCourseAccessText" class="text-xs text-gray-300 mt-2">
+              Votre accès aux réservations de cours dans l'onglet <strong>Planning</strong> est actif.
+            </p>
           </div>
+          <button onclick="basculerOnglet('planning')" class="w-full py-2.5 rounded-xl bg-gold/15 border border-gold/40 text-gold font-bold text-xs hover:bg-gold hover:text-black transition">
+            📅 Accéder au Planning des Cours
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION STATISTIQUES DE LUXE DU CLUB (COMPTE PROFESSEUR UNIQUEMENT) -->
+      <div id="profAnalyticsSection" class="card-luxe p-6 rounded-2xl space-y-6 border border-gold/40">
+        <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 gap-3">
+          <div>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30 uppercase">Tableau de Bord Analytique Head Coach</span>
+            <h2 class="text-lg font-extrabold text-white uppercase tracking-wider mt-1">Statistiques Démographiques & Grades du Club</h2>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="bg-carbone px-4 py-2 rounded-xl border border-gold/30 text-center">
+              <p id="kpiTotalMembers" class="text-lg font-black gold-gradient-text">0</p>
+              <p class="text-[10px] text-gray-400 uppercase">Total Membres</p>
+            </div>
+            <div class="bg-carbone px-4 py-2 rounded-xl border border-white/10 text-center">
+              <p id="kpiTotalStudents" class="text-lg font-black silver-gradient-text">0</p>
+              <p class="text-[10px] text-gray-400 uppercase">Élèves Actifs</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <!-- GRAPHIQUE 1 : CATÉGORIE D'ÂGE -->
+          <div class="bg-carbone/80 p-4 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div class="mb-2">
+              <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider">1. Catégories d'Âge</h3>
+              <p class="text-[10px] text-gray-400">Enfants (4-11), Ados (12-15), Adultes (16+)</p>
+            </div>
+            <div class="relative h-52 w-full flex items-center justify-center">
+              <canvas id="chartAgeCategories"></canvas>
+            </div>
+          </div>
+
+          <!-- GRAPHIQUE 2 : HOMME / FEMME -->
+          <div class="bg-carbone/80 p-4 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div class="mb-2">
+              <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider">2. Hommes & Femmes</h3>
+              <p class="text-[10px] text-gray-400">Répartition par genre au sein du club</p>
+            </div>
+            <div class="relative h-52 w-full flex items-center justify-center">
+              <canvas id="chartGender"></canvas>
+            </div>
+          </div>
+
+          <!-- GRAPHIQUE 3 : COULEUR DE CEINTURE -->
+          <div class="bg-carbone/80 p-4 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div class="mb-2">
+              <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider">3. Couleurs de Ceinture</h3>
+              <p class="text-[10px] text-gray-400">Distribution des grades JJB</p>
+            </div>
+            <div class="relative h-52 w-full flex items-center justify-center">
+              <canvas id="chartBelts"></canvas>
+            </div>
+          </div>
+
+          <!-- GRAPHIQUE 4 : RÉPARTITION PAR VILLE -->
+          <div class="bg-carbone/80 p-4 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div class="mb-2">
+              <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider">4. Répartition par Ville</h3>
+              <p class="text-[10px] text-gray-400">Provenance géographique des adhérents</p>
+            </div>
+            <div class="relative h-52 w-full flex items-center justify-center">
+              <canvas id="chartCities"></canvas>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -444,7 +516,7 @@
           </div>
 
           <button id="btnSaveSparring" onclick="enregistrerStatsSparring()" class="w-full py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            💾 Enregistrer dans Google Sheets (App_Club_Soul_System_JJ)
+            💾 Enregistrer les Statistiques de Sparring
           </button>
         </div>
 
@@ -454,7 +526,7 @@
     <!-- ONGLET 2 : PLANNING & INSCRIPTIONS EN DIRECT -->
     <div id="sectionPlanning" class="hidden space-y-6">
       
-      <!-- FORMULAIRE CRÉATION DE SESSION (HEAD COACH UNIQUEMENT) -->
+      <!-- FORMULAIRE CRÉATION DE SESSION (HEAD COACH) -->
       <div id="boxCreateEvent" class="card-luxe p-6 rounded-2xl space-y-4">
         <div class="flex justify-between items-center">
           <h2 class="text-base font-bold text-white uppercase tracking-wider">Créer une Session / Stage / Master Class (Head Coach)</h2>
@@ -483,12 +555,12 @@
           </div>
           <div>
             <label class="text-gray-400 font-semibold">Professeur</label>
-            <input type="text" id="eventProfesseur" value="Martin Huambachano" class="w-full bg-carbone border border-gold/40 rounded-lg p-2.5 text-white font-bold mt-1">
+            <input type="text" id="eventProfesseur" value="Martin Huambachano" class="w-full bg-carbone border border-gold/40 rounded-lg p-2.5 text-gold font-bold mt-1">
           </div>
           <div>
             <label class="text-gray-400 font-semibold">Limite / Récurrence</label>
-            <div class="flex gap-2 mt-1">
-              <input type="number" id="eventCapacite" value="16" min="1" max="100" class="w-16 bg-carbone border border-gold/40 rounded-lg p-2.5 text-center text-gold font-bold" title="Limite d'inscrits">
+            <div class="flex gap-1.5 mt-1">
+              <input type="number" id="eventCapacite" value="16" min="1" max="100" title="Limite d'inscrits" class="w-14 bg-carbone border border-gold/40 rounded-lg p-2.5 text-center text-gold font-bold">
               <select id="eventRecurrence" class="flex-1 bg-carbone border border-white/10 rounded-lg p-2 text-gray-300">
                 <option value="Ponctuel">Ponctuel</option>
                 <option value="Hebdomadaire">Hebdo</option>
@@ -499,17 +571,17 @@
         </div>
         <div class="flex justify-end">
           <button id="btnPublierSession" onclick="publierEvenementSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            ➕ Publier la Session dans Google Sheets
+            ➕ Publier la Session au Planning
           </button>
         </div>
       </div>
 
-      <!-- ALERTE SI L'ÉLÈVE EST BLOQUÉ POUR LES INSCRIPTIONS AUX COURS -->
-      <div id="blockedCoursesBanner" class="hidden bg-red-500/10 border border-red-500/50 p-4 rounded-2xl flex items-center space-x-3">
-        <span class="text-2xl">🚫</span>
+      <!-- AVERTISSEMENT SI L'ÉLÈVE A LES INSCRIPTIONS BLOQUÉES -->
+      <div id="studentCourseBlockedBanner" class="hidden bg-red-500/15 border border-red-500/50 p-4 rounded-2xl flex items-center space-x-3">
+        <span class="text-2xl">⛔</span>
         <div>
-          <h3 class="text-xs font-extrabold text-red-400 uppercase tracking-wider">Inscription aux cours temporairement bloquée</h3>
-          <p class="text-xs text-gray-300">Votre inscription aux séances est suspendue (régularisation de cotisation ou dossier requise). Contactez votre professeur.</p>
+          <h3 class="text-xs font-extrabold text-red-400 uppercase">Réservation de Cours Suspendue</h3>
+          <p class="text-xs text-gray-300">Votre inscription aux cours a été temporairement bloquée par votre professeur (cotisation / dossier en attente). Rapprochez-vous de <strong>Martin Huambachano</strong>.</p>
         </div>
       </div>
 
@@ -517,7 +589,7 @@
         <div class="flex flex-wrap justify-between items-center gap-2 border-b border-white/10 pb-3">
           <div>
             <h2 class="text-lg font-bold text-white uppercase tracking-wider">Planning Officiel des Sessions</h2>
-            <p class="text-xs text-gray-400">Session active pour : <strong id="planningActiveMemberName" class="text-gold">Membre actif</strong></p>
+            <p class="text-xs text-gray-400">Membre actif : <strong id="planningActiveMemberName" class="text-gold">Membre actif</strong></p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="chargerElevesSheets()" class="px-3 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 text-xs hover:border-gold">
@@ -531,59 +603,52 @@
         
         <div id="sessionsListContainer" class="space-y-4">
           <div class="text-center py-8 text-xs text-gray-400">
-            ⏳ Chargement des sessions depuis Google Sheets...
+            ⏳ Chargement des sessions...
           </div>
         </div>
       </div>
 
     </div>
 
-    <!-- ONGLET 3 : MON PROFIL, CONTRÔLE D'ACCÈS & FICHE PROFESSEUR POUR LES ÉLÈVES -->
+    <!-- ONGLET 3 : MON PROFIL & GESTION DES GRADES -->
     <div id="sectionMonProfil" class="hidden space-y-6">
-
-      <!-- CARTE OFFICIELLE DU PROFESSEUR (VISIBLE PAR LES ÉLÈVES UNIQUEMENT AVEC LES 5 INFOS AUTORISÉES) -->
-      <div id="studentViewCoachCard" class="hidden card-luxe p-6 rounded-2xl border border-gold/50 space-y-4">
+      
+      <!-- FICHE OFFICIELLE DU PROFESSEUR (VISIBLE PAR LES ÉLÈVES UNIQUEMENT : PHOTO, NOM, PRÉNOM, GRADE+BARRETTE, DATE DE NAISSANCE, TÉLÉPHONE) -->
+      <div id="coachPublicProfileCard" class="hidden card-luxe p-6 rounded-2xl border border-gold/50 space-y-4">
         <div class="flex items-center justify-between border-b border-white/10 pb-3">
           <div>
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30 uppercase">Head Coach — Soul System Jiu Jitsu</span>
-            <h2 class="text-base font-extrabold text-white uppercase tracking-wider mt-1">Profil de Votre Professeur</h2>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30 uppercase">Head Coach & Fondateur</span>
+            <h2 class="text-base font-extrabold text-white uppercase tracking-wider mt-1">Profil Officiel de Votre Professeur</h2>
           </div>
-          <span class="text-xs text-gold font-bold">Contact Officiel</span>
         </div>
-
         <div class="flex flex-wrap items-center gap-6">
-          <img id="coachPublicPhoto" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-24 h-24 rounded-2xl border-2 border-gold object-cover shadow-xl">
-          
-          <div class="flex-1 min-w-[240px] space-y-3">
-            <div>
-              <h3 id="coachPublicName" class="text-lg font-extrabold text-white">Martin Huambachano</h3>
-              <p id="coachPublicGradeText" class="text-xs text-gold font-bold uppercase">Ceinture Marron — 0 Barrette</p>
+          <img id="publicCoachPhoto" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-24 h-24 rounded-2xl border-2 border-gold object-cover shadow-xl">
+          <div class="space-y-2 flex-1 min-w-[240px]">
+            <h3 id="publicCoachName" class="text-xl font-extrabold text-white">Martin Huambachano</h3>
+            <p id="publicCoachGrade" class="text-xs font-bold text-gold uppercase">Ceinture Marron • 0 Barrette</p>
+            <div id="publicCoachBeltDisplay" class="w-full max-w-xs h-6 rounded belt-marron relative flex items-center justify-end overflow-hidden shadow-inner">
+              <div id="publicCoachBeltTip" class="h-full w-14 bg-black flex items-center justify-evenly px-1 border-l border-white/20"></div>
             </div>
-
-            <div id="coachPublicBeltBar" class="w-full max-w-xs h-6 rounded belt-marron relative flex items-center justify-end overflow-hidden shadow-inner">
-              <div id="coachPublicBeltTip" class="h-full w-14 bg-black flex items-center justify-evenly px-1 border-l border-white/20"></div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
-              <div class="bg-carbone/80 px-3.5 py-2 rounded-xl border border-white/10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
+              <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/10">
                 <span class="text-gray-400 block text-[10px] uppercase">Date de Naissance</span>
-                <span id="coachPublicDob" class="text-white font-bold">—</span>
+                <strong id="publicCoachDob" class="text-white">—</strong>
               </div>
-              <div class="bg-carbone/80 px-3.5 py-2 rounded-xl border border-white/10">
-                <span class="text-gray-400 block text-[10px] uppercase">Numéro de Téléphone</span>
-                <span id="coachPublicPhone" class="text-gold font-bold">—</span>
+              <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/10">
+                <span class="text-gray-400 block text-[10px] uppercase">Téléphone</span>
+                <strong id="publicCoachPhone" class="text-gold">—</strong>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- FICHE D'INFORMATIONS PERSONNELLES -->
+      <!-- FICHE PERSONNELLE DU MEMBRE -->
       <div class="card-luxe p-6 rounded-2xl space-y-6">
         <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 gap-3">
           <div>
             <h2 class="text-lg font-bold text-white uppercase tracking-wider">Fiche d'Informations Personnelles</h2>
-            <p id="profileEditSubtext" class="text-xs text-gray-400">Synchronisée automatiquement avec Base_Adherents_2026_2027 & App_Club_Soul_System_JJ</p>
+            <p id="profileEditSubtext" class="text-xs text-gray-400">Données officielles du club Soul System Jiu Jitsu</p>
           </div>
           <div class="flex items-center gap-2">
             <span id="profileLockBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
@@ -600,18 +665,18 @@
           </select>
         </div>
 
-        <!-- CONTRÔLE D'ACCÈS & BLOCAGE ÉLÈVE (HEAD COACH UNIQUEMENT) -->
-        <div id="boxBlockControlsCoach" class="bg-carbone/90 p-4 rounded-xl border border-red-500/30 flex flex-wrap justify-between items-center gap-4">
+        <!-- PANNEAU CONTRÔLE D'ACCÈS & BLOCAGE ÉLÈVE (PROFESSEUR UNIQUEMENT) -->
+        <div id="boxAccessControlCoach" class="hidden bg-carbone/90 p-4 rounded-xl border border-red-500/30 flex flex-wrap justify-between items-center gap-4">
           <div>
-            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Contrôle d'Accès & Cotisation (Professeur)</h3>
-            <p class="text-[11px] text-gray-400">Bloquez l'inscription aux cours (impayé) ou interdisez l'accès au compte de cet élève</p>
+            <h3 class="text-xs font-extrabold text-white uppercase tracking-wider">🛡️ Contrôle d'Accès & Cotisation Élève (Professeur)</h3>
+            <p class="text-[11px] text-gray-400">Bloquez les inscriptions aux cours (ex. impayé) ou suspendez l'accès au compte à tout moment.</p>
           </div>
           <div class="flex flex-wrap items-center gap-3 text-xs">
-            <button id="btnToggleBlockCourses" type="button" onclick="basculerBlocageCours()" class="px-4 py-2 rounded-xl bg-carbone border border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/10 transition">
-              ✅ Inscriptions Cours : Autorisées
+            <button id="btnToggleBloqueCours" type="button" onclick="basculerBlocageEleve('BLOQUE_COURS')" class="px-3.5 py-2 rounded-xl font-bold border transition">
+              ✅ Inscription Cours : Autorisée
             </button>
-            <button id="btnToggleBlockAccount" type="button" onclick="basculerBlocageCompte()" class="px-4 py-2 rounded-xl bg-carbone border border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/10 transition">
-              🔓 Accès Compte App : Autorisé
+            <button id="btnToggleBloqueCompte" type="button" onclick="basculerBlocageEleve('BLOQUE_COMPTE')" class="px-3.5 py-2 rounded-xl font-bold border transition">
+              ✅ Accès Compte : Actif
             </button>
           </div>
         </div>
@@ -704,6 +769,11 @@
             </div>
 
             <div>
+              <label class="text-gray-400 font-semibold">Total Cours Validés</label>
+              <input type="number" id="fieldTotalCours" min="0" value="0" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
+            </div>
+
+            <div>
               <label class="text-gray-400 font-semibold">Personne à Contacter en Cas d'Urgence</label>
               <input type="text" id="fieldUrgence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
             </div>
@@ -713,9 +783,9 @@
               <input type="text" id="fieldAllergies" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
             </div>
 
-            <div>
-              <label class="text-gray-400 font-semibold">Total Cours Validés</label>
-              <input type="number" id="fieldTotalCours" min="0" value="0" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
+            <div class="md:col-span-2">
+              <label class="text-gray-400 font-semibold">Club Précédent</label>
+              <input type="text" id="fieldClubPrecedent" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
             </div>
           </div>
         </div>
@@ -728,113 +798,27 @@
       </div>
     </div>
 
-    <!-- ONGLET 4 : CLASSEMENT GENERAL (ACCESSIBLE AUX ÉLÈVES) -->
+    <!-- ONGLET 4 : CLASSEMENT GENERAL -->
     <div id="sectionClassement" class="hidden card-luxe p-6 rounded-2xl">
       <div class="flex flex-wrap items-center justify-between mb-6">
         <div>
-          <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement & Challenge Assiduité</h2>
-          <p class="text-xs text-gray-400">Nom, Prénom & Grade avec Barrette — Saison 2026-2027</p>
+          <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement & Grades du Club</h2>
+          <p class="text-xs text-gray-400">Saison Officielle Soul System Jiu Jitsu</p>
         </div>
         <div class="flex space-x-2">
-          <span class="px-3 py-1 rounded-lg bg-gold text-xs text-black font-bold">Classement Officiel</span>
+          <span class="px-3 py-1 rounded-lg bg-gold text-xs text-black font-bold">Saison 2026-2027</span>
         </div>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs">
           <thead>
-            <tr class="border-b border-white/10 text-gray-400 uppercase">
-              <th class="py-3 px-4">Rang</th>
-              <th class="py-3 px-4">Nom & Prénom</th>
-              <th class="py-3 px-4">Grade & Barrette</th>
-              <th class="py-3 px-4 text-center">Cours Suivis</th>
-              <th class="py-3 px-4 text-right">Statut</th>
+            <tr id="classementHeaderRow" class="border-b border-white/10 text-gray-400 uppercase">
             </tr>
           </thead>
           <tbody id="classementBody" class="divide-y divide-white/5">
           </tbody>
         </table>
-      </div>
-    </div>
-
-    <!-- ONGLET 5 : ANALYTICS CLUB DE LUXE (RÉSERVÉ AU PROFESSEUR) -->
-    <div id="sectionAnalytics" class="hidden space-y-6">
-      <div class="card-luxe p-6 rounded-2xl flex flex-wrap items-center justify-between gap-4 border border-gold/40">
-        <div>
-          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30 uppercase">Executive Club Intelligence</span>
-          <h2 class="text-lg font-extrabold text-white uppercase tracking-wider mt-1">Statistiques & Démographie — Soul System Jiu Jitsu</h2>
-          <p class="text-xs text-gray-400">Vue analytique temps réel réservée au Head Coach (Martin Huambachano)</p>
-        </div>
-        <div class="flex gap-3 text-center">
-          <div class="bg-carbone/90 px-4 py-2 rounded-xl border border-gold/30">
-            <p id="statTotalClub" class="text-xl font-black gold-gradient-text">0</p>
-            <p class="text-[10px] text-gray-400 uppercase">Membres Actifs</p>
-          </div>
-          <div class="bg-carbone/90 px-4 py-2 rounded-xl border border-white/10">
-            <p id="statTotalVilles" class="text-xl font-black silver-gradient-text">0</p>
-            <p class="text-[10px] text-gray-400 uppercase">Villes Représentées</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        <!-- GRAPHIQUE 1 : CATÉGORIES D'ÂGE (ENFANTS 4-11, ADOS 12-15, ADULTES 16+) -->
-        <div class="card-luxe p-6 rounded-2xl space-y-4">
-          <div class="flex justify-between items-center border-b border-white/10 pb-2">
-            <div>
-              <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">1. Répartition par Catégorie d'Âge</h3>
-              <p class="text-[11px] text-gold">Enfants (4–11 ans) • Ados (12–15 ans) • Adultes (16 ans et +)</p>
-            </div>
-            <span class="text-lg">🥋</span>
-          </div>
-          <div class="relative h-[260px] w-full flex items-center justify-center">
-            <canvas id="chartAgeCategories"></canvas>
-          </div>
-        </div>
-
-        <!-- GRAPHIQUE 2 : HOMMES / FEMMES -->
-        <div class="card-luxe p-6 rounded-2xl space-y-4">
-          <div class="flex justify-between items-center border-b border-white/10 pb-2">
-            <div>
-              <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">2. Répartition Hommes / Femmes</h3>
-              <p class="text-[11px] text-gold">Équilibre des effectifs du club</p>
-            </div>
-            <span class="text-lg">⚖️</span>
-          </div>
-          <div class="relative h-[260px] w-full flex items-center justify-center">
-            <canvas id="chartGender"></canvas>
-          </div>
-        </div>
-
-        <!-- GRAPHIQUE 3 : COULEURS DE CEINTURES -->
-        <div class="card-luxe p-6 rounded-2xl space-y-4">
-          <div class="flex justify-between items-center border-b border-white/10 pb-2">
-            <div>
-              <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">3. Répartition par Couleur de Ceinture</h3>
-              <p class="text-[11px] text-gold">Blanche • Bleue • Violette • Marron • Noire</p>
-            </div>
-            <span class="text-lg">🏆</span>
-          </div>
-          <div class="relative h-[260px] w-full flex items-center justify-center">
-            <canvas id="chartBelts"></canvas>
-          </div>
-        </div>
-
-        <!-- GRAPHIQUE 4 : RÉPARTITION PAR VILLE -->
-        <div class="card-luxe p-6 rounded-2xl space-y-4">
-          <div class="flex justify-between items-center border-b border-white/10 pb-2">
-            <div>
-              <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">4. Répartition Géographique par Ville</h3>
-              <p class="text-[11px] text-gold">Provenance des adhérents</p>
-            </div>
-            <span class="text-lg">📍</span>
-          </div>
-          <div class="relative h-[260px] w-full flex items-center justify-center">
-            <canvas id="chartCities"></canvas>
-          </div>
-        </div>
-
       </div>
     </div>
 
@@ -848,7 +832,7 @@
         <div>
           <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30 uppercase">Feuille de Présence Tatami</span>
           <h2 id="modalSessionTitle" class="text-lg font-extrabold text-white mt-1">Appel Tatami</h2>
-          <p class="text-xs text-gray-400">Les élèves inscrits au cours sont pré-cochés. Validez pour ajouter <strong class="text-gold">+1 cours</strong> dans Google Sheets.</p>
+          <p class="text-xs text-gray-400">Les élèves inscrits au cours sont pré-cochés. Validez pour ajouter <strong class="text-gold">+1 cours</strong>.</p>
         </div>
         <button onclick="fermerAppelTatami()" class="text-gray-400 hover:text-white text-xl font-bold px-2">✕</button>
       </div>
@@ -930,37 +914,41 @@
     function parseBirthDate(dobStr) {
       if (!dobStr) return null;
       const s = String(dobStr).trim();
-      // Format DD/MM/YYYY ou D/M/YYYY
-      const frMatch = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-      if (frMatch) {
-        return {
-          day: parseInt(frMatch[1], 10),
-          month: parseInt(frMatch[2], 10),
-          year: parseInt(frMatch[3], 10)
-        };
+      // Format DD/MM/YYYY
+      let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (m) {
+        return new Date(parseInt(m[3]), parseInt(m[2]) - 1, parseInt(m[1]));
       }
       // Format YYYY-MM-DD
-      const isoMatch = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-      if (isoMatch) {
-        return {
-          year: parseInt(isoMatch[1], 10),
-          month: parseInt(isoMatch[2], 10),
-          day: parseInt(isoMatch[3], 10)
-        };
+      m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+      if (m) {
+        return new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
       }
       return null;
     }
 
-    function calculerAgeExact(dobStr) {
-      const parsed = parseBirthDate(dobStr);
-      if (!parsed) return null;
+    function calculerAge(dobStr) {
+      const birth = parseBirthDate(dobStr);
+      if (!birth || isNaN(birth.getTime())) return null;
       const today = new Date();
-      let age = today.getFullYear() - parsed.year;
-      const mDiff = (today.getMonth() + 1) - parsed.month;
-      if (mDiff < 0 || (mDiff === 0 && today.getDate() < parsed.day)) {
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
         age--;
       }
       return age;
+    }
+
+    function extraireVille(el) {
+      const v = String(getVal(el, ['VILLE', 'Ville'], '')).trim();
+      if (v) return v.charAt(0).toUpperCase() + v.slice(1);
+      const adr = String(getVal(el, ['ADRESSE', 'Adresse'], '')).trim();
+      const matchCp = adr.match(/\b\d{5}\s+([A-Za-zÀ-ÿ\-\s]+)/);
+      if (matchCp && matchCp[1]) {
+        const city = matchCp[1].trim();
+        return city.charAt(0).toUpperCase() + city.slice(1);
+      }
+      return "Non renseignée";
     }
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -1024,7 +1012,8 @@
       script.id = "sheetsJsonpScript";
       script.src = GOOGLE_SHEETS_API_URL + "?callback=traiterSheetsData&t=" + Date.now();
       script.onerror = function() {
-        badge.textContent = "⚠️ Hors ligne";
+        const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+        badge.textContent = isProf ? "⚠️ Hors ligne" : "⚠️ Mode Hors Ligne";
         badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/30";
       };
       document.body.appendChild(script);
@@ -1032,20 +1021,21 @@
 
     function traiterSheetsData(data) {
       const badge = document.getElementById("syncStatusBadge");
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
       const rawList = Array.isArray(data) ? data : (data && data.eleves ? data.eleves : []);
       
       if (rawList.length > 0) {
         listeEleves = rawList.filter(e => getVal(e, ['NOM', 'PRENOM', 'Nom', 'Prenom']) !== "");
-        badge.textContent = `🟢 Connecté (${listeEleves.length} membres)`;
+        badge.textContent = isProf ? `🟢 Connecté (${listeEleves.length} membres)` : `🟢 Espace Membre Actif`;
         badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
         document.getElementById("totalElevesCount").textContent = `${listeEleves.length} inscrits`;
 
         const selectDash = document.getElementById("eleveSelect");
         const selectProf = document.getElementById("eleveSelectProfil");
-        const studentLoginSel = document.getElementById("studentLoginSelect");
+        const selectStudentSession = document.getElementById("studentSessionSelector");
         selectDash.innerHTML = "";
         selectProf.innerHTML = "";
-        studentLoginSel.innerHTML = "";
+        selectStudentSession.innerHTML = "";
         
         if (!firstLoadDone) {
           const profIdx = listeEleves.findIndex(e => {
@@ -1065,11 +1055,8 @@
           const nom = getVal(eleve, ['NOM', 'Nom'], '');
           const ceinture = getVal(eleve, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE', 'Grade'], 'Ceinture Blanche');
           const barrettes = parseInt(getVal(eleve, ['BARRETTES', 'NOMBRE_BARRETTES', 'Barrettes'], 0)) || 0;
-          const role = String(getVal(eleve, ['ROLE'], '')).toLowerCase();
-          const blkC = String(getVal(eleve, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
-          const blkA = String(getVal(eleve, ['ACCES_BLOQUE'], 'NON')).toUpperCase() === 'OUI';
-          const statusTag = (blkA ? ' [🔒 COMPTE BLOQUÉ]' : '') + (blkC ? ' [🚫 COURS BLOQUÉS]' : '');
-          const labelOpt = `${prenom} ${nom} — ${ceinture} (${barrettes} bar.)${statusTag}`;
+          const role = String(getVal(eleve, ['ROLE', 'Role'], '')).toLowerCase();
+          const labelOpt = `${prenom} ${nom} — ${ceinture} (${barrettes} bar.)`;
 
           const opt1 = document.createElement("option");
           opt1.value = index;
@@ -1082,20 +1069,20 @@
           selectProf.appendChild(opt2);
 
           if (!role.includes('prof')) {
-            const optS = document.createElement("option");
-            optS.value = index;
-            optS.textContent = `${prenom} ${nom}`;
-            studentLoginSel.appendChild(optS);
+            const opt3 = document.createElement("option");
+            opt3.value = index;
+            opt3.textContent = `Compte : ${prenom} ${nom}`;
+            selectStudentSession.appendChild(opt3);
           }
         });
 
         selectDash.value = String(prevIdx);
         selectProf.value = String(prevIdx);
         actualiserAlerteBarrettes();
-        verifierAnniversaires();
-        genererClassement();
+        verifierAnniversairesDuJour();
+        actualiserGraphiquesLuxeProf();
         actualiserCartePubliqueProfesseur();
-        genererGraphiquesLuxeProfesseur();
+        genererClassement();
         changerEleve();
       }
 
@@ -1107,48 +1094,214 @@
       afficherSessionsPlanning();
     }
 
-    // --- VÉRIFICATION DES ANNIVERSAIRES DU JOUR (PROFESSEUR) ---
-    function verifierAnniversaires() {
-      const today = new Date();
-      const dToday = today.getDate();
-      const mToday = today.getMonth() + 1;
-      const yToday = today.getFullYear();
+    // --- VÉRIFICATION DES ANNIVERSAIRES DU JOUR (PROFESSEUR UNIQUEMENT) ---
+    function verifierAnniversairesDuJour() {
+      const box = document.getElementById("birthdayNotificationBox");
+      const listEl = document.getElementById("birthdayListContent");
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
 
-      const anniversaires = [];
+      if (!isProf || listeEleves.length === 0) {
+        box.classList.add("hidden");
+        return;
+      }
+
+      const today = new Date();
+      const day = today.getDate();
+      const month = today.getMonth();
+      const annivs = [];
+
       listeEleves.forEach(el => {
-        const dob = getVal(el, ['DATE_NAISSANCE', 'Date_Naissance'], '');
-        const parsed = parseBirthDate(dob);
-        if (parsed && parsed.day === dToday && parsed.month === mToday) {
+        const dobStr = getVal(el, ['DATE_NAISSANCE', 'Date_Naissance'], '');
+        const birth = parseBirthDate(dobStr);
+        if (birth && birth.getDate() === day && birth.getMonth() === month) {
           const prenom = getVal(el, ['PRENOM', 'Prenom'], '');
           const nom = getVal(el, ['NOM', 'Nom'], '');
+          const age = today.getFullYear() - birth.getFullYear();
           const ceinture = getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
           const barrettes = parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0;
-          const age = yToday - parsed.year;
-          anniversaires.push(`🎉 <strong>${prenom} ${nom}</strong> fête ses <strong>${age} ans</strong> aujourd'hui — <span class="text-gold">${ceinture} (${barrettes} barrette${barrettes > 1 ? 's' : ''})</span>`);
+          annivs.push(`🎉 <strong>${prenom} ${nom}</strong> fête ses <strong>${age} ans</strong> aujourd'hui — <span class="text-gold font-bold">${ceinture} (${barrettes} barrette${barrettes > 1 ? 's' : ''})</span>`);
         }
       });
 
-      const box = document.getElementById("birthdayNotificationBox");
-      const listText = document.getElementById("birthdayListText");
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
-
-      if (anniversaires.length > 0 && isProf) {
-        listText.innerHTML = anniversaires.map(line => `<p>${line}</p>`).join("");
+      if (annivs.length > 0) {
+        listEl.innerHTML = annivs.map(line => `<p>${line}</p>`).join("");
         box.classList.remove("hidden");
       } else {
         box.classList.add("hidden");
       }
     }
 
-    // --- REMPLISSAGE DE LA CARTE OFFICIELLE DU PROFESSEUR (VUE ÉLÈVE) ---
+    // --- GRAPHIQUES DE LUXE DU CLUB (COMPTE PROFESSEUR UNIQUEMENT) ---
+    function actualiserGraphiquesLuxeProf() {
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      const section = document.getElementById("profAnalyticsSection");
+      if (!isProf) {
+        section.style.display = "none";
+        return;
+      }
+      section.style.display = "block";
+
+      const totalMembres = listeEleves.length;
+      const elevesOnly = listeEleves.filter(e => !String(getVal(e, ['ROLE', 'Role'], '')).toLowerCase().includes('prof'));
+      document.getElementById("kpiTotalMembers").textContent = totalMembres;
+      document.getElementById("kpiTotalStudents").textContent = elevesOnly.length;
+
+      // 1. Catégories d'Âge : Enfants (4-11), Ados (12-15), Adultes (16+)
+      let countEnfants = 0;
+      let countAdos = 0;
+      let countAdultes = 0;
+
+      // 2. Hommes / Femmes
+      let countHommes = 0;
+      let countFemmes = 0;
+
+      // 3. Couleurs de ceinture
+      const beltsMap = { Blanche: 0, Bleue: 0, Violette: 0, Marron: 0, Noire: 0 };
+
+      // 4. Villes
+      const citiesMap = {};
+
+      listeEleves.forEach(el => {
+        // Âge
+        const dob = getVal(el, ['DATE_NAISSANCE', 'Date_Naissance'], '');
+        const age = calculerAge(dob);
+        const catStr = String(getVal(el, ['CATEGORIE'], '')).toLowerCase();
+
+        if (age !== null) {
+          if (age >= 4 && age <= 11) countEnfants++;
+          else if (age >= 12 && age <= 15) countAdos++;
+          else countAdultes++;
+        } else {
+          if (catStr.includes('enfant')) countEnfants++;
+          else if (catStr.includes('ado')) countAdos++;
+          else countAdultes++;
+        }
+
+        // Genre
+        const sexe = String(getVal(el, ['SEXE', 'GENRE'], 'Homme')).toLowerCase();
+        if (sexe.startsWith('f')) countFemmes++;
+        else countHommes++;
+
+        // Ceinture
+        const c = String(getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE'], 'Blanche')).toLowerCase();
+        if (c.includes('noire') || c.includes('black')) beltsMap.Noire++;
+        else if (c.includes('marron') || c.includes('brown')) beltsMap.Marron++;
+        else if (c.includes('violet') || c.includes('purple')) beltsMap.Violette++;
+        else if (c.includes('bleu') || c.includes('blue')) beltsMap.Bleue++;
+        else beltsMap.Blanche++;
+
+        // Ville
+        const ville = extraireVille(el);
+        citiesMap[ville] = (citiesMap[ville] || 0) + 1;
+      });
+
+      // Rendu Graphique 1 : Catégories d'Âge
+      if (chartAge) chartAge.destroy();
+      chartAge = new Chart(document.getElementById('chartAgeCategories').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Enfants (4-11 ans)', 'Ados (12-15 ans)', 'Adultes (16+ ans)'],
+          datasets: [{
+            data: [countEnfants, countAdos, countAdultes],
+            backgroundColor: ['#F3E5AB', '#94A3B8', '#D4AF37'],
+            borderColor: '#121418',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#CBD5E1', font: { size: 10, weight: 'bold' }, boxWidth: 10 } }
+          }
+        }
+      });
+
+      // Rendu Graphique 2 : Hommes & Femmes
+      if (chartGender) chartGender.destroy();
+      chartGender = new Chart(document.getElementById('chartGender').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Hommes', 'Femmes'],
+          datasets: [{
+            data: [countHommes, countFemmes],
+            backgroundColor: ['#D4AF37', '#E2E8F0'],
+            borderColor: '#121418',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#CBD5E1', font: { size: 10, weight: 'bold' }, boxWidth: 10 } }
+          }
+        }
+      });
+
+      // Rendu Graphique 3 : Couleurs de Ceinture
+      if (chartBelts) chartBelts.destroy();
+      chartBelts = new Chart(document.getElementById('chartBelts').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: ['Blanche', 'Bleue', 'Violette', 'Marron', 'Noire'],
+          datasets: [{
+            label: 'Membres',
+            data: [beltsMap.Blanche, beltsMap.Bleue, beltsMap.Violette, beltsMap.Marron, beltsMap.Noire],
+            backgroundColor: ['#F8FAFC', '#2563EB', '#7C3AED', '#6D4C41', '#18181B'],
+            borderColor: ['#94A3B8', '#60A5FA', '#A78BFA', '#A1887F', '#D4AF37'],
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true, ticks: { color: '#94A3B8', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.06)' } },
+            x: { ticks: { color: '#CBD5E1', font: { size: 10, weight: 'bold' } }, grid: { display: false } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Rendu Graphique 4 : Villes
+      const cityLabels = Object.keys(citiesMap);
+      const cityValues = Object.values(citiesMap);
+      if (chartCities) chartCities.destroy();
+      chartCities = new Chart(document.getElementById('chartCities').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: cityLabels,
+          datasets: [{
+            label: 'Adhérents',
+            data: cityValues,
+            backgroundColor: 'rgba(212, 175, 55, 0.75)',
+            borderColor: '#FFF099',
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { beginAtZero: true, ticks: { color: '#94A3B8', stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.06)' } },
+            y: { ticks: { color: '#CBD5E1', font: { size: 10, weight: 'bold' } }, grid: { display: false } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    // --- CARTE PUBLIQUE DU PROFESSEUR POUR LES ÉLÈVES (PHOTO, NOM, PRÉNOM, GRADE+BARRETTE, DATE DE NAISSANCE, TÉLÉPHONE) ---
     function actualiserCartePubliqueProfesseur() {
       const prof = listeEleves.find(e => {
         const nom = String(getVal(e, ['NOM'], '')).toLowerCase();
-        const email = String(getVal(e, ['EMAIL'], '')).toLowerCase();
         const role = String(getVal(e, ['ROLE'], '')).toLowerCase();
-        return nom.includes('huambachano') || email.includes('huambachano') || role.includes('prof');
+        return nom.includes('huambachano') || role.includes('prof');
       });
-
       if (!prof) return;
 
       const prenom = getVal(prof, ['PRENOM', 'Prenom'], 'Martin');
@@ -1158,18 +1311,18 @@
       const barrettes = Math.min(4, Math.max(0, parseInt(getVal(prof, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0));
       const dob = getVal(prof, ['DATE_NAISSANCE', 'Date_Naissance'], 'Non renseignée');
       const tel = getVal(prof, ['TELEPHONE', 'TEL'], 'Non renseigné');
-      const rawPhoto = getVal(prof, ['PHOTO', 'AVATAR'], '');
+      const avatarUrl = formatAvatarUrl(getVal(prof, ['PHOTO', 'AVATAR'], ''), fullName);
 
-      document.getElementById("coachPublicPhoto").src = formatAvatarUrl(rawPhoto, fullName);
-      document.getElementById("coachPublicName").textContent = fullName;
-      const ceintureLabel = ceintureRaw.toLowerCase().includes('ceinture') ? ceintureRaw : `Ceinture ${ceintureRaw}`;
-      document.getElementById("coachPublicGradeText").textContent = `${ceintureLabel} — ${barrettes} Barrette${barrettes > 1 ? 's' : ''}`;
-      document.getElementById("coachPublicDob").textContent = dob;
-      document.getElementById("coachPublicPhone").textContent = tel;
+      document.getElementById("publicCoachPhoto").src = avatarUrl;
+      document.getElementById("headerAvatar").src = avatarUrl;
+      document.getElementById("publicCoachName").textContent = fullName;
+      document.getElementById("publicCoachGrade").textContent = `${ceintureRaw} • ${barrettes} Barrette${barrettes > 1 ? 's' : ''}`;
+      document.getElementById("publicCoachDob").textContent = dob;
+      document.getElementById("publicCoachPhone").textContent = tel;
 
-      // Dessin ceinture du professeur
-      const beltEl = document.getElementById("coachPublicBeltBar");
-      const tipEl = document.getElementById("coachPublicBeltTip");
+      // Dessin miniature de la ceinture du professeur
+      const beltEl = document.getElementById("publicCoachBeltDisplay");
+      const tipEl = document.getElementById("publicCoachBeltTip");
       const lower = ceintureRaw.toLowerCase();
       beltEl.className = "w-full max-w-xs h-6 rounded relative flex items-center justify-end overflow-hidden shadow-inner ";
       tipEl.className = "h-full w-14 flex items-center justify-evenly px-1 border-l border-white/20 ";
@@ -1191,12 +1344,15 @@
       changerEleve();
     }
 
-    function changerCompteEleveConnecte(val) {
-      document.getElementById("eleveSelect").value = val;
-      changerEleve();
+    function changerSessionEleve(val) {
+      const idx = parseInt(val);
+      if (!isNaN(idx) && listeEleves[idx]) {
+        document.getElementById("eleveSelect").value = String(idx);
+        changerEleve();
+      }
     }
 
-    // --- GESTION DYNAMIQUE DU PLANNING (LIMITE 16 + PROFESSEUR + CONFIDENTIALITÉ ÉLÈVE) ---
+    // --- GESTION DYNAMIQUE DU PLANNING ---
     function afficherSessionsPlanning() {
       const container = document.getElementById("sessionsListContainer");
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
@@ -1204,12 +1360,12 @@
       const activeFullName = activeEl
         ? `${getVal(activeEl, ['PRENOM', 'Prenom'], '')} ${getVal(activeEl, ['NOM', 'Nom'], '')}`.trim()
         : "";
-      const estBloqueCours = activeEl && String(getVal(activeEl, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
+      const isCourseBlockedForActive = activeEl && String(getVal(activeEl, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
 
       document.getElementById("planningActiveMemberName").textContent = activeFullName || "Membre actif";
 
-      const blockedBanner = document.getElementById("blockedCoursesBanner");
-      if (!isProf && estBloqueCours) {
+      const blockedBanner = document.getElementById("studentCourseBlockedBanner");
+      if (!isProf && isCourseBlockedForActive) {
         blockedBanner.classList.remove("hidden");
       } else {
         blockedBanner.classList.add("hidden");
@@ -1219,7 +1375,7 @@
         container.innerHTML = `
           <div class="bg-carbone/60 border border-white/10 rounded-xl p-6 text-center space-y-2">
             <p class="text-sm font-bold text-white">Aucune session publiée pour le moment</p>
-            <p class="text-xs text-gray-400">Le planning officiel apparaîtra ici dès la publication des cours.</p>
+            <p class="text-xs text-gray-400">Les prochains cours apparaîtront ici dès leur publication par le professeur.</p>
           </div>
         `;
         return;
@@ -1234,89 +1390,141 @@
         const dateHeure = getVal(ses, ['DATE_HEURE'], '');
         const recurrence = getVal(ses, ['RECURRENCE'], 'Ponctuel');
         const capacite = parseInt(getVal(ses, ['CAPACITE'], 16)) || 16;
-        const professeurCours = getVal(ses, ['PROFESSEUR'], 'Martin Huambachano');
+        const profNom = getVal(ses, ['PROFESSEUR'], 'Martin Huambachano');
         const inscritsRaw = String(getVal(ses, ['INSCRITS'], '')).trim();
         const inscritsArr = inscritsRaw ? inscritsRaw.split(",").map(x => x.trim()).filter(Boolean) : [];
 
         const estInscrit = activeFullName && inscritsArr.some(n => n.toLowerCase() === activeFullName.toLowerCase());
         const complet = inscritsArr.length >= capacite && !estInscrit;
-        const btnDisabled = complet || (!estInscrit && estBloqueCours);
+        const bloqueParCoach = !isProf && isCourseBlockedForActive && !estInscrit;
+        const placesRestantes = Math.max(0, capacite - inscritsArr.length);
 
         const card = document.createElement("div");
-        card.className = "bg-carbone/80 p-5 rounded-xl border border-gold/30 flex flex-wrap justify-between items-center gap-4";
+        card.className = "bg-carbone/80 p-5 rounded-xl border border-gold/30 space-y-3";
 
-        // CONFIDENTIALITÉ : Le professeur voit la liste des noms inscrits ; les élèves voient uniquement le compteur !
-        const inscritsInfoHtml = isProf
+        // CONFIDENTIALITÉ : Seul le Professeur voit la liste nominative des inscrits
+        const inscritsSection = isProf
           ? (inscritsArr.length > 0
-              ? `<p class="text-[11px] text-gray-400 mt-1.5">🥋 Inscrits (${inscritsArr.length}/${capacite}) : <span class="text-gray-200 font-semibold">${inscritsArr.join(", ")}</span></p>`
-              : `<p class="text-[11px] text-gray-500 mt-1.5">Aucun élève inscrit pour le moment.</p>`)
-          : `<p class="text-[11px] text-gray-400 mt-1.5">🔒 Liste nominative réservée au professeur</p>`;
+              ? `<p class="text-[11px] text-gray-300 mt-1.5">🥋 <strong>Élèves inscrits (${inscritsArr.length}) :</strong> <span class="text-gold">${inscritsArr.join(", ")}</span></p>`
+              : `<p class="text-[11px] text-gray-500 mt-1.5">Aucun inscrit pour le moment.</p>`)
+          : `<p class="text-[11px] text-gray-400 mt-1.5">👥 Places : <strong class="text-white">${inscritsArr.length} inscrit(s)</strong> sur ${capacite}</p>`;
 
-        // CONTRÔLES PROFESSEUR EN DIRECT (MODIFIER LIMITE D'INSCRITS + NOM DU PROFESSEUR)
-        const profEditControls = isProf ? `
-          <div class="mt-3 pt-2.5 border-t border-white/5 flex flex-wrap items-center gap-2 text-[11px]">
-            <span class="text-gray-400 font-semibold">Professeur :</span>
-            <input type="text" id="profInput_${id}" value="${professeurCours}" class="bg-anthracite border border-white/15 rounded px-2 py-1 text-white font-semibold w-44">
-            <span class="text-gray-400 font-semibold ml-1">Limite max :</span>
-            <input type="number" id="capInput_${id}" value="${capacite}" min="1" max="100" class="bg-anthracite border border-gold/40 rounded px-2 py-1 text-gold font-bold w-14 text-center">
-            <button onclick="sauvegarderParametresSession('${id}')" class="px-2.5 py-1 rounded bg-gold/20 border border-gold/50 text-gold font-bold hover:bg-gold hover:text-black transition">
-              💾 Mettre à jour
-            </button>
+        // CONTRÔLES PROFESSEUR POUR MODIFIER LIMITE & PROFESSEUR QUAND IL VEUT
+        const profQuickEditBar = isProf ? `
+          <div class="pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-gray-400 font-semibold">⚙️ Paramètres cours :</span>
+              <label class="flex items-center gap-1 text-gray-300">
+                Prof :
+                <input type="text" id="profInput_${id}" value="${profNom.replace(/"/g, '&quot;')}" class="bg-anthracite border border-white/15 rounded px-2 py-1 text-white font-semibold w-40">
+              </label>
+              <label class="flex items-center gap-1 text-gray-300">
+                Limite :
+                <input type="number" id="capInput_${id}" value="${capacite}" min="1" max="100" class="bg-anthracite border border-gold/40 rounded px-2 py-1 text-gold font-bold w-14 text-center">
+              </label>
+              <button type="button" onclick="modifierParametresSession('${id}', this)" class="px-2.5 py-1 rounded bg-gold/20 border border-gold/50 text-gold font-bold hover:bg-gold hover:text-black transition">
+                💾 Appliquer
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick='ouvrirAppelTatami(${JSON.stringify(type + " — " + theme)}, ${JSON.stringify(inscritsArr)})' class="px-3 py-1.5 rounded-lg bg-carbone border border-gold/40 text-gold font-bold hover:bg-gold/10">
+                🥋 Appel Tatami
+              </button>
+              <button onclick="supprimerSessionSheets('${id}')" class="px-2.5 py-1.5 rounded-lg bg-carbone border border-red-500/30 text-red-400 hover:bg-red-500/10" title="Supprimer cette session">
+                🗑️
+              </button>
+            </div>
           </div>
-        ` : '';
+        ` : "";
 
         let btnLabel = "S'inscrire";
-        if (estInscrit) btnLabel = "✓ Inscrit (Annuler)";
-        else if (estBloqueCours) btnLabel = "🚫 Inscription Bloquée";
-        else if (complet) btnLabel = `Complet (${inscritsArr.length}/${capacite})`;
+        let btnClass = "bg-gold text-black hover:bg-gold-light";
+        let btnDisabled = false;
+
+        if (estInscrit) {
+          btnLabel = "✓ Inscrit (Annuler)";
+          btnClass = "bg-emerald-500 text-black hover:bg-emerald-400";
+        } else if (bloqueParCoach) {
+          btnLabel = "⛔ Inscription Bloquée";
+          btnClass = "bg-red-900/50 text-red-300 border border-red-500/40 cursor-not-allowed";
+          btnDisabled = true;
+        } else if (complet) {
+          btnLabel = "🚫 Cours Complet";
+          btnClass = "bg-gray-700 text-gray-400 cursor-not-allowed";
+          btnDisabled = true;
+        }
 
         card.innerHTML = `
-          <div class="space-y-1 flex-1 min-w-[260px]">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">${type}</span>
-              <span class="text-xs text-gray-400">● ${dateHeure}</span>
-              <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400">${recurrence}</span>
-              <span class="text-[10px] px-2 py-0.5 rounded bg-gold/10 text-gold font-semibold">🥋 Prof : ${professeurCours}</span>
-            </div>
-            <h3 class="font-extrabold text-base text-white">${theme}</h3>
-            ${inscritsInfoHtml}
-            ${profEditControls}
-          </div>
-
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="text-right mr-1">
-              <p class="text-xs font-extrabold ${complet ? 'text-red-400' : 'text-gold'}">${inscritsArr.length} / ${capacite} Inscrits</p>
-              <p class="text-[10px] text-gray-400">${complet ? 'Cours Complet' : (capacite - inscritsArr.length) + ' place(s) restante(s)'}</p>
+          <div class="flex flex-wrap justify-between items-center gap-4">
+            <div class="space-y-1 flex-1 min-w-[240px]">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">${type}</span>
+                <span class="text-xs text-gray-300 font-semibold">● ${dateHeure}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400">${recurrence}</span>
+                <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-anthracite border border-gold/25 text-gold font-bold">👨‍🏫 Prof. ${profNom}</span>
+              </div>
+              <h3 class="font-extrabold text-base text-white">${theme}</h3>
+              ${inscritsSection}
             </div>
 
-            <button onclick="toggleInscriptionSession('${id}', this)" ${btnDisabled ? 'disabled' : ''} class="px-4 py-2 rounded-xl font-extrabold text-xs transition ${
-              estInscrit
-                ? 'bg-emerald-500 text-black hover:bg-emerald-400'
-                : (btnDisabled ? 'bg-gray-800 text-gray-400 border border-white/10 cursor-not-allowed' : 'bg-gold text-black hover:bg-gold-light')
-            }">
-              ${btnLabel}
-            </button>
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="text-right mr-1">
+                <p class="text-xs font-extrabold ${complet ? 'text-red-400' : 'text-gold'}">${inscritsArr.length} / ${capacite} Inscrits</p>
+                <p class="text-[10px] text-gray-400">${complet ? 'Limite atteinte' : placesRestantes + ' place(s) restante(s)'}</p>
+              </div>
 
-            <button onclick='ouvrirAppelTatami(${JSON.stringify(type + " — " + theme)}, ${JSON.stringify(inscritsArr)})' style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-gold/40 text-xs text-gold font-bold hover:bg-gold/10">
-              🥋 Appel Tatami
-            </button>
-
-            <button onclick="supprimerSessionSheets('${id}')" style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-2.5 py-2 rounded-xl bg-carbone border border-red-500/30 text-xs text-red-400 hover:bg-red-500/10" title="Supprimer cette session">
-              🗑️
-            </button>
+              <button onclick="toggleInscriptionSession('${id}', this)" ${btnDisabled ? 'disabled' : ''} class="px-4 py-2 rounded-xl font-extrabold text-xs transition ${btnClass}">
+                ${btnLabel}
+              </button>
+            </div>
           </div>
+          ${profQuickEditBar}
         `;
         container.appendChild(card);
       });
+    }
+
+    async function modifierParametresSession(sessionId, btn) {
+      const capInput = document.getElementById("capInput_" + sessionId);
+      const profInput = document.getElementById("profInput_" + sessionId);
+      const newCap = Math.max(1, parseInt(capInput.value) || 16);
+      const newProf = profInput.value.trim() || "Martin Huambachano";
+
+      const ses = listeSessions.find(s => String(getVal(s, ['ID'], '')) === String(sessionId));
+      if (!ses) return;
+
+      btn.disabled = true;
+      btn.textContent = "⏳...";
+
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "updateSession",
+            sessionId: sessionId,
+            capacite: newCap,
+            professeur: newProf
+          })
+        });
+
+        ses.CAPACITE = newCap;
+        ses.PROFESSEUR = newProf;
+        afficherSessionsPlanning();
+        alert(`✅ Session mise à jour : Professeur ${newProf} — Limite ${newCap} inscrits.`);
+      } catch (err) {
+        alert("❌ Erreur lors de la mise à jour : " + err.message);
+      }
     }
 
     async function publierEvenementSheets() {
       const type = document.getElementById("eventType").value;
       const theme = document.getElementById("eventTheme").value.trim();
       const dateHeure = document.getElementById("eventDate").value.trim();
-      const recurrence = document.getElementById("eventRecurrence").value;
-      const capacite = parseInt(document.getElementById("eventCapacite").value) || 16;
       const professeur = document.getElementById("eventProfesseur").value.trim() || "Martin Huambachano";
+      const recurrence = document.getElementById("eventRecurrence").value;
+      const capacite = Math.max(1, parseInt(document.getElementById("eventCapacite").value) || 16);
 
       if (!theme || !dateHeure) {
         alert("⚠️ Renseignez au minimum le thème et la date/horaire de la session.");
@@ -1355,53 +1563,21 @@
         document.getElementById("eventDate").value = "";
         badge.textContent = "✅ Session publiée";
         badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-        alert(`📅 Session publiée (Prof : ${professeur} — Limite : ${capacite} places) !`);
+        alert(`📅 Session publiée (${capacite} places max — Prof. ${professeur}) !`);
       } catch (err) {
         alert("❌ Erreur lors de la publication : " + err.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = "➕ Publier la Session dans Google Sheets";
-      }
-    }
-
-    async function sauvegarderParametresSession(sessionId) {
-      const capEl = document.getElementById("capInput_" + sessionId);
-      const profEl = document.getElementById("profInput_" + sessionId);
-      if (!capEl || !profEl) return;
-
-      const newCap = Math.max(1, parseInt(capEl.value) || 16);
-      const newProf = profEl.value.trim() || "Martin Huambachano";
-
-      const ses = listeSessions.find(s => String(getVal(s, ['ID'], '')) === String(sessionId));
-      if (ses) {
-        ses.CAPACITE = newCap;
-        ses.PROFESSEUR = newProf;
-      }
-
-      try {
-        await fetch(GOOGLE_SHEETS_API_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            action: "updateSession",
-            sessionId: sessionId,
-            CAPACITE: newCap,
-            PROFESSEUR: newProf
-          })
-        });
-        afficherSessionsPlanning();
-        const badge = document.getElementById("syncStatusBadge");
-        badge.textContent = `✅ Cours mis à jour (Limite: ${newCap})`;
-        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-      } catch (err) {
-        alert("❌ Erreur lors de la mise à jour du cours : " + err.message);
+        btn.textContent = "➕ Publier la Session au Planning";
       }
     }
 
     async function toggleInscriptionSession(sessionId, btn) {
       const activeEl = listeEleves[currentEleveIndex];
       if (!activeEl) return;
+
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      const isCourseBlocked = String(getVal(activeEl, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
 
       const memberName = `${getVal(activeEl, ['PRENOM', 'Prenom'], '')} ${getVal(activeEl, ['NOM', 'Nom'], '')}`.trim();
       const ses = listeSessions.find(s => String(getVal(s, ['ID'], '')) === String(sessionId));
@@ -1414,23 +1590,25 @@
       const etaitInscrit = pos !== -1;
 
       if (!etaitInscrit) {
-        const estBloqueCours = String(getVal(activeEl, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
-        if (estBloqueCours) {
-          alert("🚫 Votre inscription aux cours est bloquée. Veuillez contacter votre professeur.");
+        if (!isProf && isCourseBlocked) {
+          alert("⛔ Votre inscription aux cours est bloquée. Veuillez contacter votre professeur.");
           return;
         }
         if (liste.length >= capacite) {
-          alert(`⚠️ Cours complet ! La limite de ${capacite} inscrits est atteinte.`);
+          alert("🚫 Ce cours est complet (limite de " + capacite + " inscrits atteinte).");
           afficherSessionsPlanning();
           return;
         }
-        liste.push(memberName);
-      } else {
-        liste.splice(pos, 1);
       }
 
       btn.disabled = true;
-      btn.textContent = "⏳ Sync...";
+      btn.textContent = "⏳...";
+
+      if (etaitInscrit) {
+        liste.splice(pos, 1);
+      } else {
+        liste.push(memberName);
+      }
       ses.INSCRITS = liste.join(", ");
 
       try {
@@ -1447,7 +1625,7 @@
 
         afficherSessionsPlanning();
         const badge = document.getElementById("syncStatusBadge");
-        badge.textContent = etaitInscrit ? "✅ Désinscription enregistrée" : "✅ Inscription enregistrée";
+        badge.textContent = etaitInscrit ? "✅ Désinscription validée" : "✅ Inscription validée";
         badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
       } catch (err) {
         alert("❌ Erreur réseau lors de l'inscription : " + err.message);
@@ -1455,7 +1633,7 @@
     }
 
     async function supprimerSessionSheets(sessionId) {
-      if (!confirm("Supprimer définitivement cette session du planning Google Sheets ?")) return;
+      if (!confirm("Supprimer définitivement cette session du planning ?")) return;
 
       try {
         await fetch(GOOGLE_SHEETS_API_URL, {
@@ -1472,71 +1650,66 @@
       }
     }
 
-    // --- BLOCAGE / DÉBLOCAGE INSCRIPTIONS COURS & ACCÈS COMPTE (PROFESSEUR) ---
+    // --- BLOCAGE / DÉBLOCAGE ÉLÈVE PAR LE PROFESSEUR ---
+    async function basculerBlocageEleve(champ) {
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      if (!isProf) return;
+
+      const el = listeEleves[currentEleveIndex];
+      if (!el) return;
+
+      const currentVal = String(getVal(el, [champ], 'NON')).toUpperCase();
+      const newVal = currentVal === 'OUI' ? 'NON' : 'OUI';
+      const updates = {};
+      updates[champ] = newVal;
+
+      const ok = await envoyerMiseAJourSheets(updates, null, "");
+      if (ok) {
+        actualiserBoutonsBlocage(el);
+        const prenom = getVal(el, ['PRENOM'], '');
+        const nom = getVal(el, ['NOM'], '');
+        if (champ === 'BLOQUE_COURS') {
+          alert(newVal === 'OUI'
+            ? `⛔ Inscription aux cours BLOQUÉE pour ${prenom} ${nom}.`
+            : `✅ Inscription aux cours DÉBLOQUÉE pour ${prenom} ${nom}.`);
+        } else {
+          alert(newVal === 'OUI'
+            ? `🚫 Accès au compte INTERDIT pour ${prenom} ${nom}.`
+            : `✅ Accès au compte RÉTABLI pour ${prenom} ${nom}.`);
+        }
+      }
+    }
+
     function actualiserBoutonsBlocage(el) {
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      const role = String(getVal(el, ['ROLE', 'Role'], '')).toLowerCase();
+      const box = document.getElementById("boxAccessControlCoach");
+
+      if (!isProf || role.includes('prof')) {
+        box.classList.add("hidden");
+        return;
+      }
+
+      box.classList.remove("hidden");
       const blkCours = String(getVal(el, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
-      const blkCompte = String(getVal(el, ['ACCES_BLOQUE'], 'NON')).toUpperCase() === 'OUI';
+      const blkCompte = String(getVal(el, ['BLOQUE_COMPTE'], 'NON')).toUpperCase() === 'OUI';
 
-      const btnC = document.getElementById("btnToggleBlockCourses");
-      const btnA = document.getElementById("btnToggleBlockAccount");
-
+      const btnCours = document.getElementById("btnToggleBloqueCours");
       if (blkCours) {
-        btnC.textContent = "🚫 Inscriptions Cours : BLOQUÉES (Débloquer)";
-        btnC.className = "px-4 py-2 rounded-xl bg-red-500/20 border border-red-500 text-red-300 font-extrabold hover:bg-red-500/30 transition";
+        btnCours.textContent = "⛔ Inscription Cours : BLOQUÉE (Cliquer pour débloquer)";
+        btnCours.className = "px-3.5 py-2 rounded-xl font-bold border bg-red-500/20 border-red-500 text-red-300 hover:bg-red-500/30 transition";
       } else {
-        btnC.textContent = "✅ Inscriptions Cours : Autorisées (Bloquer)";
-        btnC.className = "px-4 py-2 rounded-xl bg-carbone border border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/10 transition";
+        btnCours.textContent = "✅ Inscription Cours : Autorisée (Cliquer pour bloquer)";
+        btnCours.className = "px-3.5 py-2 rounded-xl font-bold border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 transition";
       }
 
+      const btnCompte = document.getElementById("btnToggleBloqueCompte");
       if (blkCompte) {
-        btnA.textContent = "🔒 Accès Compte App : INTERDIT (Autoriser)";
-        btnA.className = "px-4 py-2 rounded-xl bg-red-500/20 border border-red-500 text-red-300 font-extrabold hover:bg-red-500/30 transition";
+        btnCompte.textContent = "🚫 Accès Compte : INTERDIT (Cliquer pour autoriser)";
+        btnCompte.className = "px-3.5 py-2 rounded-xl font-bold border bg-red-500/20 border-red-500 text-red-300 hover:bg-red-500/30 transition";
       } else {
-        btnA.textContent = "🔓 Accès Compte App : Autorisé (Interdire)";
-        btnA.className = "px-4 py-2 rounded-xl bg-carbone border border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/10 transition";
-      }
-    }
-
-    async function basculerBlocageCours() {
-      const el = listeEleves[currentEleveIndex];
-      if (!el) return;
-      const role = String(getVal(el, ['ROLE'], '')).toLowerCase();
-      if (role.includes('prof')) {
-        alert("⚠️ Impossible de bloquer le compte du Professeur.");
-        return;
-      }
-
-      const actuellementBloque = String(getVal(el, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
-      const nouvelleValeur = actuellementBloque ? "NON" : "OUI";
-
-      const ok = await envoyerMiseAJourSheets({ BLOQUE_COURS: nouvelleValeur }, null, "");
-      if (ok) {
-        actualiserBoutonsBlocage(el);
-        afficherSessionsPlanning();
-        alert(nouvelleValeur === "OUI"
-          ? "🚫 L'inscription aux cours est désormais BLOQUÉE pour cet élève."
-          : "✅ L'inscription aux cours est à nouveau AUTORISÉE pour cet élève.");
-      }
-    }
-
-    async function basculerBlocageCompte() {
-      const el = listeEleves[currentEleveIndex];
-      if (!el) return;
-      const role = String(getVal(el, ['ROLE'], '')).toLowerCase();
-      if (role.includes('prof')) {
-        alert("⚠️ Impossible de bloquer le compte du Professeur.");
-        return;
-      }
-
-      const actuellementBloque = String(getVal(el, ['ACCES_BLOQUE'], 'NON')).toUpperCase() === 'OUI';
-      const nouvelleValeur = actuellementBloque ? "NON" : "OUI";
-
-      const ok = await envoyerMiseAJourSheets({ ACCES_BLOQUE: nouvelleValeur }, null, "");
-      if (ok) {
-        actualiserBoutonsBlocage(el);
-        alert(nouvelleValeur === "OUI"
-          ? "🔒 L'accès à l'application est désormais INTERDIT pour cet élève."
-          : "🔓 L'accès à l'application est à nouveau AUTORISÉ pour cet élève.");
+        btnCompte.textContent = "✅ Accès Compte : Actif (Cliquer pour interdire)";
+        btnCompte.className = "px-3.5 py-2 rounded-xl font-bold border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 transition";
       }
     }
 
@@ -1580,12 +1753,15 @@
     async function envoyerMiseAJourSheets(updatesObj, btnElement, originalText) {
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
       if (!isProf) {
-        alert("🔒 Accès refusé : seul le Professeur peut modifier les informations.");
+        alert("🔒 Accès refusé : seul le Professeur peut modifier ces informations.");
         return false;
       }
 
       const el = listeEleves[currentEleveIndex];
-      if (!el) return false;
+      if (!el) {
+        alert("⚠️ Aucun membre sélectionné.");
+        return false;
+      }
 
       const badge = document.getElementById("syncStatusBadge");
       badge.textContent = "⏳ Sauvegarde en cours...";
@@ -1593,7 +1769,7 @@
 
       if (btnElement) {
         btnElement.disabled = true;
-        btnElement.textContent = "⏳ Enregistrement dans Google Sheets...";
+        btnElement.textContent = "⏳ Enregistrement...";
       }
 
       try {
@@ -1607,7 +1783,7 @@
         alert("❌ Erreur réseau lors de l'enregistrement : " + err.message);
         return false;
       } finally {
-        if (btnElement) {
+        if (btnElement && originalText) {
           btnElement.disabled = false;
           btnElement.textContent = originalText;
         }
@@ -1616,7 +1792,10 @@
 
     // --- MODALE D'APPEL TATAMI ---
     function ouvrirAppelTatami(nomSession, inscritsArr = []) {
-      if (listeEleves.length === 0) return;
+      if (listeEleves.length === 0) {
+        alert("⏳ Chargement des élèves en cours, veuillez patienter.");
+        return;
+      }
 
       document.getElementById("modalSessionTitle").textContent = "Appel Tatami — " + nomSession;
       document.getElementById("searchAppelInput").value = "";
@@ -1712,7 +1891,9 @@
           if (!el) continue;
 
           const currentCourses = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
-          await envoyerMiseAJourPourEleve(el, { TOTAL_COURS: currentCourses + 1 });
+          const newTotal = currentCourses + 1;
+
+          await envoyerMiseAJourPourEleve(el, { TOTAL_COURS: newTotal });
         }
 
         actualiserAlerteBarrettes();
@@ -1720,10 +1901,12 @@
         changerEleve();
 
         badge.textContent = `✅ +1 cours validé (${checkedBoxes.length} élèves)`;
+        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+
         fermerAppelTatami();
-        alert(`🥋 Appel Tatami validé ! +1 cours ajouté dans Google Sheets pour ${checkedBoxes.length} élève(s).`);
+        alert(`🥋 Appel Tatami validé ! +1 cours ajouté pour ${checkedBoxes.length} élève(s).`);
       } catch (err) {
-        alert("❌ Erreur lors de l'enregistrement de l'appel : " + err.message);
+        alert("❌ Une erreur s'est produite lors de l'enregistrement : " + err.message);
       } finally {
         btn.disabled = false;
         btn.textContent = "✅ Valider les Présences (+1 Cours)";
@@ -1740,6 +1923,32 @@
       const el = listeEleves[idx];
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
 
+      // Vérifie si le compte de l'élève est interdit
+      const isAccountBlocked = !isProf && String(getVal(el, ['BLOQUE_COMPTE'], 'NON')).toUpperCase() === 'OUI';
+      if (isAccountBlocked) {
+        document.getElementById("accountBlockedScreen").classList.remove("hidden");
+        document.getElementById("mainAppContainer").classList.add("hidden");
+      } else {
+        document.getElementById("accountBlockedScreen").classList.add("hidden");
+        document.getElementById("mainAppContainer").classList.remove("hidden");
+      }
+
+      // Mise à jour carte statut cours élève
+      const isCourseBlocked = String(getVal(el, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
+      const courseBadge = document.getElementById("studentCourseAccessBadge");
+      const courseText = document.getElementById("studentCourseAccessText");
+      if (isCourseBlocked) {
+        courseBadge.textContent = "⛔ Inscriptions Bloquées";
+        courseBadge.className = "text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold";
+        courseText.innerHTML = "Votre inscription aux cours est temporairement bloquée. Rapprochez-vous de <strong>Martin Huambachano</strong>.";
+      } else {
+        courseBadge.textContent = "✅ Inscriptions Ouvertes";
+        courseBadge.className = "text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold";
+        courseText.innerHTML = "Votre accès aux réservations de cours dans l'onglet <strong>Planning</strong> est actif.";
+      }
+
+      actualiserBoutonsBlocage(el);
+
       const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Membre');
       const nom = getVal(el, ['NOM', 'Nom'], '');
       const fullName = `${prenom} ${nom}`.trim();
@@ -1747,16 +1956,6 @@
       const barrettes = Math.min(4, Math.max(0, parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES', 'Barrettes'], 0)) || 0));
       const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
       const role = getVal(el, ['ROLE', 'Role', 'STATUT'], 'Élève');
-
-      // Vérifie si le compte élève est bloqué (lorsqu'on est en Mode Élève)
-      const accesBloque = String(getVal(el, ['ACCES_BLOQUE'], 'NON')).toUpperCase() === 'OUI';
-      const overlay = document.getElementById("blockedAccountOverlay");
-      if (!isProf && accesBloque) {
-        document.getElementById("blockedAccountName").textContent = fullName;
-        overlay.classList.remove("hidden");
-      } else {
-        overlay.classList.add("hidden");
-      }
 
       document.getElementById("activeCardName").textContent = fullName;
       document.getElementById("activeCardSub").textContent = `${role} • ${barrettes} Barrette(s)`;
@@ -1779,18 +1978,18 @@
       // Remplissage automatique complet des champs de "Mon Profil"
       document.getElementById("fieldPrenom").value = prenom;
       document.getElementById("fieldNom").value = nom;
-      document.getElementById("fieldSexe").value = getVal(el, ['SEXE', 'Genre'], 'Homme') === 'Femme' ? 'Femme' : 'Homme';
+      const sexeVal = String(getVal(el, ['SEXE', 'GENRE'], 'Homme')).toLowerCase().startsWith('f') ? 'Femme' : 'Homme';
+      document.getElementById("fieldSexe").value = sexeVal;
       document.getElementById("fieldEmail").value = getVal(el, ['EMAIL', 'Email', 'MAIL'], '');
       document.getElementById("fieldTel").value = getVal(el, ['TELEPHONE', 'TEL', 'Telephone'], '');
       document.getElementById("fieldDateNaissance").value = getVal(el, ['DATE_NAISSANCE', 'Date_Naissance'], '');
       document.getElementById("fieldLicence").value = getVal(el, ['LICENCE_CFJJB', 'LICENCE', 'Licence'], 'En cours');
       document.getElementById("fieldAdresse").value = getVal(el, ['ADRESSE', 'Adresse'], '');
-      document.getElementById("fieldVille").value = getVal(el, ['VILLE', 'Ville'], '');
+      document.getElementById("fieldVille").value = extraireVille(el) === "Non renseignée" ? "" : extraireVille(el);
       document.getElementById("fieldUrgence").value = getVal(el, ['URGENCE', 'Contact_Urgence'], '');
       document.getElementById("fieldAllergies").value = getVal(el, ['ALLERGIES', 'Allergies'], 'Aucunes');
+      document.getElementById("fieldClubPrecedent").value = getVal(el, ['CLUB_PRECEDENT', 'Club_Precedent'], 'Aucun');
       document.getElementById("fieldTotalCours").value = cours;
-
-      actualiserBoutonsBlocage(el);
 
       const selectBelt = document.getElementById("selectCeintureProf");
       for (let opt of selectBelt.options) {
@@ -1940,10 +2139,10 @@
         }
         previsualiserGradeActif();
         actualiserAlerteBarrettes();
+        actualiserGraphiquesLuxeProf();
         actualiserCartePubliqueProfesseur();
         genererClassement();
-        genererGraphiquesLuxeProfesseur();
-        alert(`✅ Grade enregistré dans Google Sheets : Ceinture ${belt} (${stripes} barrette(s)) !`);
+        alert(`✅ Grade enregistré : Ceinture ${belt} (${stripes} barrette(s)) !`);
       }
     }
 
@@ -1975,9 +2174,28 @@
       updates['SUB_WIN' + suffix] = parseInt(document.getElementById('subWin').value) || 0;
       updates['SUB_LOSS' + suffix] = parseInt(document.getElementById('subLoss').value) || 0;
 
-      const ok = await envoyerMiseAJourSheets(updates, btn, "💾 Enregistrer dans Google Sheets (App_Club_Soul_System_JJ)");
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      if (!isProf) {
+        // En mode élève, sauvegarde directe des stats sparring de l'élève sans message technique
+        const el = listeEleves[currentEleveIndex];
+        if (!el) return;
+        btn.disabled = true;
+        btn.textContent = "⏳ Enregistrement...";
+        try {
+          await envoyerMiseAJourPourEleve(el, updates);
+          alert("✅ Vos statistiques de sparring ont été enregistrées !");
+        } catch (err) {
+          alert("❌ Erreur lors de l'enregistrement : " + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "💾 Enregistrer mes Statistiques de Sparring";
+        }
+        return;
+      }
+
+      const ok = await envoyerMiseAJourSheets(updates, btn, "💾 Enregistrer les Statistiques de Sparring");
       if (ok) {
-        alert("✅ Les 10 points de sparring ont été enregistrés dans Google Sheets !");
+        alert("✅ Les 10 points de sparring ont été enregistrés !");
       }
     }
 
@@ -1995,6 +2213,7 @@
         VILLE: document.getElementById("fieldVille").value.trim(),
         URGENCE: document.getElementById("fieldUrgence").value.trim(),
         ALLERGIES: document.getElementById("fieldAllergies").value.trim(),
+        CLUB_PRECEDENT: document.getElementById("fieldClubPrecedent").value.trim(),
         TOTAL_COURS: parseInt(document.getElementById("fieldTotalCours").value) || 0
       };
 
@@ -2011,220 +2230,24 @@
         }
         changerEleve();
         actualiserAlerteBarrettes();
+        verifierAnniversairesDuJour();
+        actualiserGraphiquesLuxeProf();
         actualiserCartePubliqueProfesseur();
-        verifierAnniversaires();
         genererClassement();
-        genererGraphiquesLuxeProfesseur();
-        alert("✅ Fiche personnelle mise à jour dans Google Sheets !");
+        alert("✅ Fiche personnelle mise à jour !");
       }
     }
 
-    // --- GRAPHIQUES DE LUXE DU PROFESSEUR (ÂGE, GENRE, CEINTURES, VILLES) ---
-    function genererGraphiquesLuxeProfesseur() {
-      if (listeEleves.length === 0) return;
-
-      let enfants = 0; // 4 à 11 ans
-      let ados = 0;    // 12 à 15 ans
-      let adultes = 0; // 16 ans et +
-
-      let hommes = 0;
-      let femmes = 0;
-
-      const beltsCount = {
-        "Blanche": 0,
-        "Bleue": 0,
-        "Violette": 0,
-        "Marron": 0,
-        "Noire": 0
-      };
-
-      const citiesMap = {};
-
-      listeEleves.forEach(el => {
-        // 1. Catégorie d'âge (4-11, 12-15, 16+)
-        const dob = getVal(el, ['DATE_NAISSANCE', 'Date_Naissance'], '');
-        const age = calculerAgeExact(dob);
-        if (age !== null) {
-          if (age >= 4 && age <= 11) enfants++;
-          else if (age >= 12 && age <= 15) ados++;
-          else if (age >= 16) adultes++;
-        } else {
-          const cat = String(getVal(el, ['CATEGORIE'], 'Adulte')).toLowerCase();
-          if (cat.includes('enfant')) enfants++;
-          else if (cat.includes('ado')) ados++;
-          else adultes++;
-        }
-
-        // 2. Homme / Femme
-        const sexe = String(getVal(el, ['SEXE', 'Genre'], 'Homme')).toLowerCase();
-        if (sexe.startsWith('f') || sexe.includes('fem')) femmes++;
-        else hommes++;
-
-        // 3. Couleur de ceinture
-        const cStr = String(getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE'], 'Blanche')).toLowerCase();
-        if (cStr.includes('noire')) beltsCount["Noire"]++;
-        else if (cStr.includes('marron')) beltsCount["Marron"]++;
-        else if (cStr.includes('violet')) beltsCount["Violette"]++;
-        else if (cStr.includes('bleu')) beltsCount["Bleue"]++;
-        else beltsCount["Blanche"]++;
-
-        // 4. Ville
-        let ville = String(getVal(el, ['VILLE', 'Ville'], '')).trim();
-        if (!ville) {
-          const adr = String(getVal(el, ['ADRESSE'], '')).trim();
-          const parts = adr.split(",");
-          if (parts.length > 1) {
-            ville = parts[parts.length - 1].replace(/\d{4,5}/g, '').trim();
-          }
-        }
-        if (!ville) ville = "Non renseignée";
-        ville = ville.charAt(0).toUpperCase() + ville.slice(1).toLowerCase();
-        citiesMap[ville] = (citiesMap[ville] || 0) + 1;
-      });
-
-      document.getElementById("statTotalClub").textContent = listeEleves.length;
-      document.getElementById("statTotalVilles").textContent = Object.keys(citiesMap).filter(v => v !== "Non renseignée").length;
-
-      const commonLegend = {
-        position: 'bottom',
-        labels: { color: '#CBD5E1', font: { size: 11, weight: 'bold' }, padding: 14 }
-      };
-
-      // Chart 1 : Catégories d'âge
-      if (chartAge) chartAge.destroy();
-      chartAge = new Chart(document.getElementById("chartAgeCategories").getContext("2d"), {
-        type: 'doughnut',
-        data: {
-          labels: ['Enfants (4-11 ans)', 'Ados (12-15 ans)', 'Adultes (16 ans et +)'],
-          datasets: [{
-            data: [enfants, ados, adultes],
-            backgroundColor: ['#38BDF8', '#A855F7', '#D4AF37'],
-            borderColor: '#08090B',
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '62%',
-          plugins: { legend: commonLegend }
-        }
-      });
-
-      // Chart 2 : Hommes / Femmes
-      if (chartGender) chartGender.destroy();
-      chartGender = new Chart(document.getElementById("chartGender").getContext("2d"), {
-        type: 'doughnut',
-        data: {
-          labels: ['Hommes', 'Femmes'],
-          datasets: [{
-            data: [hommes, femmes],
-            backgroundColor: ['#D4AF37', '#F472B6'],
-            borderColor: '#08090B',
-            borderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '62%',
-          plugins: { legend: commonLegend }
-        }
-      });
-
-      // Chart 3 : Couleurs de ceinture
-      if (chartBelts) chartBelts.destroy();
-      chartBelts = new Chart(document.getElementById("chartBelts").getContext("2d"), {
-        type: 'bar',
-        data: {
-          labels: ['Blanche', 'Bleue', 'Violette', 'Marron', 'Noire'],
-          datasets: [{
-            label: 'Membres',
-            data: [
-              beltsCount["Blanche"],
-              beltsCount["Bleue"],
-              beltsCount["Violette"],
-              beltsCount["Marron"],
-              beltsCount["Noire"]
-            ],
-            backgroundColor: ['#F8FAFC', '#2563EB', '#7C3AED', '#6D4C41', '#18181B'],
-            borderColor: ['#94A3B8', '#60A5FA', '#A78BFA', '#A1887F', '#D4AF37'],
-            borderWidth: 1.5,
-            borderRadius: 8
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: { color: '#94A3B8', stepSize: 1 },
-              grid: { color: 'rgba(255,255,255,0.06)' }
-            },
-            x: {
-              ticks: { color: '#E2E8F0', font: { weight: 'bold', size: 11 } },
-              grid: { display: false }
-            }
-          },
-          plugins: { legend: { display: false } }
-        }
-      });
-
-      // Chart 4 : Villes
-      const sortedCities = Object.entries(citiesMap).sort((a, b) => b[1] - a[1]);
-      if (chartCities) chartCities.destroy();
-      chartCities = new Chart(document.getElementById("chartCities").getContext("2d"), {
-        type: 'bar',
-        data: {
-          labels: sortedCities.map(c => c[0]),
-          datasets: [{
-            label: 'Adhérents',
-            data: sortedCities.map(c => c[1]),
-            backgroundColor: 'rgba(212, 175, 55, 0.75)',
-            borderColor: '#FFF099',
-            borderWidth: 1.5,
-            borderRadius: 8
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              beginAtZero: true,
-              ticks: { color: '#94A3B8', stepSize: 1 },
-              grid: { color: 'rgba(255,255,255,0.06)' }
-            },
-            y: {
-              ticks: { color: '#E2E8F0', font: { weight: 'bold', size: 11 } },
-              grid: { display: false }
-            }
-          },
-          plugins: { legend: { display: false } }
-        }
-      });
-    }
-
     function basculerOnglet(nom) {
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
-      if (nom === 'analytics' && !isProf) nom = 'dashboard';
-
       document.getElementById("sectionDashboard").classList.add("hidden");
       document.getElementById("sectionPlanning").classList.add("hidden");
       document.getElementById("sectionMonProfil").classList.add("hidden");
       document.getElementById("sectionClassement").classList.add("hidden");
-      document.getElementById("sectionAnalytics").classList.add("hidden");
 
-      const inactiveClass = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
-      document.getElementById("tabDash").className = inactiveClass;
-      document.getElementById("tabPlan").className = inactiveClass;
-      document.getElementById("tabProf").className = inactiveClass;
-      document.getElementById("tabClass").className = inactiveClass;
-      document.getElementById("tabAnalytics").className = isProf
-        ? "btnProfOnly px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs"
-        : "hidden";
+      document.getElementById("tabDash").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      document.getElementById("tabPlan").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      document.getElementById("tabProf").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      document.getElementById("tabClass").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
 
       if (nom === 'dashboard') {
         document.getElementById("sectionDashboard").classList.remove("hidden");
@@ -2238,62 +2261,66 @@
       } else if (nom === 'classement') {
         document.getElementById("sectionClassement").classList.remove("hidden");
         document.getElementById("tabClass").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
-      } else if (nom === 'analytics' && isProf) {
-        document.getElementById("sectionAnalytics").classList.remove("hidden");
-        document.getElementById("tabAnalytics").className = "btnProfOnly px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
-        genererGraphiquesLuxeProfesseur();
       }
     }
 
-    // GESTION DES DROITS PROFESSEUR VS ÉLÈVE
+    // GESTION DES RÔLES (PROFESSEUR VS ÉLÈVE)
     function changerRoleCompte() {
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      const studentSelector = document.getElementById("studentSessionSelector");
+      const badge = document.getElementById("syncStatusBadge");
+
+      if (!isProf) {
+        studentSelector.classList.remove("hidden");
+        // Si l'index actif est le professeur, bascule automatiquement sur le premier élève
+        const curEl = listeEleves[currentEleveIndex];
+        if (!curEl || String(getVal(curEl, ['ROLE', 'Role'], '')).toLowerCase().includes('prof')) {
+          if (studentSelector.options.length > 0) {
+            currentEleveIndex = parseInt(studentSelector.options[0].value);
+            document.getElementById("eleveSelect").value = String(currentEleveIndex);
+          }
+        }
+        studentSelector.value = String(currentEleveIndex);
+        badge.textContent = "🟢 Espace Membre Actif";
+        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+      } else {
+        studentSelector.classList.add("hidden");
+        const profIdx = listeEleves.findIndex(e => {
+          const nom = String(getVal(e, ['NOM'], '')).toLowerCase();
+          const role = String(getVal(e, ['ROLE'], '')).toLowerCase();
+          return nom.includes('huambachano') || role.includes('prof');
+        });
+        if (profIdx !== -1) {
+          currentEleveIndex = profIdx;
+          document.getElementById("eleveSelect").value = String(profIdx);
+        }
+        if (listeEleves.length > 0) {
+          badge.textContent = `🟢 Connecté (${listeEleves.length} membres)`;
+        }
+      }
       
+      // Éléments réservés au Professeur
       document.getElementById("coachNotificationBox").style.display = isProf ? 'flex' : 'none';
       document.getElementById("boxCreateEvent").style.display = isProf ? 'block' : 'none';
       document.getElementById("boxGradeEditCoach").style.display = isProf ? 'flex' : 'none';
-      document.getElementById("boxBlockControlsCoach").style.display = isProf ? 'flex' : 'none';
       document.getElementById("boxSaveProfilFooter").style.display = isProf ? 'flex' : 'none';
       document.getElementById("btnUploadPhotoLabel").style.display = isProf ? 'inline-block' : 'none';
+      document.getElementById("boxSelectEleve").style.display = isProf ? 'flex' : 'none';
       document.getElementById("boxProfilMemberSwitch").style.display = isProf ? 'flex' : 'none';
       document.querySelectorAll(".btnProfOnly").forEach(btn => btn.style.display = isProf ? 'inline-block' : 'none');
 
-      // Carte publique du Professeur visible uniquement en Mode Élève
-      const coachCard = document.getElementById("studentViewCoachCard");
-      const studentLoginBox = document.getElementById("studentLoginBox");
-      const eleveSelectDash = document.getElementById("eleveSelect");
-      const studentPrivateNotice = document.getElementById("studentPrivateNotice");
-
+      // Éléments réservés aux Élèves (carte statut cours + fiche publique du professeur)
       if (isProf) {
-        coachCard.classList.add("hidden");
-        studentLoginBox.classList.add("hidden");
-        eleveSelectDash.classList.remove("hidden");
-        studentPrivateNotice.classList.add("hidden");
-        document.getElementById("boxSelectTitle").textContent = "Sélection Membre (Professeur)";
-        document.getElementById("boxSelectDesc").textContent = "Sélectionnez votre profil ou celui d'un élève :";
-        document.getElementById("blockedAccountOverlay").classList.add("hidden");
+        document.getElementById("boxStudentCourseStatus").classList.add("hidden");
+        document.getElementById("coachPublicProfileCard").classList.add("hidden");
+        document.getElementById("btnSaveSparring").textContent = "💾 Enregistrer les Statistiques de Sparring";
       } else {
-        coachCard.classList.remove("hidden");
-        studentLoginBox.classList.remove("hidden");
-        eleveSelectDash.classList.add("hidden");
-        studentPrivateNotice.classList.remove("hidden");
-        document.getElementById("boxSelectTitle").textContent = "Confidentialité Membre";
-        document.getElementById("boxSelectDesc").textContent = "Les profils des autres élèves sont masqués.";
-
-        // Si le profil actif était le professeur, bascule sur le 1er élève
-        const curEl = listeEleves[currentEleveIndex];
-        if (curEl && String(getVal(curEl, ['ROLE'], '')).toLowerCase().includes('prof')) {
-          const firstStudentIdx = listeEleves.findIndex(e => !String(getVal(e, ['ROLE'], '')).toLowerCase().includes('prof'));
-          if (firstStudentIdx !== -1) {
-            document.getElementById("studentLoginSelect").value = String(firstStudentIdx);
-            document.getElementById("eleveSelect").value = String(firstStudentIdx);
-          }
-        }
-        if (!document.getElementById("sectionAnalytics").classList.contains("hidden")) {
-          basculerOnglet('dashboard');
-        }
+        document.getElementById("boxStudentCourseStatus").classList.remove("hidden");
+        document.getElementById("coachPublicProfileCard").classList.remove("hidden");
+        document.getElementById("btnSaveSparring").textContent = "💾 Enregistrer mes Statistiques de Sparring";
       }
 
+      // Verrouille / Déverrouille tous les champs du profil
       document.querySelectorAll(".profile-editable").forEach(input => {
         input.disabled = !isProf;
       });
@@ -2303,17 +2330,38 @@
         lockBadge.textContent = "🔓 Édition Professeur Active";
         lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
       } else {
-        lockBadge.textContent = "🔒 Lecture Seule (Modifications réservées au Professeur)";
-        lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/30";
+        lockBadge.textContent = "🔒 Lecture Seule";
+        lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-gray-300 border border-white/15";
       }
 
-      verifierAnniversaires();
+      verifierAnniversairesDuJour();
+      actualiserGraphiquesLuxeProf();
+      genererClassement();
       changerEleve();
     }
 
+    // CLASSEMENT GÉNÉRAL (ÉLÈVES : NOM, PRÉNOM, GRADE AVEC BARRETTE UNIQUEMENT)
     function genererClassement() {
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      const headerRow = document.getElementById("classementHeaderRow");
       const body = document.getElementById("classementBody");
       body.innerHTML = "";
+
+      if (isProf) {
+        headerRow.innerHTML = `
+          <th class="py-3 px-4">Rang</th>
+          <th class="py-3 px-4">Nom & Prénom</th>
+          <th class="py-3 px-4">Grade & Barrette</th>
+          <th class="py-3 px-4 text-center">Cours Suivis</th>
+          <th class="py-3 px-4 text-right">Statut</th>
+        `;
+      } else {
+        headerRow.innerHTML = `
+          <th class="py-3 px-4">Rang</th>
+          <th class="py-3 px-4">Nom & Prénom</th>
+          <th class="py-3 px-4">Grade avec Barrette</th>
+        `;
+      }
       
       let elevesTries = [...listeEleves]
         .filter(e => !String(getVal(e, ['ROLE', 'Role'], '')).toLowerCase().includes('prof'))
@@ -2333,13 +2381,21 @@
         const barrettes = parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0;
         const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
 
-        tr.innerHTML = `
-          <td class="py-3 px-4">${mark}</td>
-          <td class="py-3 px-4 font-bold text-white">${nom.toUpperCase()} ${prenom}</td>
-          <td class="py-3 px-4 text-gold font-semibold">${ceinture} (${barrettes} barrette${barrettes > 1 ? 's' : ''})</td>
-          <td class="py-3 px-4 text-center font-extrabold text-white">${cours}</td>
-          <td class="py-3 px-4 text-right text-gray-400 text-xs">${idx < 3 ? '🔥 Podium' : 'Adhérent'}</td>
-        `;
+        if (isProf) {
+          tr.innerHTML = `
+            <td class="py-3 px-4">${mark}</td>
+            <td class="py-3 px-4 font-bold text-white">${nom.toUpperCase()} ${prenom}</td>
+            <td class="py-3 px-4 text-gold font-semibold">${ceinture} (${barrettes} barrette${barrettes > 1 ? 's' : ''})</td>
+            <td class="py-3 px-4 text-center font-extrabold text-white">${cours}</td>
+            <td class="py-3 px-4 text-right text-gray-400 text-xs">${idx < 3 ? '🔥 Podium' : 'Adhérent'}</td>
+          `;
+        } else {
+          tr.innerHTML = `
+            <td class="py-3 px-4">${mark}</td>
+            <td class="py-3 px-4 font-bold text-white">${nom.toUpperCase()} ${prenom}</td>
+            <td class="py-3 px-4 text-gold font-semibold">${ceinture} (${barrettes} barrette${barrettes > 1 ? 's' : ''})</td>
+          `;
+        }
         body.appendChild(tr);
       });
     }
