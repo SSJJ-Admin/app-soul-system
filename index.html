@@ -179,7 +179,7 @@
         <p class="text-xs text-gray-400">Rôle Actif</p>
         <select id="userRoleToggle" onchange="changerRoleCompte()" class="bg-carbone border border-gold/40 rounded px-2.5 py-1 text-xs text-gold font-bold focus:outline-none">
           <option value="prof">Professeur (Martin Huambachano)</option>
-          <option value="eleve">Élève (Lecture Seule)</option>
+          <option value="eleve">Élève (Accès Restreint)</option>
         </select>
       </div>
       <div class="relative group cursor-pointer" onclick="basculerOnglet('monprofil')">
@@ -271,11 +271,11 @@
           </div>
         </div>
 
-        <!-- CARTE 3 : SÉLECTEUR DE MEMBRE EN DIRECT -->
+        <!-- CARTE 3 : SÉLECTEUR DE MEMBRE (PROFESSEUR) / CONFIDENTIALITÉ (ÉLÈVE) -->
         <div id="boxSelectEleve" class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-2">
-              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre</h2>
+              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre (Professeur)</h2>
               <span id="totalElevesCount" class="text-[10px] text-gold font-bold">0 inscrits</span>
             </div>
             <p class="text-xs text-gray-400 mb-3">Sélectionnez votre profil ou celui d'un élève :</p>
@@ -283,6 +283,19 @@
           <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
             <option value="">Chargement de la base...</option>
           </select>
+        </div>
+
+        <div id="boxPrivacyEleve" class="hidden card-luxe p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Espace Élève Privé</h2>
+              <span class="text-[10px] text-emerald-400 font-bold">🔒 Protégé</span>
+            </div>
+            <p class="text-xs text-gray-400">L'accès aux profils des autres élèves est restreint. Vous pouvez vous inscrire aux cours dans le <strong>Planning</strong> et consulter le <strong>Classement Général</strong>.</p>
+          </div>
+          <button onclick="basculerOnglet('classement')" class="w-full py-2.5 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10 transition">
+            🏆 Voir le Classement Général
+          </button>
         </div>
       </div>
 
@@ -414,12 +427,13 @@
     <!-- ONGLET 2 : PLANNING & INSCRIPTIONS EN DIRECT -->
     <div id="sectionPlanning" class="hidden space-y-6">
       
+      <!-- FORMULAIRE CRÉATION DE SESSION (HEAD COACH) -->
       <div id="boxCreateEvent" class="card-luxe p-6 rounded-2xl space-y-4">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-wrap justify-between items-center gap-2">
           <h2 class="text-base font-bold text-white uppercase tracking-wider">Créer une Session / Stage / Master Class (Head Coach)</h2>
-          <span class="text-[10px] text-gold font-bold uppercase">Onglet "Sessions" Google Sheets</span>
+          <span class="text-[10px] text-gold font-bold uppercase">Limite par défaut : 16 inscrits max</span>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-xs">
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 text-xs">
           <div>
             <label class="text-gray-400 font-semibold">Type de Session</label>
             <select id="eventType" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
@@ -437,13 +451,17 @@
             <input type="text" id="eventTheme" placeholder="ex: Guard Retention & Leg Locks" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
           <div>
+            <label class="text-gray-400 font-semibold">Professeur</label>
+            <input type="text" id="eventProfesseur" value="Martin Huambachano" placeholder="Nom du professeur" class="w-full bg-carbone border border-gold/40 rounded-lg p-2.5 text-white font-bold mt-1">
+          </div>
+          <div>
             <label class="text-gray-400 font-semibold">Date & Horaires</label>
             <input type="text" id="eventDate" placeholder="Mardi 17 Nov — 19h30" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
           <div>
             <label class="text-gray-400 font-semibold">Places Max / Récurrence</label>
             <div class="flex gap-2 mt-1">
-              <input type="number" id="eventCapacite" value="20" min="2" max="100" class="w-16 bg-carbone border border-gold/40 rounded-lg p-2.5 text-center text-gold font-bold">
+              <input type="number" id="eventCapacite" value="16" min="1" max="150" title="Limite d'inscrits (initialement 16)" class="w-16 bg-carbone border border-gold/40 rounded-lg p-2.5 text-center text-gold font-bold">
               <select id="eventRecurrence" class="flex-1 bg-carbone border border-white/10 rounded-lg p-2 text-gray-300">
                 <option value="Ponctuel">Ponctuel</option>
                 <option value="Hebdomadaire">Hebdo</option>
@@ -459,11 +477,12 @@
         </div>
       </div>
 
+      <!-- LISTE DES SESSIONS DU PLANNING -->
       <div class="card-luxe p-6 rounded-2xl space-y-4">
         <div class="flex flex-wrap justify-between items-center gap-2 border-b border-white/10 pb-3">
           <div>
             <h2 class="text-lg font-bold text-white uppercase tracking-wider">Planning Officiel des Sessions</h2>
-            <p class="text-xs text-gray-400">Inscriptions en direct pour : <strong id="planningActiveMemberName" class="text-gold">Membre actif</strong></p>
+            <p class="text-xs text-gray-400">Session active pour : <strong id="planningActiveMemberName" class="text-gold">Membre actif</strong></p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="chargerElevesSheets()" class="px-3 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 text-xs hover:border-gold">
@@ -484,12 +503,12 @@
 
     </div>
 
-    <!-- ONGLET 3 : MON PROFIL & GESTION DES GRADES (ÉDITION RÉSERVÉE AU PROFESSEUR) -->
+    <!-- ONGLET 3 : MON PROFIL & GESTION DES GRADES -->
     <div id="sectionMonProfil" class="hidden card-luxe p-6 rounded-2xl space-y-6">
       <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 gap-3">
         <div>
           <h2 class="text-lg font-bold text-white uppercase tracking-wider">Fiche d'Informations Personnelles</h2>
-          <p id="profileEditSubtext" class="text-xs text-gray-400">Synchronisée automatiquement avec Base_Adherents_2026_2027 & App_Club_Soul_System_JJ</p>
+          <p class="text-xs text-gray-400">Synchronisée avec Base_Adherents_2026_2027 & App_Club_Soul_System_JJ</p>
         </div>
         <div class="flex items-center gap-2">
           <span id="profileLockBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
@@ -498,9 +517,9 @@
         </div>
       </div>
 
-      <!-- SÉLECTEUR DE MEMBRE SUR L'ONGLET PROFIL POUR MODIFIER FACILEMENT N'IMPORTE QUEL ÉLÈVE -->
+      <!-- SÉLECTEUR DE MEMBRE SUR L'ONGLET PROFIL (VISIBLE UNIQUEMENT EN MODE PROFESSEUR) -->
       <div id="boxProfilMemberSwitch" class="bg-carbone/70 p-3.5 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <span class="text-gray-300 font-semibold">👤 Fiche affichée actuellement :</span>
+        <span class="text-gray-300 font-semibold">👤 Fiche affichée actuellement (Accès Professeur) :</span>
         <select id="eleveSelectProfil" onchange="synchroniserSelecteurProfil(this.value)" class="bg-anthracite border border-gold/40 rounded-lg px-3 py-1.5 text-gold font-bold focus:outline-none">
           <option value="">Chargement...</option>
         </select>
@@ -609,15 +628,15 @@
       </div>
     </div>
 
-    <!-- ONGLET 4 : CLASSEMENT GENERAL -->
+    <!-- ONGLET 4 : CLASSEMENT GÉNÉRAL (ACCESSIBLE AUX ÉLÈVES : NOM, PRÉNOM, GRADE + BARRETTES) -->
     <div id="sectionClassement" class="hidden card-luxe p-6 rounded-2xl">
-      <div class="flex flex-wrap items-center justify-between mb-6">
+      <div class="flex flex-wrap items-center justify-between mb-6 gap-2">
         <div>
-          <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement & Challenge Assiduité</h2>
-          <p class="text-xs text-gray-400">Données réelles issues de Google Sheets</p>
+          <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement Général du Club</h2>
+          <p class="text-xs text-gray-400">Nom, Prénom et Grade officiel avec barrettes</p>
         </div>
         <div class="flex space-x-2">
-          <button class="px-3 py-1 rounded-lg bg-gold text-xs text-black font-bold">Saison 2026-2027</button>
+          <span class="px-3 py-1 rounded-lg bg-gold text-xs text-black font-bold">Saison 2026-2027</span>
         </div>
       </div>
 
@@ -626,10 +645,10 @@
           <thead>
             <tr class="border-b border-white/10 text-gray-400 uppercase">
               <th class="py-3 px-4">Rang</th>
-              <th class="py-3 px-4">Élève</th>
-              <th class="py-3 px-4">Grade</th>
+              <th class="py-3 px-4">Nom</th>
+              <th class="py-3 px-4">Prénom</th>
+              <th class="py-3 px-4">Grade & Barrettes</th>
               <th class="py-3 px-4 text-center">Cours Suivis</th>
-              <th class="py-3 px-4 text-right">Badge</th>
             </tr>
           </thead>
           <tbody id="classementBody" class="divide-y divide-white/5">
@@ -702,7 +721,6 @@
         if (obj[upper] !== undefined && obj[upper] !== null && String(obj[upper]).trim() !== "") {
           return obj[upper];
         }
-        // Recherche insensible à la casse (ex: CEINTURE_ACTuELLE)
         const foundKey = Object.keys(obj).find(ok => ok.toLowerCase() === k.toLowerCase());
         if (foundKey && obj[foundKey] !== undefined && obj[foundKey] !== null && String(obj[foundKey]).trim() !== "") {
           return obj[foundKey];
@@ -806,7 +824,6 @@
         selectDash.innerHTML = "";
         selectProf.innerHTML = "";
         
-        // Au premier chargement, positionne automatiquement sur Martin Huambachano (Professeur)
         if (!firstLoadDone) {
           const profIdx = listeEleves.findIndex(e => {
             const nom = String(getVal(e, ['NOM'], '')).toLowerCase();
@@ -858,7 +875,7 @@
       changerEleve();
     }
 
-    // --- GESTION DYNAMIQUE DU PLANNING ---
+    // --- GESTION DYNAMIQUE DU PLANNING (LIMITE 16 CONFIGURABLE + PROFESSEUR + CONFIDENTIALITÉ ÉLÈVE) ---
     function afficherSessionsPlanning() {
       const container = document.getElementById("sessionsListContainer");
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
@@ -873,7 +890,7 @@
         container.innerHTML = `
           <div class="bg-carbone/60 border border-white/10 rounded-xl p-6 text-center space-y-2">
             <p class="text-sm font-bold text-white">Aucune session publiée pour le moment</p>
-            <p class="text-xs text-gray-400">Utilisez le formulaire ci-dessus pour publier un cours dans l'onglet <strong>Sessions</strong> de Google Sheets.</p>
+            <p class="text-xs text-gray-400">Le professeur peut publier les cours ci-dessus (limite initiale : 16 inscrits).</p>
           </div>
         `;
         return;
@@ -887,7 +904,8 @@
         const theme = getVal(ses, ['THEME'], 'Session JJB');
         const dateHeure = getVal(ses, ['DATE_HEURE'], '');
         const recurrence = getVal(ses, ['RECURRENCE'], 'Ponctuel');
-        const capacite = parseInt(getVal(ses, ['CAPACITE'], 20)) || 20;
+        const capacite = parseInt(getVal(ses, ['CAPACITE'], 16)) || 16;
+        const professeur = getVal(ses, ['PROFESSEUR'], 'Martin Huambachano');
         const inscritsRaw = String(getVal(ses, ['INSCRITS'], '')).trim();
         const inscritsArr = inscritsRaw ? inscritsRaw.split(",").map(x => x.trim()).filter(Boolean) : [];
 
@@ -895,45 +913,71 @@
         const complet = inscritsArr.length >= capacite && !estInscrit;
 
         const card = document.createElement("div");
-        card.className = "bg-carbone/80 p-5 rounded-xl border border-gold/30 flex flex-wrap justify-between items-center gap-4";
+        card.className = "bg-carbone/80 p-5 rounded-xl border border-gold/30 space-y-4";
 
-        const inscritsBadges = inscritsArr.length > 0
-          ? `<p class="text-[11px] text-gray-400 mt-1.5">🥋 Inscrits : <span class="text-gray-200">${inscritsArr.join(", ")}</span></p>`
-          : `<p class="text-[11px] text-gray-500 mt-1.5">Aucun inscrit pour le moment — soyez le premier !</p>`;
+        // CONFIDENTIALITÉ : Le professeur voit la liste nominative ; l'élève voit UNIQUEMENT le nombre d'inscrits
+        const blocInscrits = isProf
+          ? (inscritsArr.length > 0
+              ? `<p class="text-[11px] text-gray-300 mt-2">🥋 Élèves inscrits (${inscritsArr.length}) : <span class="text-gold font-semibold">${inscritsArr.join(", ")}</span></p>`
+              : `<p class="text-[11px] text-gray-500 mt-2">Aucun élève inscrit pour le moment.</p>`)
+          : `<p class="text-[11px] text-gray-400 mt-2">👥 Effectif actuel : <strong class="text-white">${inscritsArr.length} / ${capacite} inscrits</strong> ${complet ? '<span class="text-red-400 font-bold">(Cours complet — inscriptions fermées)</span>' : ''}</p>`;
+
+        // CONTRÔLES PROFESSEUR SUR LA CARTE (MODIFIER LIMITE & PROFESSEUR À TOUT MOMENT)
+        const blocAdminProf = isProf ? `
+          <div class="pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="flex items-center gap-1.5">
+                <label class="text-gray-400">Professeur :</label>
+                <input type="text" id="profInput_${id}" value="${professeur.replace(/"/g, '&quot;')}" class="bg-anthracite border border-gold/40 rounded-lg px-2.5 py-1 text-white font-bold w-44">
+              </div>
+              <div class="flex items-center gap-1.5">
+                <label class="text-gray-400">Limite inscrits :</label>
+                <input type="number" id="capInput_${id}" value="${capacite}" min="1" max="150" class="bg-anthracite border border-gold/40 rounded-lg px-2 py-1 text-center text-gold font-bold w-16">
+              </div>
+              <button onclick="modifierSessionSheets('${id}', this)" class="px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold font-bold hover:bg-gold hover:text-black transition">
+                💾 Mettre à jour
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick='ouvrirAppelTatami(${JSON.stringify(type + " — " + theme)}, ${JSON.stringify(inscritsArr)})' class="px-3 py-1.5 rounded-lg bg-carbone border border-gold/40 text-gold font-bold hover:bg-gold/10">
+                🥋 Appel Tatami
+              </button>
+              <button onclick="supprimerSessionSheets('${id}')" class="px-2.5 py-1.5 rounded-lg bg-carbone border border-red-500/30 text-red-400 hover:bg-red-500/10" title="Supprimer cette session">
+                🗑️
+              </button>
+            </div>
+          </div>
+        ` : '';
 
         card.innerHTML = `
-          <div class="space-y-1 flex-1 min-w-[240px]">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">${type}</span>
-              <span class="text-xs text-gray-400">● ${dateHeure}</span>
-              <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400">${recurrence}</span>
-            </div>
-            <h3 class="font-extrabold text-base text-white">${theme}</h3>
-            ${inscritsBadges}
-          </div>
-
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="text-right mr-1">
-              <p class="text-xs font-extrabold ${complet ? 'text-red-400' : 'text-gold'}">${inscritsArr.length} / ${capacite} Inscrits</p>
-              <p class="text-[10px] text-gray-400">${complet ? 'Complet' : 'Places disponibles'}</p>
+          <div class="flex flex-wrap justify-between items-center gap-4">
+            <div class="space-y-1 flex-1 min-w-[240px]">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">${type}</span>
+                <span class="text-xs text-gray-400">● ${dateHeure}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400">${recurrence}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-gold/10 text-gold font-semibold">👨‍🏫 Prof. ${professeur}</span>
+              </div>
+              <h3 class="font-extrabold text-base text-white">${theme}</h3>
+              ${blocInscrits}
             </div>
 
-            <button onclick="toggleInscriptionSession('${id}', this)" ${complet ? 'disabled' : ''} class="px-4 py-2 rounded-xl font-extrabold text-xs transition ${
-              estInscrit
-                ? 'bg-emerald-500 text-black hover:bg-emerald-400'
-                : (complet ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-gold text-black hover:bg-gold-light')
-            }">
-              ${estInscrit ? '✓ Inscrit (Annuler)' : (complet ? 'Complet' : "S'inscrire")}
-            </button>
+            <div class="flex items-center gap-3">
+              <div class="text-right mr-1">
+                <p class="text-xs font-extrabold ${complet ? 'text-red-400' : 'text-gold'}">${inscritsArr.length} / ${capacite} Inscrits</p>
+                <p class="text-[10px] text-gray-400">${complet ? 'Limite atteinte' : (capacite - inscritsArr.length) + ' place(s) libre(s)'}</p>
+              </div>
 
-            <button onclick='ouvrirAppelTatami(${JSON.stringify(type + " — " + theme)}, ${JSON.stringify(inscritsArr)})' style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-gold/40 text-xs text-gold font-bold hover:bg-gold/10">
-              🥋 Appel Tatami
-            </button>
-
-            <button onclick="supprimerSessionSheets('${id}')" style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-2.5 py-2 rounded-xl bg-carbone border border-red-500/30 text-xs text-red-400 hover:bg-red-500/10" title="Supprimer cette session">
-              🗑️
-            </button>
+              <button onclick="toggleInscriptionSession('${id}', this)" ${complet ? 'disabled' : ''} class="px-4 py-2 rounded-xl font-extrabold text-xs transition ${
+                estInscrit
+                  ? 'bg-emerald-500 text-black hover:bg-emerald-400'
+                  : (complet ? 'bg-gray-800 border border-red-500/40 text-red-400 cursor-not-allowed' : 'bg-gold text-black hover:bg-gold-light')
+              }">
+                ${estInscrit ? '✓ Inscrit (Annuler)' : (complet ? '🔒 Complet' : "S'inscrire")}
+              </button>
+            </div>
           </div>
+          ${blocAdminProf}
         `;
         container.appendChild(card);
       });
@@ -942,9 +986,10 @@
     async function publierEvenementSheets() {
       const type = document.getElementById("eventType").value;
       const theme = document.getElementById("eventTheme").value.trim();
+      const professeur = document.getElementById("eventProfesseur").value.trim() || "Martin Huambachano";
       const dateHeure = document.getElementById("eventDate").value.trim();
       const recurrence = document.getElementById("eventRecurrence").value;
-      const capacite = parseInt(document.getElementById("eventCapacite").value) || 20;
+      const capacite = parseInt(document.getElementById("eventCapacite").value) || 16;
 
       if (!theme || !dateHeure) {
         alert("⚠️ Renseignez au minimum le thème et la date/horaire de la session.");
@@ -961,6 +1006,7 @@
         ID: "SES-" + Date.now(),
         TYPE: type,
         THEME: theme,
+        PROFESSEUR: professeur,
         DATE_HEURE: dateHeure,
         RECURRENCE: recurrence,
         CAPACITE: capacite,
@@ -982,12 +1028,50 @@
         document.getElementById("eventDate").value = "";
         badge.textContent = "✅ Session publiée";
         badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-        alert("📅 Session publiée dans l'onglet 'Sessions' de Google Sheets !");
+        alert(`📅 Session publiée (${capacite} places max — Professeur : ${professeur}) !`);
       } catch (err) {
         alert("❌ Erreur lors de la publication : " + err.message);
       } finally {
         btn.disabled = false;
         btn.textContent = "➕ Publier la Session dans Google Sheets";
+      }
+    }
+
+    async function modifierSessionSheets(sessionId, btn) {
+      const capInput = document.getElementById("capInput_" + sessionId);
+      const profInput = document.getElementById("profInput_" + sessionId);
+      if (!capInput || !profInput) return;
+
+      const newCap = Math.max(1, parseInt(capInput.value) || 16);
+      const newProf = profInput.value.trim() || "Martin Huambachano";
+
+      btn.disabled = true;
+      btn.textContent = "⏳...";
+
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "updateSession",
+            sessionId: sessionId,
+            CAPACITE: newCap,
+            PROFESSEUR: newProf
+          })
+        });
+
+        const ses = listeSessions.find(s => String(getVal(s, ['ID'], '')) === String(sessionId));
+        if (ses) {
+          ses.CAPACITE = newCap;
+          ses.PROFESSEUR = newProf;
+        }
+        afficherSessionsPlanning();
+        const badge = document.getElementById("syncStatusBadge");
+        badge.textContent = "✅ Session mise à jour";
+        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+      } catch (err) {
+        alert("❌ Erreur lors de la modification : " + err.message);
       }
     }
 
@@ -999,13 +1083,20 @@
       const ses = listeSessions.find(s => String(getVal(s, ['ID'], '')) === String(sessionId));
       if (!ses) return;
 
-      btn.disabled = true;
-      btn.textContent = "⏳ Sync...";
-
+      const capacite = parseInt(getVal(ses, ['CAPACITE'], 16)) || 16;
       const rawInscrits = String(getVal(ses, ['INSCRITS'], '')).trim();
       let liste = rawInscrits ? rawInscrits.split(",").map(x => x.trim()).filter(Boolean) : [];
       const pos = liste.findIndex(n => n.toLowerCase() === memberName.toLowerCase());
       const etaitInscrit = pos !== -1;
+
+      if (!etaitInscrit && liste.length >= capacite) {
+        alert(`🔒 Cours complet : la limite de ${capacite} inscrits est atteinte.`);
+        afficherSessionsPlanning();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "⏳ Sync...";
 
       if (etaitInscrit) {
         liste.splice(pos, 1);
@@ -1289,7 +1380,6 @@
       document.getElementById("activeCardProgressText").textContent = `${cours} / ${cibleProchaineBarrette} cours`;
       document.getElementById("activeCardProgressBar").style.width = `${pct}%`;
 
-      // Remplissage automatique complet des champs de "Mon Profil"
       document.getElementById("fieldPrenom").value = prenom;
       document.getElementById("fieldNom").value = nom;
       document.getElementById("fieldEmail").value = getVal(el, ['EMAIL', 'Email', 'MAIL'], '');
@@ -1549,7 +1639,7 @@
       }
     }
 
-    // VERROUILLAGE STRICT EN MODE ÉLÈVE : SEUL LE PROFESSEUR PEUT MODIFIER LES PROFILS
+    // GESTION DES DROITS : CONFIDENTIALITÉ PROFILS EN MODE ÉLÈVE & ÉDITION RÉSERVÉE AU PROFESSEUR
     function changerRoleCompte() {
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
       
@@ -1560,7 +1650,23 @@
       document.getElementById("btnUploadPhotoLabel").style.display = isProf ? 'inline-block' : 'none';
       document.querySelectorAll(".btnProfOnly").forEach(btn => btn.style.display = isProf ? 'inline-block' : 'none');
 
-      // Verrouille / Déverrouille tous les champs du profil
+      // Masque les sélecteurs de membres aux élèves pour empêcher l'accès aux profils des autres élèves
+      document.getElementById("boxSelectEleve").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("boxPrivacyEleve").style.display = isProf ? 'none' : 'flex';
+      document.getElementById("boxProfilMemberSwitch").style.display = isProf ? 'flex' : 'none';
+
+      // Si on bascule en mode Élève alors que le profil du Professeur était affiché, bascule sur un profil Élève
+      if (!isProf && listeEleves.length > 0) {
+        const currentRole = String(getVal(listeEleves[currentEleveIndex], ['ROLE'], '')).toLowerCase();
+        if (currentRole.includes('prof')) {
+          const firstStudentIdx = listeEleves.findIndex(e => !String(getVal(e, ['ROLE'], '')).toLowerCase().includes('prof'));
+          if (firstStudentIdx !== -1) {
+            document.getElementById("eleveSelect").value = String(firstStudentIdx);
+            changerEleve();
+          }
+        }
+      }
+
       document.querySelectorAll(".profile-editable").forEach(input => {
         input.disabled = !isProf;
       });
@@ -1577,6 +1683,7 @@
       afficherSessionsPlanning();
     }
 
+    // CLASSEMENT GÉNÉRAL : NOM, PRÉNOM, GRADE & BARRETTES
     function genererClassement() {
       const body = document.getElementById("classementBody");
       body.innerHTML = "";
@@ -1593,18 +1700,22 @@
         else if (idx === 1) mark = `🥈 <span class="text-silver font-bold">2ème</span>`;
         else if (idx === 2) mark = `🥉 <span class="text-amber-700 font-bold">3ème</span>`;
 
-        const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Élève');
         const nom = getVal(el, ['NOM', 'Nom'], '');
+        const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Élève');
         const ceinture = getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
         const barrettes = parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0;
         const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
 
+        const barrettesVisuel = barrettes > 0
+          ? `<span class="ml-1.5 px-2 py-0.5 rounded bg-gold/15 border border-gold/40 text-gold font-bold text-[10px]">${barrettes} barrette${barrettes > 1 ? 's' : ''}</span>`
+          : `<span class="ml-1.5 px-2 py-0.5 rounded bg-white/5 text-gray-400 text-[10px]">0 barrette</span>`;
+
         tr.innerHTML = `
           <td class="py-3 px-4">${mark}</td>
-          <td class="py-3 px-4 font-bold text-white">${prenom} ${nom}</td>
-          <td class="py-3 px-4 text-gold">${ceinture} (${barrettes} bar.)</td>
+          <td class="py-3 px-4 font-extrabold text-white uppercase">${nom}</td>
+          <td class="py-3 px-4 font-bold text-gray-200">${prenom}</td>
+          <td class="py-3 px-4 text-gold font-semibold">${ceinture} ${barrettesVisuel}</td>
           <td class="py-3 px-4 text-center font-extrabold text-white">${cours}</td>
-          <td class="py-3 px-4 text-right text-gray-400 text-xs">${idx < 3 ? '🔥 Podium' : 'Adhérent'}</td>
         `;
         body.appendChild(tr);
       });
