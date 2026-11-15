@@ -148,6 +148,12 @@
         height: 118px;
       }
     }
+
+    input:disabled {
+      opacity: 0.78;
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.05) !important;
+    }
   </style>
 </head>
 
@@ -173,7 +179,7 @@
         <p class="text-xs text-gray-400">Rôle Actif</p>
         <select id="userRoleToggle" onchange="changerRoleCompte()" class="bg-carbone border border-gold/40 rounded px-2.5 py-1 text-xs text-gold font-bold focus:outline-none">
           <option value="prof">Professeur (Martin Huambachano)</option>
-          <option value="eleve">Élève (Vue Restreinte)</option>
+          <option value="eleve">Élève (Lecture Seule)</option>
         </select>
       </div>
       <div class="relative group cursor-pointer" onclick="basculerOnglet('monprofil')">
@@ -216,7 +222,7 @@
       
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <!-- CARTE 1 : PROFIL DYNAMIQUE DE L'ÉLÈVE SÉLECTIONNÉ -->
+        <!-- CARTE 1 : PROFIL DYNAMIQUE DU MEMBRE SÉLECTIONNÉ -->
         <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-3">
@@ -272,7 +278,7 @@
               <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre</h2>
               <span id="totalElevesCount" class="text-[10px] text-gold font-bold">0 inscrits</span>
             </div>
-            <p class="text-xs text-gray-400 mb-3">Membre actif (utilisé pour le radar et les inscriptions cours) :</p>
+            <p class="text-xs text-gray-400 mb-3">Sélectionnez votre profil ou celui d'un élève :</p>
           </div>
           <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
             <option value="">Chargement de la base...</option>
@@ -398,21 +404,20 @@
           </div>
 
           <button id="btnSaveSparring" onclick="enregistrerStatsSparring()" class="w-full py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            💾 Enregistrer dans Google Sheets (app_club_soul_system_jj)
+            💾 Enregistrer dans Google Sheets (App_Club_Soul_System_JJ)
           </button>
         </div>
 
       </div>
     </div>
 
-    <!-- ONGLET 2 : PLANNING & INSCRIPTIONS EN DIRECT (ONGLET "Sessions") -->
+    <!-- ONGLET 2 : PLANNING & INSCRIPTIONS EN DIRECT -->
     <div id="sectionPlanning" class="hidden space-y-6">
       
-      <!-- FORMULAIRE CRÉATION DE SESSION (HEAD COACH) -->
       <div id="boxCreateEvent" class="card-luxe p-6 rounded-2xl space-y-4">
         <div class="flex justify-between items-center">
           <h2 class="text-base font-bold text-white uppercase tracking-wider">Créer une Session / Stage / Master Class (Head Coach)</h2>
-          <span class="text-[10px] text-gold font-bold uppercase">Écriture directe dans l'onglet "Sessions"</span>
+          <span class="text-[10px] text-gold font-bold uppercase">Onglet "Sessions" Google Sheets</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-xs">
           <div>
@@ -454,7 +459,6 @@
         </div>
       </div>
 
-      <!-- LISTE DYNAMIQUE DES SESSIONS DU PLANNING -->
       <div class="card-luxe p-6 rounded-2xl space-y-4">
         <div class="flex flex-wrap justify-between items-center gap-2 border-b border-white/10 pb-3">
           <div>
@@ -473,25 +477,36 @@
         
         <div id="sessionsListContainer" class="space-y-4">
           <div class="text-center py-8 text-xs text-gray-400">
-            ⏳ Chargement des sessions depuis l'onglet "Sessions" de Google Sheets...
+            ⏳ Chargement des sessions depuis Google Sheets...
           </div>
         </div>
       </div>
 
     </div>
 
-    <!-- ONGLET 3 : MON PROFIL ET GESTION LIBRE DES GRADES -->
+    <!-- ONGLET 3 : MON PROFIL & GESTION DES GRADES (ÉDITION RÉSERVÉE AU PROFESSEUR) -->
     <div id="sectionMonProfil" class="hidden card-luxe p-6 rounded-2xl space-y-6">
-      <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4">
+      <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 gap-3">
         <div>
           <h2 class="text-lg font-bold text-white uppercase tracking-wider">Fiche d'Informations Personnelles</h2>
-          <p class="text-xs text-gray-400">Toute modification est enregistrée directement dans Google Sheets</p>
+          <p id="profileEditSubtext" class="text-xs text-gray-400">Synchronisée automatiquement avec Base_Adherents_2026_2027 & App_Club_Soul_System_JJ</p>
         </div>
-        <span id="profileRoleBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-gold/10 text-gold border border-gold/30">
-          FICHE MEMBRE
-        </span>
+        <div class="flex items-center gap-2">
+          <span id="profileLockBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            🔓 Édition Professeur Active
+          </span>
+        </div>
       </div>
 
+      <!-- SÉLECTEUR DE MEMBRE SUR L'ONGLET PROFIL POUR MODIFIER FACILEMENT N'IMPORTE QUEL ÉLÈVE -->
+      <div id="boxProfilMemberSwitch" class="bg-carbone/70 p-3.5 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <span class="text-gray-300 font-semibold">👤 Fiche affichée actuellement :</span>
+        <select id="eleveSelectProfil" onchange="synchroniserSelecteurProfil(this.value)" class="bg-anthracite border border-gold/40 rounded-lg px-3 py-1.5 text-gold font-bold focus:outline-none">
+          <option value="">Chargement...</option>
+        </select>
+      </div>
+
+      <!-- GESTION DU GRADE & BARRETTES (HEAD COACH UNIQUEMENT) -->
       <div id="boxGradeEditCoach" class="bg-carbone/80 p-4 rounded-xl border border-gold/40 flex flex-wrap justify-between items-center gap-3">
         <div>
           <h3 class="text-xs font-bold text-gold uppercase">Gestion du Grade & Barrettes (Head Coach)</h3>
@@ -523,7 +538,7 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="flex flex-col items-center justify-center space-y-3 bg-carbone/60 p-4 rounded-xl border border-white/5">
           <img id="profilePhotoDisplay" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-28 h-28 rounded-2xl border-2 border-gold object-cover shadow-xl">
-          <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold text-xs font-bold hover:bg-gold hover:text-black transition">
+          <label id="btnUploadPhotoLabel" class="cursor-pointer px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold text-xs font-bold hover:bg-gold hover:text-black transition">
             📷 Modifier Photo
             <input type="file" accept="image/*" class="hidden" onchange="uploadPhotoProfil(event)">
           </label>
@@ -532,49 +547,64 @@
         <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           <div>
             <label class="text-gray-400 font-semibold">Prénom</label>
-            <input type="text" id="fieldPrenom" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            <input type="text" id="fieldPrenom" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
 
           <div>
             <label class="text-gray-400 font-semibold">Nom</label>
-            <input type="text" id="fieldNom" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            <input type="text" id="fieldNom" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
 
           <div>
             <label class="text-gray-400 font-semibold">Adresse Email</label>
-            <input type="email" id="fieldEmail" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            <input type="email" id="fieldEmail" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
 
           <div>
             <label class="text-gray-400 font-semibold">Numéro de Téléphone</label>
-            <input type="text" id="fieldTel" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            <input type="text" id="fieldTel" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
           </div>
 
           <div>
-            <label class="text-gray-400 font-semibold">Licence / Assurance JJB</label>
-            <input type="text" id="fieldLicence" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-emerald-400 font-bold mt-1">
+            <label class="text-gray-400 font-semibold">Date de Naissance</label>
+            <input type="text" id="fieldDateNaissance" value="" placeholder="JJ/MM/AAAA" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
 
           <div>
-            <label class="text-gray-400 font-semibold">Total Cours Validés</label>
-            <input type="number" id="fieldTotalCours" min="0" value="0" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
+            <label class="text-gray-400 font-semibold">Licence CFJJB / Assurance</label>
+            <input type="text" id="fieldLicence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-emerald-400 font-bold mt-1">
           </div>
 
-          <div>
-            <label class="text-gray-400 font-semibold">Adresse Postale</label>
-            <input type="text" id="fieldAdresse" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+          <div class="md:col-span-2">
+            <label class="text-gray-400 font-semibold">Adresse Postale Complète</label>
+            <input type="text" id="fieldAdresse" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
 
           <div>
             <label class="text-gray-400 font-semibold">Personne à Contacter en Cas d'Urgence</label>
-            <input type="text" id="fieldUrgence" value="" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+            <input type="text" id="fieldUrgence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+          </div>
+
+          <div>
+            <label class="text-gray-400 font-semibold">Informations Médicales / Allergies</label>
+            <input type="text" id="fieldAllergies" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+          </div>
+
+          <div>
+            <label class="text-gray-400 font-semibold">Club Précédent</label>
+            <input type="text" id="fieldClubPrecedent" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+          </div>
+
+          <div>
+            <label class="text-gray-400 font-semibold">Total Cours Validés</label>
+            <input type="number" id="fieldTotalCours" min="0" value="0" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
           </div>
         </div>
       </div>
 
-      <div class="flex justify-end pt-4 border-t border-white/10">
+      <div id="boxSaveProfilFooter" class="flex justify-end pt-4 border-t border-white/10">
         <button id="btnSaveProfil" onclick="sauvegarderProfilSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-          💾 Enregistrer le Profil dans Google Sheets
+          💾 Enregistrer les Modifications (Professeur)
         </button>
       </div>
     </div>
@@ -610,7 +640,7 @@
 
   </main>
 
-  <!-- FENÊTRE MODALE INTERACTIVE : APPEL TATAMI (+1 TOTAL_COURS DANS GOOGLE SHEETS) -->
+  <!-- FENÊTRE MODALE INTERACTIVE : APPEL TATAMI -->
   <div id="modalAppelTatami" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
     <div class="card-luxe w-full max-w-2xl rounded-2xl border border-gold/50 p-6 space-y-5 shadow-2xl">
       
@@ -659,6 +689,7 @@
     let listeEleves = [];
     let listeSessions = [];
     let currentEleveIndex = 0;
+    let firstLoadDone = false;
     let radarChart = null;
 
     function getVal(obj, keys, fallback = "") {
@@ -671,12 +702,31 @@
         if (obj[upper] !== undefined && obj[upper] !== null && String(obj[upper]).trim() !== "") {
           return obj[upper];
         }
+        // Recherche insensible à la casse (ex: CEINTURE_ACTuELLE)
+        const foundKey = Object.keys(obj).find(ok => ok.toLowerCase() === k.toLowerCase());
+        if (foundKey && obj[foundKey] !== undefined && obj[foundKey] !== null && String(obj[foundKey]).trim() !== "") {
+          return obj[foundKey];
+        }
       }
       return fallback;
     }
 
+    function formatAvatarUrl(rawUrl, fullName) {
+      if (rawUrl && String(rawUrl).includes("drive.google.com")) {
+        const match = String(rawUrl).match(/[-\w]{25,}/);
+        if (match) {
+          return `https://lh3.googleusercontent.com/d/${match[0]}`;
+        }
+      }
+      if (rawUrl && String(rawUrl).startsWith("http")) {
+        return rawUrl;
+      }
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=D4AF37&color=000`;
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
       initRadar();
+      changerRoleCompte();
       chargerElevesSheets();
     });
 
@@ -751,29 +801,50 @@
         badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
         document.getElementById("totalElevesCount").textContent = `${listeEleves.length} inscrits`;
 
-        const select = document.getElementById("eleveSelect");
-        const prevIdx = currentEleveIndex < listeEleves.length ? currentEleveIndex : 0;
-        select.innerHTML = "";
+        const selectDash = document.getElementById("eleveSelect");
+        const selectProf = document.getElementById("eleveSelectProfil");
+        selectDash.innerHTML = "";
+        selectProf.innerHTML = "";
         
+        // Au premier chargement, positionne automatiquement sur Martin Huambachano (Professeur)
+        if (!firstLoadDone) {
+          const profIdx = listeEleves.findIndex(e => {
+            const nom = String(getVal(e, ['NOM'], '')).toLowerCase();
+            const email = String(getVal(e, ['EMAIL'], '')).toLowerCase();
+            const role = String(getVal(e, ['ROLE'], '')).toLowerCase();
+            return nom.includes('huambachano') || email.includes('huambachano') || role.includes('prof');
+          });
+          if (profIdx !== -1) currentEleveIndex = profIdx;
+          firstLoadDone = true;
+        }
+
+        const prevIdx = currentEleveIndex < listeEleves.length ? currentEleveIndex : 0;
+
         listeEleves.forEach((eleve, index) => {
           const prenom = getVal(eleve, ['PRENOM', 'Prenom'], '');
           const nom = getVal(eleve, ['NOM', 'Nom'], '');
-          const ceinture = getVal(eleve, ['CEINTURE_ACTUELLE', 'CEINTURE', 'Grade'], 'Ceinture Blanche');
-          const barrettes = parseInt(getVal(eleve, ['BARRETTES', 'Barrettes', 'STRIPES'], 0)) || 0;
+          const ceinture = getVal(eleve, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE', 'Grade'], 'Ceinture Blanche');
+          const barrettes = parseInt(getVal(eleve, ['BARRETTES', 'NOMBRE_BARRETTES', 'Barrettes'], 0)) || 0;
+          const labelOpt = `${prenom} ${nom} — ${ceinture} (${barrettes} bar.)`;
 
-          const opt = document.createElement("option");
-          opt.value = index;
-          opt.textContent = `${prenom} ${nom} — ${ceinture} (${barrettes} bar.)`;
-          select.appendChild(opt);
+          const opt1 = document.createElement("option");
+          opt1.value = index;
+          opt1.textContent = labelOpt;
+          selectDash.appendChild(opt1);
+
+          const opt2 = document.createElement("option");
+          opt2.value = index;
+          opt2.textContent = labelOpt;
+          selectProf.appendChild(opt2);
         });
 
-        select.value = String(prevIdx);
+        selectDash.value = String(prevIdx);
+        selectProf.value = String(prevIdx);
         actualiserAlerteBarrettes();
         genererClassement();
         changerEleve();
       }
 
-      // Traitement de l'onglet "Sessions"
       if (data && Array.isArray(data.sessions)) {
         listeSessions = data.sessions;
       } else {
@@ -782,7 +853,12 @@
       afficherSessionsPlanning();
     }
 
-    // --- GESTION DYNAMIQUE DU PLANNING (ONGLET "Sessions" DE GOOGLE SHEETS) ---
+    function synchroniserSelecteurProfil(val) {
+      document.getElementById("eleveSelect").value = val;
+      changerEleve();
+    }
+
+    // --- GESTION DYNAMIQUE DU PLANNING ---
     function afficherSessionsPlanning() {
       const container = document.getElementById("sessionsListContainer");
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
@@ -917,10 +993,7 @@
 
     async function toggleInscriptionSession(sessionId, btn) {
       const activeEl = listeEleves[currentEleveIndex];
-      if (!activeEl) {
-        alert("⚠️ Aucun membre sélectionné.");
-        return;
-      }
+      if (!activeEl) return;
 
       const memberName = `${getVal(activeEl, ['PRENOM', 'Prenom'], '')} ${getVal(activeEl, ['NOM', 'Nom'], '')}`.trim();
       const ses = listeSessions.find(s => String(getVal(s, ['ID'], '')) === String(sessionId));
@@ -929,7 +1002,6 @@
       btn.disabled = true;
       btn.textContent = "⏳ Sync...";
 
-      // Mise à jour optimiste immédiate
       const rawInscrits = String(getVal(ses, ['INSCRITS'], '')).trim();
       let liste = rawInscrits ? rawInscrits.split(",").map(x => x.trim()).filter(Boolean) : [];
       const pos = liste.findIndex(n => n.toLowerCase() === memberName.toLowerCase());
@@ -986,8 +1058,8 @@
       listeEleves.forEach(eleve => {
         const role = String(getVal(eleve, ['ROLE', 'Role'], '')).toLowerCase();
         if (role.includes('prof')) return;
-        const barrettes = parseInt(getVal(eleve, ['BARRETTES', 'Barrettes', 'STRIPES'], 0)) || 0;
-        const cours = parseInt(getVal(eleve, ['TOTAL_COURS', 'COURS', 'Assiduite'], 0)) || 0;
+        const barrettes = parseInt(getVal(eleve, ['BARRETTES', 'NOMBRE_BARRETTES', 'Barrettes'], 0)) || 0;
+        const cours = parseInt(getVal(eleve, ['TOTAL_COURS', 'COURS'], 0)) || 0;
         if (cours >= (barrettes + 1) * 25 && barrettes < 4) {
           eligiblesCount++;
         }
@@ -1019,9 +1091,15 @@
     }
 
     async function envoyerMiseAJourSheets(updatesObj, btnElement, originalText) {
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      if (!isProf) {
+        alert("🔒 Accès refusé : seul le Professeur (Martin Huambachano) peut modifier les informations.");
+        return false;
+      }
+
       const el = listeEleves[currentEleveIndex];
       if (!el) {
-        alert("⚠️ Aucun élève sélectionné.");
+        alert("⚠️ Aucun membre sélectionné.");
         return false;
       }
 
@@ -1052,7 +1130,7 @@
       }
     }
 
-    // --- MODALE D'APPEL TATAMI (AVEC PRÉ-COCHAGE DES INSCRITS) ---
+    // --- MODALE D'APPEL TATAMI ---
     function ouvrirAppelTatami(nomSession, inscritsArr = []) {
       if (listeEleves.length === 0) {
         alert("⏳ Chargement des élèves en cours, veuillez patienter quelques secondes.");
@@ -1073,8 +1151,8 @@
         const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Élève');
         const nom = getVal(el, ['NOM', 'Nom'], '');
         const fullName = `${prenom} ${nom}`.trim();
-        const ceinture = getVal(el, ['CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
-        const barrettes = parseInt(getVal(el, ['BARRETTES', 'Barrettes'], 0)) || 0;
+        const ceinture = getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
+        const barrettes = parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0;
         const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
         const estPreInscrit = inscritsLower.includes(fullName.toLowerCase());
 
@@ -1153,7 +1231,7 @@
           const el = listeEleves[idx];
           if (!el) continue;
 
-          const currentCourses = parseInt(getVal(el, ['TOTAL_COURS', 'COURS', 'Assiduite'], 0)) || 0;
+          const currentCourses = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
           const newTotal = currentCourses + 1;
 
           await envoyerMiseAJourPourEleve(el, { TOTAL_COURS: newTotal });
@@ -1182,21 +1260,23 @@
       if (isNaN(idx) || !listeEleves[idx]) return;
 
       currentEleveIndex = idx;
+      document.getElementById("eleveSelectProfil").value = String(idx);
       const el = listeEleves[idx];
 
       const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Membre');
       const nom = getVal(el, ['NOM', 'Nom'], '');
       const fullName = `${prenom} ${nom}`.trim();
-      const ceintureRaw = String(getVal(el, ['CEINTURE_ACTUELLE', 'CEINTURE', 'Grade'], 'Blanche'));
-      const barrettes = Math.min(4, Math.max(0, parseInt(getVal(el, ['BARRETTES', 'Barrettes', 'STRIPES'], 0)) || 0));
-      const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS', 'Assiduite'], 0)) || 0;
+      const ceintureRaw = String(getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE', 'Grade'], 'Blanche'));
+      const barrettes = Math.min(4, Math.max(0, parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES', 'Barrettes'], 0)) || 0));
+      const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
       const role = getVal(el, ['ROLE', 'Role', 'STATUT'], 'Élève');
 
       document.getElementById("activeCardName").textContent = fullName;
       document.getElementById("activeCardSub").textContent = `${role} • ${barrettes} Barrette(s)`;
       document.getElementById("activeCardBeltLabel").textContent = ceintureRaw.toLowerCase().includes('ceinture') ? ceintureRaw : `Ceinture ${ceintureRaw}`;
       
-      const avatarUrl = getVal(el, ['PHOTO', 'AVATAR'], `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=D4AF37&color=000`);
+      const rawPhoto = getVal(el, ['PHOTO', 'AVATAR'], '');
+      const avatarUrl = formatAvatarUrl(rawPhoto, fullName);
       document.getElementById("activeCardAvatar").src = avatarUrl;
       document.getElementById("profilePhotoDisplay").src = avatarUrl;
 
@@ -1209,14 +1289,18 @@
       document.getElementById("activeCardProgressText").textContent = `${cours} / ${cibleProchaineBarrette} cours`;
       document.getElementById("activeCardProgressBar").style.width = `${pct}%`;
 
+      // Remplissage automatique complet des champs de "Mon Profil"
       document.getElementById("fieldPrenom").value = prenom;
       document.getElementById("fieldNom").value = nom;
       document.getElementById("fieldEmail").value = getVal(el, ['EMAIL', 'Email', 'MAIL'], '');
       document.getElementById("fieldTel").value = getVal(el, ['TELEPHONE', 'TEL', 'Telephone'], '');
-      document.getElementById("fieldLicence").value = getVal(el, ['LICENCE', 'Licence'], 'En cours');
-      document.getElementById("fieldTotalCours").value = cours;
+      document.getElementById("fieldDateNaissance").value = getVal(el, ['DATE_NAISSANCE', 'Date_Naissance'], '');
+      document.getElementById("fieldLicence").value = getVal(el, ['LICENCE_CFJJB', 'LICENCE', 'Licence'], 'En cours');
       document.getElementById("fieldAdresse").value = getVal(el, ['ADRESSE', 'Adresse'], '');
       document.getElementById("fieldUrgence").value = getVal(el, ['URGENCE', 'Contact_Urgence'], '');
+      document.getElementById("fieldAllergies").value = getVal(el, ['ALLERGIES', 'Allergies'], 'Aucunes');
+      document.getElementById("fieldClubPrecedent").value = getVal(el, ['CLUB_PRECEDENT', 'Club_Precedent'], 'Aucun');
+      document.getElementById("fieldTotalCours").value = cours;
 
       const selectBelt = document.getElementById("selectCeintureProf");
       for (let opt of selectBelt.options) {
@@ -1283,229 +1367,4 @@
         tipEl.className += "bg-black";
       } else if (lower.includes("bleu") || lower.includes("blue")) {
         beltEl.className += "belt-bleue";
-        tipEl.className += "bg-black";
-      } else {
-        beltEl.className += "belt-blanche";
-        tipEl.className += "bg-black";
-      }
-
-      tipEl.innerHTML = "";
-      for (let i = 0; i < nbBarrettes; i++) {
-        tipEl.innerHTML += '<div class="w-1.5 h-4 bg-white rounded-xs shadow"></div>';
-      }
-    }
-
-    function actualiserRadarDepuisInputs() {
-      if (!radarChart) return;
-      const wins = [
-        parseInt(document.getElementById('tdWin').value) || 0,
-        parseInt(document.getElementById('pullWin').value) || 0,
-        parseInt(document.getElementById('passWin').value) || 0,
-        parseInt(document.getElementById('mountWin').value) || 0,
-        parseInt(document.getElementById('sideWin').value) || 0,
-        parseInt(document.getElementById('nsWin').value) || 0,
-        parseInt(document.getElementById('guardCtrlWin').value) || 0,
-        parseInt(document.getElementById('escWin').value) || 0,
-        parseInt(document.getElementById('swpWin').value) || 0,
-        parseInt(document.getElementById('subWin').value) || 0
-      ];
-      const losses = [
-        parseInt(document.getElementById('tdLoss').value) || 0,
-        parseInt(document.getElementById('pullLoss').value) || 0,
-        parseInt(document.getElementById('passLoss').value) || 0,
-        parseInt(document.getElementById('mountLoss').value) || 0,
-        parseInt(document.getElementById('sideLoss').value) || 0,
-        parseInt(document.getElementById('nsLoss').value) || 0,
-        parseInt(document.getElementById('guardCtrlLoss').value) || 0,
-        parseInt(document.getElementById('escLoss').value) || 0,
-        parseInt(document.getElementById('swpLoss').value) || 0,
-        parseInt(document.getElementById('subLoss').value) || 0
-      ];
-
-      const maxVal = Math.max(5, ...wins, ...losses);
-      radarChart.options.scales.r.suggestedMax = maxVal + 1;
-      radarChart.data.datasets[0].data = wins;
-      radarChart.data.datasets[1].data = losses;
-      radarChart.update();
-    }
-
-    function changerPeriodeRadar() {
-      changerEleve();
-    }
-
-    function previsualiserGradeActif() {
-      const belt = document.getElementById("selectCeintureProf").value;
-      const stripes = parseInt(document.getElementById("selectBarrettesProf").value) || 0;
-      document.getElementById("activeCardBeltLabel").textContent = `Ceinture ${belt}`;
-      const role = listeEleves[currentEleveIndex] ? getVal(listeEleves[currentEleveIndex], ['ROLE', 'Role'], 'Élève') : 'Élève';
-      document.getElementById("activeCardSub").textContent = `${role} • ${stripes} Barrette(s)`;
-      dessinerCeinture(belt, stripes);
-    }
-
-    async function sauvegarderGradeSheets() {
-      const belt = document.getElementById("selectCeintureProf").value;
-      const stripes = parseInt(document.getElementById("selectBarrettesProf").value) || 0;
-      const btn = document.getElementById("btnSaveGrade");
-
-      const updates = {
-        CEINTURE_ACTUELLE: `Ceinture ${belt}`,
-        BARRETTES: stripes
-      };
-
-      const ok = await envoyerMiseAJourSheets(updates, btn, "🏆 Valider Grade");
-      if (ok) {
-        const opt = document.getElementById("eleveSelect").options[currentEleveIndex];
-        const prenom = getVal(listeEleves[currentEleveIndex], ['PRENOM', 'Prenom'], '');
-        const nom = getVal(listeEleves[currentEleveIndex], ['NOM', 'Nom'], '');
-        if (opt) opt.textContent = `${prenom} ${nom} — Ceinture ${belt} (${stripes} bar.)`;
-        previsualiserGradeActif();
-        actualiserAlerteBarrettes();
-        genererClassement();
-        alert(`✅ Grade enregistré dans Google Sheets : Ceinture ${belt} (${stripes} barrette(s)) !`);
-      }
-    }
-
-    async function enregistrerStatsSparring() {
-      actualiserRadarDepuisInputs();
-      const btn = document.getElementById("btnSaveSparring");
-      const p = document.getElementById("periodeSelector").value;
-      const suffix = p === 'm1' ? '_M1' : (p === 'cumul' ? '_CUMUL' : '');
-
-      const updates = {};
-      updates['TD_WIN' + suffix] = parseInt(document.getElementById('tdWin').value) || 0;
-      updates['TD_LOSS' + suffix] = parseInt(document.getElementById('tdLoss').value) || 0;
-      updates['PULL_WIN' + suffix] = parseInt(document.getElementById('pullWin').value) || 0;
-      updates['PULL_LOSS' + suffix] = parseInt(document.getElementById('pullLoss').value) || 0;
-      updates['PASS_WIN' + suffix] = parseInt(document.getElementById('passWin').value) || 0;
-      updates['PASS_LOSS' + suffix] = parseInt(document.getElementById('passLoss').value) || 0;
-      updates['MOUNT_WIN' + suffix] = parseInt(document.getElementById('mountWin').value) || 0;
-      updates['MOUNT_LOSS' + suffix] = parseInt(document.getElementById('mountLoss').value) || 0;
-      updates['SIDE_WIN' + suffix] = parseInt(document.getElementById('sideWin').value) || 0;
-      updates['SIDE_LOSS' + suffix] = parseInt(document.getElementById('sideLoss').value) || 0;
-      updates['NS_WIN' + suffix] = parseInt(document.getElementById('nsWin').value) || 0;
-      updates['NS_LOSS' + suffix] = parseInt(document.getElementById('nsLoss').value) || 0;
-      updates['GUARD_CTRL_WIN' + suffix] = parseInt(document.getElementById('guardCtrlWin').value) || 0;
-      updates['GUARD_CTRL_LOSS' + suffix] = parseInt(document.getElementById('guardCtrlLoss').value) || 0;
-      updates['ESC_WIN' + suffix] = parseInt(document.getElementById('escWin').value) || 0;
-      updates['ESC_LOSS' + suffix] = parseInt(document.getElementById('escLoss').value) || 0;
-      updates['SWP_WIN' + suffix] = parseInt(document.getElementById('swpWin').value) || 0;
-      updates['SWP_LOSS' + suffix] = parseInt(document.getElementById('swpLoss').value) || 0;
-      updates['SUB_WIN' + suffix] = parseInt(document.getElementById('subWin').value) || 0;
-      updates['SUB_LOSS' + suffix] = parseInt(document.getElementById('subLoss').value) || 0;
-
-      const ok = await envoyerMiseAJourSheets(updates, btn, "💾 Enregistrer dans Google Sheets (app_club_soul_system_jj)");
-      if (ok) {
-        alert("✅ Les 10 points de sparring ont été enregistrés dans Google Sheets !");
-      }
-    }
-
-    async function sauvegarderProfilSheets() {
-      const btn = document.getElementById("btnSaveProfil");
-      const updates = {
-        PRENOM: document.getElementById("fieldPrenom").value.trim(),
-        NOM: document.getElementById("fieldNom").value.trim(),
-        EMAIL: document.getElementById("fieldEmail").value.trim(),
-        TELEPHONE: document.getElementById("fieldTel").value.trim(),
-        LICENCE: document.getElementById("fieldLicence").value.trim(),
-        TOTAL_COURS: parseInt(document.getElementById("fieldTotalCours").value) || 0,
-        ADRESSE: document.getElementById("fieldAdresse").value.trim(),
-        URGENCE: document.getElementById("fieldUrgence").value.trim()
-      };
-
-      const ok = await envoyerMiseAJourSheets(updates, btn, "💾 Enregistrer le Profil dans Google Sheets");
-      if (ok) {
-        const opt = document.getElementById("eleveSelect").options[currentEleveIndex];
-        const ceinture = getVal(listeEleves[currentEleveIndex], ['CEINTURE_ACTUELLE'], 'Ceinture Blanche');
-        const barrettes = parseInt(getVal(listeEleves[currentEleveIndex], ['BARRETTES'], 0)) || 0;
-        if (opt) opt.textContent = `${updates.PRENOM} ${updates.NOM} — ${ceinture} (${barrettes} bar.)`;
-        changerEleve();
-        actualiserAlerteBarrettes();
-        genererClassement();
-        alert("✅ Fiche personnelle enregistrée dans Google Sheets !");
-      }
-    }
-
-    function basculerOnglet(nom) {
-      document.getElementById("sectionDashboard").classList.add("hidden");
-      document.getElementById("sectionPlanning").classList.add("hidden");
-      document.getElementById("sectionMonProfil").classList.add("hidden");
-      document.getElementById("sectionClassement").classList.add("hidden");
-
-      document.getElementById("tabDash").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
-      document.getElementById("tabPlan").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
-      document.getElementById("tabProf").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
-      document.getElementById("tabClass").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
-
-      if (nom === 'dashboard') {
-        document.getElementById("sectionDashboard").classList.remove("hidden");
-        document.getElementById("tabDash").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
-      } else if (nom === 'planning') {
-        document.getElementById("sectionPlanning").classList.remove("hidden");
-        document.getElementById("tabPlan").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
-      } else if (nom === 'monprofil') {
-        document.getElementById("sectionMonProfil").classList.remove("hidden");
-        document.getElementById("tabProf").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
-      } else if (nom === 'classement') {
-        document.getElementById("sectionClassement").classList.remove("hidden");
-        document.getElementById("tabClass").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
-      }
-    }
-
-    function changerRoleCompte() {
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
-      document.getElementById("coachNotificationBox").style.display = isProf ? 'flex' : 'none';
-      document.getElementById("boxCreateEvent").style.display = isProf ? 'block' : 'none';
-      document.getElementById("boxGradeEditCoach").style.display = isProf ? 'flex' : 'none';
-      document.querySelectorAll(".btnProfOnly").forEach(btn => btn.style.display = isProf ? 'inline-block' : 'none');
-      afficherSessionsPlanning();
-    }
-
-    function genererClassement() {
-      const body = document.getElementById("classementBody");
-      body.innerHTML = "";
-      
-      let elevesTries = [...listeEleves]
-        .filter(e => !String(getVal(e, ['ROLE', 'Role'], '')).toLowerCase().includes('prof'))
-        .sort((a, b) => (parseInt(getVal(b, ['TOTAL_COURS', 'COURS'], 0)) || 0) - (parseInt(getVal(a, ['TOTAL_COURS', 'COURS'], 0)) || 0));
-
-      elevesTries.forEach((el, idx) => {
-        const tr = document.createElement("tr");
-        tr.className = "hover:bg-white/5 transition";
-        let mark = `<span class="text-gray-400 font-bold">#${idx + 1}</span>`;
-        if (idx === 0) mark = `🥇 <span class="text-gold font-bold">1er</span>`;
-        else if (idx === 1) mark = `🥈 <span class="text-silver font-bold">2ème</span>`;
-        else if (idx === 2) mark = `🥉 <span class="text-amber-700 font-bold">3ème</span>`;
-
-        const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Élève');
-        const nom = getVal(el, ['NOM', 'Nom'], '');
-        const ceinture = getVal(el, ['CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
-        const barrettes = parseInt(getVal(el, ['BARRETTES', 'Barrettes'], 0)) || 0;
-        const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
-
-        tr.innerHTML = `
-          <td class="py-3 px-4">${mark}</td>
-          <td class="py-3 px-4 font-bold text-white">${prenom} ${nom}</td>
-          <td class="py-3 px-4 text-gold">${ceinture} (${barrettes} bar.)</td>
-          <td class="py-3 px-4 text-center font-extrabold text-white">${cours}</td>
-          <td class="py-3 px-4 text-right text-gray-400 text-xs">${idx < 3 ? '🔥 Podium' : 'Adhérent'}</td>
-        `;
-        body.appendChild(tr);
-      });
-    }
-
-    function uploadPhotoProfil(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById("profilePhotoDisplay").src = e.target.result;
-          document.getElementById("activeCardAvatar").src = e.target.result;
-          alert("📸 Photo mise à jour !");
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-  </script>
-
-</body>
-</html>
+        tipEl.className +=
