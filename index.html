@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Soul System JJ">
-  <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="./Icon.jpeg?v=5">
-  <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=5">
+  <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="./Icon.jpeg?v=6">
+  <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=6">
 
   <script>
     (function() {
@@ -53,7 +53,7 @@
         link.href = URL.createObjectURL(blob);
         document.head.appendChild(link);
       };
-      img.src = "./Icon.jpeg?v=5";
+      img.src = "./Icon.jpeg?v=6";
     })();
   </script>
 
@@ -61,6 +61,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbz8NPvlTaWe2zB4FPQZScEDYrVu0aVuJXX5IguXPUgAqALQO4IlRbaadHN4f_efURjt/exec";
+    const PROF_MASTER_EMAIL = "huambachano.martin@gmail.com";
 
     tailwind.config = {
       darkMode: 'class',
@@ -105,10 +106,10 @@
     }
 
     .card-luxe {
-      background: rgba(18, 20, 24, 0.88);
+      background: rgba(18, 20, 24, 0.90);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(212, 175, 55, 0.22);
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.24);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.1);
     }
 
     .belt-blanche { background: linear-gradient(90deg, #E2E8F0 0%, #FFFFFF 100%); border: 1px solid #94A3B8; }
@@ -139,691 +140,851 @@
 
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-  <!-- EN-TÊTE -->
-  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-5 rounded-2xl card-luxe mb-6">
-    <div class="flex flex-wrap items-center gap-4 md:gap-6">
-      <div class="flex items-center justify-center flex-shrink-0">
-        <img src="./Logo.png?v=5" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-[0_0_15px_rgba(212,175,55,0.35)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
-      </div>
-      <div>
-        <h1 class="font-extrabold text-xl md:text-2xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
-        <div class="flex flex-wrap items-center gap-2 mt-0.5">
-          <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
-          <span id="syncStatusBadge" class="prof-only-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">⏳ Connexion...</span>
-        </div>
-      </div>
-    </div>
-    
-    <div class="flex items-center space-x-4 mt-4 md:mt-0">
-      <div class="text-right">
-        <p class="text-xs text-gray-400">Rôle Actif</p>
-        <select id="userRoleToggle" onchange="changerRoleCompte()" class="bg-carbone border border-gold/40 rounded px-2.5 py-1 text-xs text-gold font-bold focus:outline-none">
-          <option value="prof">Professeur (Martin Huambachano)</option>
-          <option value="eleve">Élève (Compte Membre)</option>
-        </select>
-      </div>
-      <div class="relative group cursor-pointer" onclick="basculerOnglet('monprofil')">
-        <img id="headerAvatar" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-11 h-11 rounded-full border-2 border-gold object-cover shadow-lg">
-      </div>
-    </div>
-  </header>
-
-  <!-- NOTIFICATION ANNIVERSAIRES DU JOUR (PROFESSEUR UNIQUEMENT) -->
-  <div id="birthdayNotificationBox" class="hidden w-full max-w-7xl mx-auto mb-4 bg-gradient-to-r from-gold/20 via-amber-500/15 to-gold/20 border border-gold p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-lg">
-    <div class="flex items-center space-x-3">
-      <span class="text-3xl">🎂</span>
-      <div>
-        <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider">Anniversaire(s) du Jour au Club !</h3>
-        <div id="birthdayNotifList" class="text-xs text-white font-semibold mt-0.5 space-y-0.5"></div>
-      </div>
-    </div>
-    <span class="px-3 py-1 rounded-full bg-gold text-black font-extrabold text-[10px] uppercase">À souhaiter sur le tatami</span>
-  </div>
-
-  <!-- NOTIFICATION BARRETTES PROFESSEUR -->
-  <div id="coachNotificationBox" class="w-full max-w-7xl mx-auto mb-6 bg-gold/10 border border-gold/40 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
-    <div class="flex items-center space-x-3">
-      <span class="text-2xl">🔔</span>
-      <div>
-        <h3 class="text-xs font-bold text-gold uppercase tracking-wider">Alerte Éligibilité Passage de Grade (Professeur)</h3>
-        <p id="coachNotifText" class="text-xs text-gray-300">Analyse des quotas d'assiduité en cours...</p>
-      </div>
-    </div>
-    <div class="flex items-center gap-2">
-      <button onclick="ouvrirAppelTatami('Session du Jour', [])" class="px-3 py-1.5 rounded-xl bg-carbone border border-gold/50 text-gold font-bold text-xs hover:bg-gold/10">
-        🥋 Appel Tatami
-      </button>
-      <button onclick="basculerOnglet('monprofil')" class="px-3 py-1.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light">
-        Gérer les Grades
-      </button>
-    </div>
-  </div>
-
-  <!-- ÉCRAN DE SUSPENSION DE COMPTE (SI BLOQUE_ACCES = OUI EN MODE ÉLÈVE) -->
-  <div id="blockedAccountOverlay" class="hidden w-full max-w-3xl mx-auto my-8 card-luxe border-red-500/50 p-8 rounded-2xl text-center space-y-4">
-    <div class="text-4xl">🚫</div>
-    <h2 class="text-xl font-extrabold text-red-400 uppercase tracking-wider">Accès au Compte Suspendu</h2>
-    <p class="text-sm text-gray-300">Votre accès à l'application <strong>Soul System Jiu Jitsu</strong> a été temporairement restreint par le professeur.</p>
-    <p class="text-xs text-gray-400">Veuillez vous rapprocher de <strong>Martin Huambachano</strong> au club pour régulariser votre situation.</p>
-  </div>
-
-  <main id="mainAppContainer" class="w-full max-w-7xl mx-auto space-y-8">
-    
-    <!-- BARRE DE NAVIGATION PRINCIPALE -->
-    <div class="flex flex-wrap gap-2 border-b border-white/10 pb-3">
-      <button onclick="basculerOnglet('dashboard')" id="tabDash" class="px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs">📊 Dashboard & Radar 360°</button>
-      <button onclick="basculerOnglet('planning')" id="tabPlan" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">📅 Planning & Inscriptions</button>
-      <button onclick="basculerOnglet('monprofil')" id="tabProf" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">👤 Mon Profil</button>
-      <button onclick="basculerOnglet('classement')" id="tabClass" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">🏆 Classement Général</button>
-      <button onclick="basculerOnglet('analytics')" id="tabAnalytics" class="btnProfOnly px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10">📈 Analytics Club (Prof)</button>
-    </div>
-
-    <!-- ONGLET 1 : DASHBOARD & RADAR COMPLET DES 10 POINTS -->
-    <div id="sectionDashboard" class="space-y-8">
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- CARTE 1 : PROFIL DYNAMIQUE DU MEMBRE ACTIF -->
-        <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-center mb-3">
-              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Fiche Membre Actif</h2>
-              <span id="activeCardBeltLabel" class="text-[11px] font-extrabold text-gold uppercase">Ceinture Blanche</span>
-            </div>
-            <div class="flex items-center space-x-4 mb-4">
-              <img id="activeCardAvatar" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-14 h-14 rounded-2xl border border-gold/60 object-cover">
-              <div>
-                <h3 id="activeCardName" class="font-bold text-lg text-white">Chargement...</h3>
-                <p id="activeCardSub" class="text-xs gold-gradient-text font-semibold">Synchronisation en cours</p>
-              </div>
-            </div>
-          </div>
-
-          <div id="beltDisplayActive" class="w-full h-7 rounded belt-blanche relative flex items-center justify-end overflow-hidden shadow-inner">
-            <div id="beltTipActive" class="h-full w-16 bg-black flex items-center justify-evenly px-1.5 border-l border-white/20">
-            </div>
-          </div>
-        </div>
-
-        <!-- CARTE 2 : ASSIDUITÉ & QUOTA PROCHAINE BARRETTE -->
-        <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
-          <div class="flex justify-between items-center mb-2">
-            <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Assiduité & Progression</h2>
-            <span id="activeCardStatusBadge" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold">Actif</span>
-          </div>
-          <div class="grid grid-cols-2 gap-4 text-center my-2">
-            <div class="bg-carbone/80 p-3 rounded-xl border border-white/5">
-              <p id="activeCardCourses" class="text-2xl font-black gold-gradient-text">0</p>
-              <p class="text-[10px] text-gray-400">Cours Validés</p>
-            </div>
-            <div class="bg-carbone/80 p-3 rounded-xl border border-white/5">
-              <p id="activeCardHours" class="text-2xl font-black silver-gradient-text">0 h</p>
-              <p class="text-[10px] text-gray-400">Volume Horaire</p>
-            </div>
-          </div>
-          <div class="space-y-1">
-            <div class="flex justify-between text-[10px] text-gray-400">
-              <span>Prochaine Barrette</span>
-              <span id="activeCardProgressText" class="text-gold font-bold">0 / 25 cours</span>
-            </div>
-            <div class="w-full bg-carbone rounded-full h-1.5 overflow-hidden border border-white/5">
-              <div id="activeCardProgressBar" class="bg-gold h-full transition-all duration-500" style="width: 0%"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CARTE 3 : SÉLECTEUR DE MEMBRE (PROFESSEUR) OU FICHE HEAD COACH (ÉLÈVE) -->
-        <div id="boxSelectEleve" class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-center mb-2">
-              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre (Prof)</h2>
-              <span id="totalElevesCount" class="text-[10px] text-gold font-bold">0 inscrits</span>
-            </div>
-            <p class="text-xs text-gray-400 mb-3">Sélectionnez un membre pour gérer sa fiche ou simuler sa vue élève :</p>
-          </div>
-          <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
-            <option value="">Chargement...</option>
-          </select>
-        </div>
-
-        <!-- CARTE ALTERNATIVE EN MODE ÉLÈVE : CONTACT HEAD COACH UNIQUEMENT -->
-        <div id="boxHeadCoachCardStudent" class="hidden card-luxe p-6 rounded-2xl flex flex-col justify-between">
-          <div class="flex justify-between items-center mb-2">
-            <h2 class="text-xs font-semibold text-gold uppercase tracking-widest">Votre Professeur (Head Coach)</h2>
-            <span id="coachCardBeltTag" class="text-[10px] px-2 py-0.5 rounded bg-gold/15 text-gold font-bold">Ceinture Marron</span>
-          </div>
-          <div class="flex items-center space-x-3.5 my-1">
-            <img id="coachCardAvatar" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-14 h-14 rounded-2xl border border-gold object-cover">
-            <div class="text-xs space-y-0.5">
-              <p id="coachCardName" class="font-extrabold text-sm text-white">Martin Huambachano</p>
-              <p id="coachCardGrade" class="text-gold font-semibold">Ceinture Marron • 0 Barrette</p>
-              <p id="coachCardDob" class="text-gray-400 text-[11px]">🎂 Né le : —</p>
-              <p id="coachCardPhone" class="text-emerald-400 font-bold text-[11px]">📞 —</p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- RADAR 360 & COMPTAGE SPARRING SUR LES 10 CATEGORIES -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <div class="lg:col-span-6 card-luxe p-6 rounded-2xl flex flex-col justify-between">
-          <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
-            <div>
-              <h2 class="text-base font-bold text-white uppercase tracking-wider">Radar de Compétences Sparring</h2>
-              <p id="radarPeriodLabel" class="text-xs text-gold">Membre : — Mois en Cours</p>
-            </div>
-            <select id="periodeSelector" onchange="changerPeriodeRadar()" class="bg-carbone border border-gold/30 text-xs text-gold rounded px-2 py-1">
-              <option value="actuel">Mois en cours</option>
-              <option value="m1">Mois précédent (M-1)</option>
-              <option value="cumul">Saison Complète</option>
-            </select>
-          </div>
-          
-          <div class="relative w-full aspect-square max-h-[380px] mx-auto flex items-center justify-center">
-            <canvas id="performanceRadar"></canvas>
-          </div>
-
-          <div class="flex justify-center space-x-6 mt-3 text-[11px]">
-            <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-gold inline-block"></span><span class="text-gray-300 font-semibold">Techniques Réussies (R)</span></span>
-            <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-silver/60 inline-block"></span><span class="text-gray-400 font-semibold">Techniques Subies (S)</span></span>
-          </div>
-        </div>
-
-        <!-- FORMULAIRE COMPLET DES 10 POINTS DE SPARRING -->
-        <div class="lg:col-span-6 card-luxe p-6 rounded-2xl space-y-4">
-          <div class="flex justify-between items-center border-b border-white/10 pb-2">
-            <h2 class="text-base font-bold text-white uppercase tracking-wider">Saisie des 10 Points de Sparring</h2>
-            <span class="text-[10px] text-gold font-bold">Réussis (Or) / Subis (Gris)</span>
-          </div>
-
-          <div class="space-y-2.5 max-h-[400px] overflow-y-auto pr-1 text-xs">
-            <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
-              <span class="font-bold text-white">1. Amenés au Sol (Takedowns)</span>
-              <div class="flex space-x-2">
-                <input type="number" id="tdWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="tdLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
-              </div>
-            </div>
-            <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
-              <span class="font-bold text-white">2. Tirages de Garde (Pull Guard)</span>
-              <div class="flex space-x-2">
-                <input type="number" id="pullWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="pullLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
-              </div>
-            </div>
-            <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
-              <span class="font-bold text-white">3. Passages de Garde</span>
-              <div class="flex space-x-2">
-                <input type="number" id="passWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="passLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
-              </div>
-            </div>
-            <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
-              <span class="font-bold text-white">4. Positions Montées</span>
-              <div class="flex space-x-2">
-                <input type="number" id="mountWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="mountLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
-              </div>
-            </div>
-            <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
-              <span class="font-bold text-white">5. Contrôles Latéraux</span>
-              <div class="flex space-x-2">
-                <input type="number" id="sideWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="sideLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
-              </div>
-            </div>
-            <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
-              <span class="font-bold text-white">6. Nord-Sud (North-South)</span>
-              <div class="flex space-x-2">
-                <input type="number" id="nsWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="nsLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
-              </div>
-            </div>
-            <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
-              <span class="font-bold text-white">7. Contrôles depuis une Garde</span>
-              <div class="flex space-x-2">
-                <input type="number" id="guardCtrlWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="guardCtrlLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
-              </div>
-            </div>
-            <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
-              <span class="font-bold text-white">8. Sorties (Escapes)</span>
-              <div class="flex space-x-2">
-                <input type="number" id="escWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="escLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
-              </div>
-            </div>
-            <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
-              <span class="font-bold text-white">9. Renversements (Sweeps)</span>
-              <div class="flex space-x-2">
-                <input type="number" id="swpWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="swpLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
-              </div>
-            </div>
-            <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
-              <span class="font-bold text-white">10. Soumissions (Taps)</span>
-              <div class="flex space-x-2">
-                <input type="number" id="subWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
-                <input type="number" id="subLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
-              </div>
-            </div>
-          </div>
-
-          <button id="btnSaveSparring" onclick="enregistrerStatsSparring()" class="w-full py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            💾 Enregistrer mes statistiques Sparring
-          </button>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ONGLET 2 : PLANNING & INSCRIPTIONS EN DIRECT -->
-    <div id="sectionPlanning" class="hidden space-y-6">
-      
-      <!-- CRÉATION DE SESSION (HEAD COACH UNIQUEMENT) -->
-      <div id="boxCreateEvent" class="card-luxe p-6 rounded-2xl space-y-4">
-        <div class="flex justify-between items-center">
-          <h2 class="text-base font-bold text-white uppercase tracking-wider">Créer une Session / Stage / Master Class (Head Coach)</h2>
-          <span class="text-[10px] text-gold font-bold uppercase">Limite par défaut : 16 inscrits</span>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 text-xs">
-          <div>
-            <label class="text-gray-400 font-semibold">Type de Session</label>
-            <select id="eventType" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
-              <option value="Cours Gi">Cours (Gi)</option>
-              <option value="Cours No-Gi">Cours (No-Gi)</option>
-              <option value="Stage">Stage Technique</option>
-              <option value="Séminaire">Séminaire d'Expert</option>
-              <option value="Master Class">Master Class 4K</option>
-              <option value="Open Mat">Open Mat Sparring</option>
-              <option value="Entraînement">Entraînement Compétition</option>
-            </select>
-          </div>
-          <div class="md:col-span-2">
-            <label class="text-gray-400 font-semibold">Thème de la Session</label>
-            <input type="text" id="eventTheme" placeholder="ex: Guard Retention & Leg Locks" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-          </div>
-          <div>
-            <label class="text-gray-400 font-semibold">Professeur</label>
-            <input type="text" id="eventProfesseur" value="Martin Huambachano" class="w-full bg-carbone border border-gold/40 rounded-lg p-2.5 text-gold font-bold mt-1">
-          </div>
-          <div>
-            <label class="text-gray-400 font-semibold">Date & Horaires</label>
-            <input type="text" id="eventDate" placeholder="Mardi 17 Nov — 19h30" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-          </div>
-          <div>
-            <label class="text-gray-400 font-semibold">Limite / Récurrence</label>
-            <div class="flex gap-2 mt-1">
-              <input type="number" id="eventCapacite" value="16" min="1" max="100" class="w-16 bg-carbone border border-gold/40 rounded-lg p-2.5 text-center text-gold font-bold" title="Nombre maximum d'inscrits">
-              <select id="eventRecurrence" class="flex-1 bg-carbone border border-white/10 rounded-lg p-2 text-gray-300">
-                <option value="Ponctuel">Ponctuel</option>
-                <option value="Hebdomadaire">Hebdo</option>
-                <option value="Mensuel">Mensuel</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="flex justify-end">
-          <button id="btnPublierSession" onclick="publierEvenementSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            ➕ Publier la Session au Planning
-          </button>
-        </div>
-      </div>
-
-      <!-- LISTE DES SESSIONS -->
-      <div class="card-luxe p-6 rounded-2xl space-y-4">
-        <div class="flex flex-wrap justify-between items-center gap-2 border-b border-white/10 pb-3">
-          <div>
-            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Planning Officiel des Sessions</h2>
-            <p class="text-xs text-gray-400">Inscriptions en direct pour : <strong id="planningActiveMemberName" class="text-gold">Membre actif</strong></p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="chargerElevesSheets()" class="px-3 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 text-xs hover:border-gold">
-              🔄 Actualiser
-            </button>
-            <button onclick="ouvrirAppelTatami('Session Libre / Cours du Jour', [])" class="btnProfOnly px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light transition">
-              🥋 Appel Tatami Rapide
-            </button>
-          </div>
-        </div>
-
-        <!-- ALERTE SI L'ÉLÈVE EST BLOQUÉ POUR LES INSCRIPTIONS AUX COURS -->
-        <div id="courseBlockedWarning" class="hidden bg-red-500/15 border border-red-500/40 p-4 rounded-xl text-xs text-red-300 font-semibold">
-          ⚠️ <strong>Inscriptions aux cours temporairement suspendues</strong> (cotisation ou dossier à régulariser auprès du professeur).
-        </div>
-        
-        <div id="sessionsListContainer" class="space-y-4">
-          <div class="text-center py-8 text-xs text-gray-400">⏳ Chargement des sessions...</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ONGLET 3 : MON PROFIL & GESTION DES GRADES -->
-    <div id="sectionMonProfil" class="hidden space-y-6">
-      
-      <!-- FICHE PERSONNELLE DU MEMBRE ACTIF -->
-      <div class="card-luxe p-6 rounded-2xl space-y-6">
-        <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 gap-3">
-          <div>
-            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Fiche d'Informations Personnelles</h2>
-            <p class="text-xs text-gray-400">Informations issues du dossier d'adhésion du club</p>
-          </div>
-          <span id="profileLockBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-            🔓 Édition Professeur Active
-          </span>
-        </div>
-
-        <!-- SÉLECTEUR DE MEMBRE SUR L'ONGLET PROFIL (PROFESSEUR UNIQUEMENT) -->
-        <div id="boxProfilMemberSwitch" class="bg-carbone/70 p-3.5 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <span class="text-gray-300 font-semibold">👤 Fiche affichée actuellement :</span>
-          <select id="eleveSelectProfil" onchange="synchroniserSelecteurProfil(this.value)" class="bg-anthracite border border-gold/40 rounded-lg px-3 py-1.5 text-gold font-bold focus:outline-none">
-            <option value="">Chargement...</option>
-          </select>
-        </div>
-
-        <!-- GESTION DU GRADE & CONTRÔLE D'ACCÈS / COTISATION (HEAD COACH UNIQUEMENT) -->
-        <div id="boxGradeEditCoach" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          
-          <div class="bg-carbone/80 p-4 rounded-xl border border-gold/40 flex flex-col justify-between gap-3">
-            <div>
-              <h3 class="text-xs font-bold text-gold uppercase">1. Grade & Barrettes (Head Coach)</h3>
-              <p class="text-[10px] text-gray-400">Attribuez la ceinture et les barrettes du membre</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-2 text-xs">
-              <select id="selectCeintureProf" onchange="previsualiserGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-white font-bold">
-                <option value="Blanche">Ceinture Blanche</option>
-                <option value="Bleue">Ceinture Bleue</option>
-                <option value="Violette">Ceinture Violette</option>
-                <option value="Marron">Ceinture Marron</option>
-                <option value="Noire">Ceinture Noire</option>
-              </select>
-
-              <select id="selectBarrettesProf" onchange="previsualiserGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-gold font-bold">
-                <option value="0">0 Barrette</option>
-                <option value="1">1 Barrette</option>
-                <option value="2">2 Barrettes</option>
-                <option value="3">3 Barrettes</option>
-                <option value="4">4 Barrettes</option>
-              </select>
-
-              <button id="btnSaveGrade" onclick="sauvegarderGradeSheets()" class="px-4 py-2 rounded-lg bg-gold text-black font-extrabold hover:bg-gold-light transition">
-                🏆 Valider Grade
-              </button>
-            </div>
-          </div>
-
-          <div class="bg-carbone/80 p-4 rounded-xl border border-red-500/30 flex flex-col justify-between gap-3">
-            <div>
-              <h3 class="text-xs font-bold text-red-400 uppercase">2. Contrôle Cotisation & Accès Application</h3>
-              <p class="text-[10px] text-gray-400">Bloquez l'inscription aux cours (impayé) ou suspendez l'accès au compte</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-2 text-xs">
-              <button id="btnToggleBloqueCours" onclick="basculerBlocageMembre('BLOQUE_COURS')" class="px-3 py-2 rounded-lg font-bold border transition">
-                🟢 Inscriptions Cours : Autorisées
-              </button>
-              <button id="btnToggleBloqueAcces" onclick="basculerBlocageMembre('BLOQUE_ACCES')" class="px-3 py-2 rounded-lg font-bold border transition">
-                🟢 Accès Compte App : Actif
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div class="flex flex-col items-center justify-center space-y-3 bg-carbone/60 p-4 rounded-xl border border-white/5">
-            <img id="profilePhotoDisplay" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-28 h-28 rounded-2xl border-2 border-gold object-cover shadow-xl">
-            <label id="btnUploadPhotoLabel" class="cursor-pointer px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold text-xs font-bold hover:bg-gold hover:text-black transition">
-              📷 Modifier Photo
-              <input type="file" accept="image/*" class="hidden" onchange="uploadPhotoProfil(event)">
-            </label>
-          </div>
-
-          <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div>
-              <label class="text-gray-400 font-semibold">Prénom</label>
-              <input type="text" id="fieldPrenom" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Nom</label>
-              <input type="text" id="fieldNom" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Genre (Homme / Femme)</label>
-              <select id="fieldGenre" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
-                <option value="Homme">Homme</option>
-                <option value="Femme">Femme</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Date de Naissance</label>
-              <input type="text" id="fieldDateNaissance" value="" placeholder="JJ/MM/AAAA" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Adresse Email</label>
-              <input type="email" id="fieldEmail" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Numéro de Téléphone</label>
-              <input type="text" id="fieldTel" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Ville</label>
-              <input type="text" id="fieldVille" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Licence CFJJB / Assurance</label>
-              <input type="text" id="fieldLicence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-emerald-400 font-bold mt-1">
-            </div>
-
-            <div class="md:col-span-2">
-              <label class="text-gray-400 font-semibold">Adresse Postale Complète</label>
-              <input type="text" id="fieldAdresse" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Personne à Contacter en Cas d'Urgence</label>
-              <input type="text" id="fieldUrgence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Informations Médicales / Allergies</label>
-              <input type="text" id="fieldAllergies" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Club Précédent</label>
-              <input type="text" id="fieldClubPrecedent" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-            </div>
-
-            <div>
-              <label class="text-gray-400 font-semibold">Total Cours Validés</label>
-              <input type="number" id="fieldTotalCours" min="0" value="0" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
-            </div>
-          </div>
-        </div>
-
-        <div id="boxSaveProfilFooter" class="flex justify-end pt-4 border-t border-white/10">
-          <button id="btnSaveProfil" onclick="sauvegarderProfilSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-            💾 Enregistrer les Modifications (Professeur)
-          </button>
-        </div>
-      </div>
-
-      <!-- FICHE PUBLIQUE DU PROFESSEUR VISIBLE PAR LES ÉLÈVES -->
-      <div id="studentCoachProfileSection" class="hidden card-luxe p-6 rounded-2xl border-gold/40 space-y-4">
-        <div class="flex justify-between items-center border-b border-white/10 pb-3">
-          <div>
-            <h3 class="text-base font-bold text-gold uppercase tracking-wider">Informations du Professeur (Head Coach)</h3>
-            <p class="text-xs text-gray-400">Contact direct et grade officiel de votre enseignant</p>
-          </div>
-          <span class="px-3 py-1 rounded-full bg-gold/10 text-gold border border-gold/30 text-xs font-bold">Soul System JJ</span>
-        </div>
-        <div class="flex flex-wrap items-center gap-6">
-          <img id="studentViewCoachPhoto" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-24 h-24 rounded-2xl border-2 border-gold object-cover shadow-xl">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-2 text-xs">
-            <div>
-              <span class="text-gray-400">Nom & Prénom :</span>
-              <p id="studentViewCoachFullName" class="text-sm font-extrabold text-white">Martin Huambachano</p>
-            </div>
-            <div>
-              <span class="text-gray-400">Grade & Barrettes :</span>
-              <p id="studentViewCoachGrade" class="text-sm font-extrabold text-gold">Ceinture Marron • 0 Barrette</p>
-            </div>
-            <div>
-              <span class="text-gray-400">Date de Naissance :</span>
-              <p id="studentViewCoachDob" class="text-sm font-bold text-white">—</p>
-            </div>
-            <div>
-              <span class="text-gray-400">Numéro de Téléphone :</span>
-              <p id="studentViewCoachPhone" class="text-sm font-extrabold text-emerald-400">—</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ONGLET 4 : CLASSEMENT GENERAL (VISIBLE PAR LES ÉLÈVES : NOM, PRÉNOM, GRADE + BARRETTES) -->
-    <div id="sectionClassement" class="hidden card-luxe p-6 rounded-2xl">
-      <div class="flex flex-wrap items-center justify-between mb-6">
+  <!-- ========================================================= -->
+  <!-- ÉCRAN DE CONNEXION SÉCURISÉ (EMAIL + CODE PIN À 4 CHIFFRES) -->
+  <!-- ========================================================= -->
+  <div id="authGateScreen" class="min-h-[82vh] flex items-center justify-center p-2">
+    <div class="card-luxe w-full max-w-md rounded-3xl p-7 md:p-9 space-y-6 border border-gold/40 shadow-2xl">
+      <div class="flex flex-col items-center text-center space-y-3">
+        <img src="./Logo.png?v=6" alt="Soul System Jiu Jitsu" class="h-28 w-auto object-contain filter drop-shadow-[0_0_18px_rgba(212,175,55,0.4)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
         <div>
-          <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement Général du Club</h2>
-          <p class="text-xs text-gray-400">Assiduité officielle et grades des membres Soul System Jiu Jitsu</p>
+          <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
+          <p class="text-xs text-silver tracking-wider uppercase mt-0.5">Espace Membre & Professeur Sécurisé</p>
         </div>
-        <span class="px-3 py-1 rounded-lg bg-gold text-xs text-black font-bold">Saison 2026-2027</span>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead>
-            <tr class="border-b border-white/10 text-gray-400 uppercase">
-              <th class="py-3 px-4">Rang</th>
-              <th class="py-3 px-4">Nom & Prénom</th>
-              <th class="py-3 px-4">Grade & Barrettes</th>
-              <th class="py-3 px-4 text-right">Statut</th>
-            </tr>
-          </thead>
-          <tbody id="classementBody" class="divide-y divide-white/5">
-          </tbody>
-        </table>
+      <div id="authStatusBanner" class="text-center text-[11px] font-semibold px-3 py-2 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/30">
+        ⏳ Synchronisation de la base des adhérents...
       </div>
-    </div>
 
-    <!-- ONGLET 5 : ANALYTICS CLUB DE LUXE (100% RÉSERVÉ AU PROFESSEUR) -->
-    <div id="sectionAnalytics" class="hidden space-y-6">
-      
-      <!-- BANDEAU KPI EXÉCUTIF -->
-      <div class="card-luxe p-6 rounded-2xl">
-        <div class="flex flex-wrap justify-between items-center gap-3 border-b border-white/10 pb-4 mb-5">
-          <div>
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/15 text-gold border border-gold/40 uppercase">Executive Business Intelligence</span>
-            <h2 class="text-xl font-extrabold text-white uppercase tracking-wider mt-1">Analytics Démographique & Grades — Soul System JJ</h2>
-            <p class="text-xs text-gray-400">Analyse croisée temps réel par catégories d'âge, genre, ceintures et implantation géographique</p>
-          </div>
-          <button onclick="actualiserGraphiquesAnalytics()" class="px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light">
-            🔄 Recalculer les Indicateurs
+      <!-- FORMULAIRE 1 : CONNEXION -->
+      <form id="loginForm" onsubmit="tenterConnexion(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Adresse Email enregistrée au club</label>
+          <input type="email" id="loginEmailInput" required placeholder="exemple@domaine.com" class="w-full bg-carbone border border-gold/40 rounded-xl px-4 py-3 text-sm text-white font-semibold focus:outline-none focus:border-gold">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Code PIN Personnel (4 chiffres)</label>
+          <input type="password" id="loginPinInput" required maxlength="4" pattern="\d{4}" inputmode="numeric" placeholder="••••" class="w-full bg-carbone border border-gold/40 rounded-xl px-4 py-3 text-center text-xl tracking-[0.6em] text-gold font-extrabold focus:outline-none focus:border-gold">
+        </div>
+
+        <button type="submit" id="btnLoginSubmit" class="w-full py-3.5 rounded-xl bg-gold text-black font-extrabold text-xs uppercase tracking-wider hover:bg-gold-light transition shadow-lg">
+          🔐 Se Connecter à mon Espace
+        </button>
+
+        <div class="text-center pt-1">
+          <button type="button" onclick="basculerModeAuth('setupPin')" class="text-xs text-gold hover:underline font-semibold">
+            Première connexion ou PIN oublié ? Définir mon Code PIN →
           </button>
         </div>
+      </form>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 text-center">
-          <div class="bg-carbone/90 p-3.5 rounded-xl border border-gold/30">
-            <p id="kpiTotalMembres" class="text-2xl font-black gold-gradient-text">0</p>
-            <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Effectif Total</p>
+      <!-- FORMULAIRE 2 : CRÉATION / RÉINITIALISATION CODE PIN -->
+      <form id="setupPinForm" onsubmit="enregistrerNouveauPin(event)" class="hidden space-y-4">
+        <div class="bg-carbone/80 p-3 rounded-xl border border-white/10 text-[11px] text-gray-300">
+          Renseignez l'adresse email enregistrée lors de votre inscription au club (ou celle du parent pour un compte famille) afin d'activer votre code PIN à 4 chiffres.
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Email Adhérent / Parent</label>
+          <input type="email" id="setupEmailInput" required placeholder="exemple@domaine.com" class="w-full bg-carbone border border-gold/40 rounded-xl px-4 py-3 text-sm text-white font-semibold focus:outline-none focus:border-gold">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-gray-300 uppercase mb-1">Nouveau PIN (4 chiffres)</label>
+            <input type="password" id="setupPin1" required maxlength="4" pattern="\d{4}" inputmode="numeric" placeholder="••••" class="w-full bg-carbone border border-gold/40 rounded-xl px-3 py-2.5 text-center text-lg tracking-[0.4em] text-gold font-extrabold">
           </div>
-          <div class="bg-carbone/90 p-3.5 rounded-xl border border-white/10">
-            <p id="kpiEnfants" class="text-2xl font-black text-sky-400">0</p>
-            <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Enfants (4–11 ans)</p>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-300 uppercase mb-1">Confirmer le PIN</label>
+            <input type="password" id="setupPin2" required maxlength="4" pattern="\d{4}" inputmode="numeric" placeholder="••••" class="w-full bg-carbone border border-gold/40 rounded-xl px-3 py-2.5 text-center text-lg tracking-[0.4em] text-gold font-extrabold">
           </div>
-          <div class="bg-carbone/90 p-3.5 rounded-xl border border-white/10">
-            <p id="kpiAdos" class="text-2xl font-black text-purple-400">0</p>
-            <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Ados (12–15 ans)</p>
+        </div>
+
+        <button type="submit" id="btnSetupPinSubmit" class="w-full py-3.5 rounded-xl bg-emerald-500 text-black font-extrabold text-xs uppercase tracking-wider hover:bg-emerald-400 transition shadow-lg">
+          ✅ Activer mon Code PIN & Entrer
+        </button>
+
+        <div class="text-center pt-1">
+          <button type="button" onclick="basculerModeAuth('login')" class="text-xs text-gray-400 hover:text-white font-semibold">
+            ← Retour à la connexion
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- APPLICATION PRINCIPALE (AFFICHÉE APRÈS AUTHENTIFICATION)  -->
+  <!-- ========================================================= -->
+  <div id="authenticatedShell" class="hidden flex-1 flex flex-col justify-between">
+    <div>
+      <!-- EN-TÊTE -->
+      <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-5 rounded-2xl card-luxe mb-6">
+        <div class="flex flex-wrap items-center gap-4 md:gap-6">
+          <div class="flex items-center justify-center flex-shrink-0">
+            <img src="./Logo.png?v=6" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-[0_0_15px_rgba(212,175,55,0.35)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
           </div>
-          <div class="bg-carbone/90 p-3.5 rounded-xl border border-white/10">
-            <p id="kpiAdultes" class="text-2xl font-black text-emerald-400">0</p>
-            <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Adultes (16+ ans)</p>
+          <div>
+            <h1 class="font-extrabold text-xl md:text-2xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
+            <div class="flex flex-wrap items-center gap-2 mt-0.5">
+              <p class="text-xs text-silver tracking-wider uppercase">Executive Club App</p>
+              <span id="roleBadgeHeader" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gold/15 text-gold border border-gold/40 uppercase">Compte Vérifié</span>
+              <span id="syncStatusBadge" class="prof-only-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">🟢 Connecté</span>
+            </div>
           </div>
-          <div class="bg-carbone/90 p-3.5 rounded-xl border border-white/10">
-            <p id="kpiRatioHF" class="text-lg font-black text-white mt-1">0% / 0%</p>
-            <p class="text-[10px] text-gray-400 uppercase font-bold mt-1">Hommes / Femmes</p>
+        </div>
+        
+        <div class="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
+          <!-- SÉLECTEUR PROFIL FAMILLE (AFFICHÉ SI LE COMPTE A PARENT + ENFANT(S) OU POUR AJOUTER UN ENFANT) -->
+          <div id="headerFamilySwitcher" class="hidden text-right">
+            <p class="text-[10px] text-gold font-bold uppercase">👨‍👧‍👦 Profil Famille Actif</p>
+            <select id="familyProfileSelectHeader" onchange="selectionnerMembreDepuisFamille(this.value)" class="bg-carbone border border-gold/50 rounded-lg px-2.5 py-1 text-xs text-white font-bold focus:outline-none">
+            </select>
           </div>
-          <div class="bg-carbone/90 p-3.5 rounded-xl border border-white/10">
-            <p id="kpiVillesCount" class="text-2xl font-black silver-gradient-text">0</p>
-            <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Villes Représentées</p>
+
+          <div class="text-right">
+            <p id="headerAccountName" class="text-xs font-extrabold text-white">—</p>
+            <p id="headerAccountEmail" class="text-[10px] text-gray-400">—</p>
           </div>
+
+          <div class="relative cursor-pointer" onclick="basculerOnglet('monprofil')" title="Mon Profil">
+            <img id="headerAvatar" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-11 h-11 rounded-full border-2 border-gold object-cover shadow-lg">
+          </div>
+
+          <button onclick="deconnecterUtilisateur()" class="px-3 py-2 rounded-xl bg-carbone border border-red-500/40 text-red-400 text-xs font-bold hover:bg-red-500/15 transition" title="Se déconnecter">
+            🚪 Quitter
+          </button>
+        </div>
+      </header>
+
+      <!-- NOTIFICATION ANNIVERSAIRES DU JOUR (PROFESSEUR UNIQUEMENT) -->
+      <div id="birthdayNotificationBox" class="hidden w-full max-w-7xl mx-auto mb-4 bg-gradient-to-r from-gold/20 via-amber-500/15 to-gold/20 border border-gold p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-lg">
+        <div class="flex items-center space-x-3">
+          <span class="text-3xl">🎂</span>
+          <div>
+            <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider">Anniversaire(s) du Jour au Club !</h3>
+            <div id="birthdayNotifList" class="text-xs text-white font-semibold mt-0.5 space-y-0.5"></div>
+          </div>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-gold text-black font-extrabold text-[10px] uppercase">À souhaiter sur le tatami</span>
+      </div>
+
+      <!-- NOTIFICATION BARRETTES PROFESSEUR -->
+      <div id="coachNotificationBox" class="hidden w-full max-w-7xl mx-auto mb-6 bg-gold/10 border border-gold/40 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center space-x-3">
+          <span class="text-2xl">🔔</span>
+          <div>
+            <h3 class="text-xs font-bold text-gold uppercase tracking-wider">Alerte Éligibilité Passage de Grade (Professeur)</h3>
+            <p id="coachNotifText" class="text-xs text-gray-300">Analyse des quotas d'assiduité en cours...</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="ouvrirAppelTatami('Session du Jour', [])" class="px-3 py-1.5 rounded-xl bg-carbone border border-gold/50 text-gold font-bold text-xs hover:bg-gold/10">
+            🥋 Appel Tatami
+          </button>
+          <button onclick="basculerOnglet('monprofil')" class="px-3 py-1.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light">
+            Gérer les Grades
+          </button>
         </div>
       </div>
 
-      <!-- LIGNE 1 : RÉPARTITIONS SIMPLES (ÂGE, GENRE, CEINTURES, VILLES) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="card-luxe p-5 rounded-2xl flex flex-col justify-between">
-          <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider mb-3">1. Catégories d'Âge</h3>
-          <div class="relative h-56"><canvas id="chartAgeSimple"></canvas></div>
-        </div>
-
-        <div class="card-luxe p-5 rounded-2xl flex flex-col justify-between">
-          <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider mb-3">2. Répartition Hommes / Femmes</h3>
-          <div class="relative h-56"><canvas id="chartGenreSimple"></canvas></div>
-        </div>
-
-        <div class="card-luxe p-5 rounded-2xl flex flex-col justify-between">
-          <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider mb-3">3. Couleurs de Ceintures</h3>
-          <div class="relative h-56"><canvas id="chartBeltSimple"></canvas></div>
-        </div>
-
-        <div class="card-luxe p-5 rounded-2xl flex flex-col justify-between">
-          <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider mb-3">4. Répartition par Ville</h3>
-          <div class="relative h-56"><canvas id="chartCitySimple"></canvas></div>
-        </div>
+      <!-- ÉCRAN DE SUSPENSION DE COMPTE (SI BLOQUE_ACCES = OUI EN MODE ÉLÈVE) -->
+      <div id="blockedAccountOverlay" class="hidden w-full max-w-3xl mx-auto my-8 card-luxe border-red-500/50 p-8 rounded-2xl text-center space-y-4">
+        <div class="text-4xl">🚫</div>
+        <h2 class="text-xl font-extrabold text-red-400 uppercase tracking-wider">Accès au Compte Suspendu</h2>
+        <p class="text-sm text-gray-300">Votre accès à l'application <strong>Soul System Jiu Jitsu</strong> a été temporairement restreint par le professeur.</p>
+        <p class="text-xs text-gray-400">Veuillez vous rapprocher de <strong>Martin Huambachano</strong> au club pour régulariser votre situation.</p>
       </div>
 
-      <!-- LIGNE 2 : ANALYSES CROISÉES HAUT NIVEAU -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="card-luxe p-6 rounded-2xl">
-          <div class="mb-3">
-            <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">5. Croisement : Hommes & Femmes par Ville</h3>
-            <p class="text-[11px] text-gray-400">Distribution géographique croisée selon le genre</p>
-          </div>
-          <div class="relative h-72"><canvas id="chartCrossGenreCity"></canvas></div>
+      <main id="mainAppContainer" class="w-full max-w-7xl mx-auto space-y-8">
+        
+        <!-- BARRE DE NAVIGATION PRINCIPALE -->
+        <div class="flex flex-wrap gap-2 border-b border-white/10 pb-3">
+          <button onclick="basculerOnglet('dashboard')" id="tabDash" class="px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs">📊 Dashboard & Radar 360°</button>
+          <button onclick="basculerOnglet('planning')" id="tabPlan" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">📅 Planning & Inscriptions</button>
+          <button onclick="basculerOnglet('monprofil')" id="tabProf" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">👤 Mon Profil & Famille</button>
+          <button onclick="basculerOnglet('classement')" id="tabClass" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">🏆 Classement Général</button>
+          <button onclick="basculerOnglet('analytics')" id="tabAnalytics" class="btnProfOnly hidden px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10">📈 Analytics Club (Prof)</button>
         </div>
 
-        <div class="card-luxe p-6 rounded-2xl">
-          <div class="mb-3">
-            <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">6. Croisement : Couleur de Ceinture par Genre</h3>
-            <p class="text-[11px] text-gray-400">Répartition des grades Hommes vs Femmes</p>
+        <!-- ONGLET 1 : DASHBOARD & RADAR COMPLET DES 10 POINTS -->
+        <div id="sectionDashboard" class="space-y-8">
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- CARTE 1 : PROFIL DYNAMIQUE DU MEMBRE ACTIF -->
+            <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-center mb-3">
+                  <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Fiche Membre Actif</h2>
+                  <span id="activeCardBeltLabel" class="text-[11px] font-extrabold text-gold uppercase">Ceinture Blanche</span>
+                </div>
+                <div class="flex items-center space-x-4 mb-4">
+                  <img id="activeCardAvatar" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-14 h-14 rounded-2xl border border-gold/60 object-cover">
+                  <div>
+                    <h3 id="activeCardName" class="font-bold text-lg text-white">Chargement...</h3>
+                    <p id="activeCardSub" class="text-xs gold-gradient-text font-semibold">Synchronisation en cours</p>
+                  </div>
+                </div>
+              </div>
+
+              <div id="beltDisplayActive" class="w-full h-7 rounded belt-blanche relative flex items-center justify-end overflow-hidden shadow-inner">
+                <div id="beltTipActive" class="h-full w-16 bg-black flex items-center justify-evenly px-1.5 border-l border-white/20">
+                </div>
+              </div>
+            </div>
+
+            <!-- CARTE 2 : ASSIDUITÉ & QUOTA PROCHAINE BARRETTE -->
+            <div class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
+              <div class="flex justify-between items-center mb-2">
+                <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Assiduité & Progression</h2>
+                <span id="activeCardStatusBadge" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold">Actif</span>
+              </div>
+              <div class="grid grid-cols-2 gap-4 text-center my-2">
+                <div class="bg-carbone/80 p-3 rounded-xl border border-white/5">
+                  <p id="activeCardCourses" class="text-2xl font-black gold-gradient-text">0</p>
+                  <p class="text-[10px] text-gray-400">Cours Validés</p>
+                </div>
+                <div class="bg-carbone/80 p-3 rounded-xl border border-white/5">
+                  <p id="activeCardHours" class="text-2xl font-black silver-gradient-text">0 h</p>
+                  <p class="text-[10px] text-gray-400">Volume Horaire</p>
+                </div>
+              </div>
+              <div class="space-y-1">
+                <div class="flex justify-between text-[10px] text-gray-400">
+                  <span>Prochaine Barrette</span>
+                  <span id="activeCardProgressText" class="text-gold font-bold">0 / 25 cours</span>
+                </div>
+                <div class="w-full bg-carbone rounded-full h-1.5 overflow-hidden border border-white/5">
+                  <div id="activeCardProgressBar" class="bg-gold h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARTE 3A : SÉLECTEUR DE MEMBRE (PROFESSEUR UNIQUEMENT) -->
+            <div id="boxSelectEleve" class="hidden card-luxe p-6 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-center mb-2">
+                  <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre (Prof)</h2>
+                  <span id="totalElevesCount" class="text-[10px] text-gold font-bold">0 inscrits</span>
+                </div>
+                <p class="text-xs text-gray-400 mb-3">Sélectionnez un adhérent pour gérer son grade, son PIN ou ses statistiques :</p>
+              </div>
+              <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
+                <option value="">Chargement...</option>
+              </select>
+            </div>
+
+            <!-- CARTE 3B : CONTACT HEAD COACH + ESPACE FAMILLE (COMPTE ÉLÈVE / PARENT UNIQUEMENT) -->
+            <div id="boxHeadCoachCardStudent" class="hidden card-luxe p-6 rounded-2xl flex flex-col justify-between">
+              <div class="flex justify-between items-center mb-2">
+                <h2 class="text-xs font-semibold text-gold uppercase tracking-widest">Votre Professeur (Head Coach)</h2>
+                <span id="coachCardBeltTag" class="text-[10px] px-2 py-0.5 rounded bg-gold/15 text-gold font-bold">Ceinture Marron</span>
+              </div>
+              <div class="flex items-center space-x-3.5 my-1">
+                <img id="coachCardAvatar" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-14 h-14 rounded-2xl border border-gold object-cover">
+                <div class="text-xs space-y-0.5">
+                  <p id="coachCardName" class="font-extrabold text-sm text-white">Martin Huambachano</p>
+                  <p id="coachCardGrade" class="text-gold font-semibold">Ceinture Marron • 0 Barrette</p>
+                  <p id="coachCardDob" class="text-gray-400 text-[11px]">🎂 Né le : —</p>
+                  <p id="coachCardPhone" class="text-emerald-400 font-bold text-[11px]">📞 —</p>
+                </div>
+              </div>
+              <button onclick="ouvrirModalAjoutEnfant()" class="mt-2 w-full py-1.5 rounded-lg bg-carbone border border-gold/40 text-gold text-[11px] font-bold hover:bg-gold/10 transition">
+                👨‍👧‍👦 Gérer ma Famille / Ajouter un Enfant
+              </button>
+            </div>
+
           </div>
-          <div class="relative h-72"><canvas id="chartCrossGenreBelt"></canvas></div>
+
+          <!-- RADAR 360 & COMPTAGE SPARRING SUR LES 10 CATEGORIES -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-6 card-luxe p-6 rounded-2xl flex flex-col justify-between">
+              <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
+                <div>
+                  <h2 class="text-base font-bold text-white uppercase tracking-wider">Radar de Compétences Sparring</h2>
+                  <p id="radarPeriodLabel" class="text-xs text-gold">Membre : — Mois en Cours</p>
+                </div>
+                <select id="periodeSelector" onchange="changerPeriodeRadar()" class="bg-carbone border border-gold/30 text-xs text-gold rounded px-2 py-1">
+                  <option value="actuel">Mois en cours</option>
+                  <option value="m1">Mois précédent (M-1)</option>
+                  <option value="cumul">Saison Complète</option>
+                </select>
+              </div>
+              
+              <div class="relative w-full aspect-square max-h-[380px] mx-auto flex items-center justify-center">
+                <canvas id="performanceRadar"></canvas>
+              </div>
+
+              <div class="flex justify-center space-x-6 mt-3 text-[11px]">
+                <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-gold inline-block"></span><span class="text-gray-300 font-semibold">Techniques Réussies (R)</span></span>
+                <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-silver/60 inline-block"></span><span class="text-gray-400 font-semibold">Techniques Subies (S)</span></span>
+              </div>
+            </div>
+
+            <!-- FORMULAIRE COMPLET DES 10 POINTS DE SPARRING -->
+            <div class="lg:col-span-6 card-luxe p-6 rounded-2xl space-y-4">
+              <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                <h2 class="text-base font-bold text-white uppercase tracking-wider">Saisie des 10 Points de Sparring</h2>
+                <span class="text-[10px] text-gold font-bold">Réussis (Or) / Subis (Gris)</span>
+              </div>
+
+              <div class="space-y-2.5 max-h-[400px] overflow-y-auto pr-1 text-xs">
+                <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
+                  <span class="font-bold text-white">1. Amenés au Sol (Takedowns)</span>
+                  <div class="flex space-x-2">
+                    <input type="number" id="tdWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                    <input type="number" id="tdLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                  </div>
+                </div>
+                <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
+                  <span class="font-bold text-white">2. Tirages de Garde (Pull Guard)</span>
+                  <div class="flex space-x-2">
+                    <input type="number" id="pullWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                    <input type="number" id="pullLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                  </div>
+                </div>
+                <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
+                  <span class="font-bold text-white">3. Passages de Garde</span>
+                  <div class="flex space-x-2">
+                    <input type="number" id="passWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                    <input type="number" id="passLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                  </div>
+                </div>
+                <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
+                  <span class="font-bold text-white">4. Positions Montées</span>
+                  <div class="flex space-x-2">
+                    <input type="number" id="mountWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                    <input type="number" id="mountLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                  </div>
+                </div>
+                <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
+                  <span class="font-bold text-white">5. Contrôles Latéraux</span>
+                  <div class="flex space-x-2">
+                    <input type="number" id="sideWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                    <input type="number" id="sideLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                  </div>
+                </div>
+                <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
+                  <span class="font-bold text-white">6. Nord-Sud (North-South)</span>
+                  <div class="flex space-x-2">
+                    <input type="number" id="nsWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                    <input type="number" id="nsLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                  </div>
+                </div>
+                <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
+                  <span class="font-bold text-white">7. Contrôles depuis une Garde</span>
+                  <div class="flex space-x-2">
+                    <input type="number" id="guardCtrlWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                    <input type="number" id="guardCtrlLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                  </div>
+                </div>
+                <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
+                  <span class="font-bold text-white">8. Sorties (Escapes)</span>
+                  <div class="flex space-x-2">
+                    <input type="number" id="escWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                    <input type="number" id="escLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                  </div>
+                </div>
+                <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
+                  <span class="font-bold text-white">9. Renversements (Sweeps)</span>
+                  <div class="flex space-x-2">
+                    <input type="number" id="swpWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                    <input type="number" id="swpLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                  </div>
+                </div>
+                <div class="bg-carbone/80 p-2.5 rounded-xl border border-white/5 flex justify-between items-center">
+                  <span class="font-bold text-white">10. Soumissions (Taps)</span>
+                  <div class="flex space-x-2">
+                    <input type="number" id="subWin" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-gold/40 text-center rounded text-gold font-bold p-1">
+                    <input type="number" id="subLoss" min="0" value="0" onchange="actualiserRadarDepuisInputs()" class="w-12 bg-anthracite border border-white/10 text-center rounded text-gray-400 p-1">
+                  </div>
+                </div>
+              </div>
+
+              <button id="btnSaveSparring" onclick="enregistrerStatsSparring()" class="w-full py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
+                💾 Enregistrer mes statistiques Sparring
+              </button>
+            </div>
+
+          </div>
         </div>
 
-        <div class="card-luxe p-6 rounded-2xl">
-          <div class="mb-3">
-            <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">7. Croisement : Catégorie d'Âge × Couleur de Ceinture</h3>
-            <p class="text-[11px] text-gray-400">Enfants (4-11), Ados (12-15) et Adultes (16+) par grade</p>
+        <!-- ONGLET 2 : PLANNING & INSCRIPTIONS EN DIRECT -->
+        <div id="sectionPlanning" class="hidden space-y-6">
+          
+          <!-- CRÉATION DE SESSION (HEAD COACH UNIQUEMENT) -->
+          <div id="boxCreateEvent" class="hidden card-luxe p-6 rounded-2xl space-y-4">
+            <div class="flex justify-between items-center">
+              <h2 class="text-base font-bold text-white uppercase tracking-wider">Créer une Session / Stage / Master Class (Head Coach)</h2>
+              <span class="text-[10px] text-gold font-bold uppercase">Limite par défaut : 16 inscrits</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-4 text-xs">
+              <div>
+                <label class="text-gray-400 font-semibold">Type de Session</label>
+                <select id="eventType" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
+                  <option value="Cours Gi">Cours (Gi)</option>
+                  <option value="Cours No-Gi">Cours (No-Gi)</option>
+                  <option value="Stage">Stage Technique</option>
+                  <option value="Séminaire">Séminaire d'Expert</option>
+                  <option value="Master Class">Master Class 4K</option>
+                  <option value="Open Mat">Open Mat Sparring</option>
+                  <option value="Entraînement">Entraînement Compétition</option>
+                </select>
+              </div>
+              <div class="md:col-span-2">
+                <label class="text-gray-400 font-semibold">Thème de la Session</label>
+                <input type="text" id="eventTheme" placeholder="ex: Guard Retention & Leg Locks" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+              </div>
+              <div>
+                <label class="text-gray-400 font-semibold">Professeur</label>
+                <input type="text" id="eventProfesseur" value="Martin Huambachano" class="w-full bg-carbone border border-gold/40 rounded-lg p-2.5 text-gold font-bold mt-1">
+              </div>
+              <div>
+                <label class="text-gray-400 font-semibold">Date & Horaires</label>
+                <input type="text" id="eventDate" placeholder="Mardi 17 Nov — 19h30" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+              </div>
+              <div>
+                <label class="text-gray-400 font-semibold">Limite / Récurrence</label>
+                <div class="flex gap-2 mt-1">
+                  <input type="number" id="eventCapacite" value="16" min="1" max="100" class="w-16 bg-carbone border border-gold/40 rounded-lg p-2.5 text-center text-gold font-bold" title="Nombre maximum d'inscrits">
+                  <select id="eventRecurrence" class="flex-1 bg-carbone border border-white/10 rounded-lg p-2 text-gray-300">
+                    <option value="Ponctuel">Ponctuel</option>
+                    <option value="Hebdomadaire">Hebdo</option>
+                    <option value="Mensuel">Mensuel</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-end">
+              <button id="btnPublierSession" onclick="publierEvenementSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
+                ➕ Publier la Session au Planning
+              </button>
+            </div>
           </div>
-          <div class="relative h-72"><canvas id="chartCrossAgeBelt"></canvas></div>
+
+          <!-- LISTE DES SESSIONS -->
+          <div class="card-luxe p-6 rounded-2xl space-y-4">
+            <div class="flex flex-wrap justify-between items-center gap-2 border-b border-white/10 pb-3">
+              <div>
+                <h2 class="text-lg font-bold text-white uppercase tracking-wider">Planning Officiel des Sessions</h2>
+                <p class="text-xs text-gray-400">Inscriptions en direct pour : <strong id="planningActiveMemberName" class="text-gold">Membre actif</strong></p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="chargerElevesSheets()" class="px-3 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 text-xs hover:border-gold">
+                  🔄 Actualiser
+                </button>
+                <button onclick="ouvrirAppelTatami('Session Libre / Cours du Jour', [])" class="btnProfOnly hidden px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light transition">
+                  🥋 Appel Tatami Rapide
+                </button>
+              </div>
+            </div>
+
+            <div id="courseBlockedWarning" class="hidden bg-red-500/15 border border-red-500/40 p-4 rounded-xl text-xs text-red-300 font-semibold">
+              ⚠️ <strong>Inscriptions aux cours temporairement suspendues</strong> (cotisation ou dossier à régulariser auprès du professeur).
+            </div>
+            
+            <div id="sessionsListContainer" class="space-y-4">
+              <div class="text-center py-8 text-xs text-gray-400">⏳ Chargement des sessions...</div>
+            </div>
+          </div>
+
         </div>
 
-        <div class="card-luxe p-6 rounded-2xl">
-          <div class="mb-3">
-            <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">8. Croisement : Catégorie d'Âge × Hommes / Femmes</h3>
-            <p class="text-[11px] text-gray-400">Structure démographique croisée par tranche d'âge</p>
+        <!-- ONGLET 3 : MON PROFIL, FAMILLE & GESTION DES GRADES -->
+        <div id="sectionMonProfil" class="hidden space-y-6">
+          
+          <!-- ESPACE FAMILLE (PARENT + ENFANTS RATTACHÉS SUR LE COMPTE) -->
+          <div id="familyManagementCard" class="hidden card-luxe p-6 rounded-2xl border-gold/40 space-y-4">
+            <div class="flex flex-wrap justify-between items-center gap-3 border-b border-white/10 pb-3">
+              <div>
+                <h3 class="text-base font-extrabold text-gold uppercase tracking-wider">👨‍👧‍👦 Espace Famille (Parent & Enfants rattachés)</h3>
+                <p class="text-xs text-gray-400">Sélectionnez un membre de votre famille pour afficher son profil ou l'inscrire aux cours</p>
+              </div>
+              <button onclick="ouvrirModalAjoutEnfant()" class="px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light transition">
+                ➕ Ajouter un Enfant sur mon Compte
+              </button>
+            </div>
+            <div id="familyMembersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            </div>
           </div>
-          <div class="relative h-72"><canvas id="chartCrossAgeGenre"></canvas></div>
-        </div>
-      </div>
 
+          <!-- FICHE PERSONNELLE DU MEMBRE ACTIF -->
+          <div class="card-luxe p-6 rounded-2xl space-y-6">
+            <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 gap-3">
+              <div>
+                <h2 class="text-lg font-bold text-white uppercase tracking-wider">Fiche d'Informations Personnelles</h2>
+                <p class="text-xs text-gray-400">Informations issues du dossier d'adhésion du club</p>
+              </div>
+              <span id="profileLockBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                🔓 Édition Professeur Active
+              </span>
+            </div>
+
+            <!-- SÉLECTEUR DE MEMBRE SUR L'ONGLET PROFIL (PROFESSEUR UNIQUEMENT) -->
+            <div id="boxProfilMemberSwitch" class="hidden bg-carbone/70 p-3.5 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <span class="text-gray-300 font-semibold">👤 Fiche affichée actuellement (Professeur) :</span>
+              <select id="eleveSelectProfil" onchange="synchroniserSelecteurProfil(this.value)" class="bg-anthracite border border-gold/40 rounded-lg px-3 py-1.5 text-gold font-bold focus:outline-none">
+                <option value="">Chargement...</option>
+              </select>
+            </div>
+
+            <!-- GESTION DU GRADE, CODE PIN & CONTRÔLE D'ACCÈS (HEAD COACH UNIQUEMENT) -->
+            <div id="boxGradeEditCoach" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-4">
+              
+              <div class="bg-carbone/80 p-4 rounded-xl border border-gold/40 flex flex-col justify-between gap-3">
+                <div>
+                  <h3 class="text-xs font-bold text-gold uppercase">1. Grade & Barrettes (Head Coach)</h3>
+                  <p class="text-[10px] text-gray-400">Attribuez la ceinture et les barrettes du membre</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                  <select id="selectCeintureProf" onchange="previsualiserGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-white font-bold">
+                    <option value="Blanche">Ceinture Blanche</option>
+                    <option value="Bleue">Ceinture Bleue</option>
+                    <option value="Violette">Ceinture Violette</option>
+                    <option value="Marron">Ceinture Marron</option>
+                    <option value="Noire">Ceinture Noire</option>
+                  </select>
+
+                  <select id="selectBarrettesProf" onchange="previsualiserGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-gold font-bold">
+                    <option value="0">0 Barrette</option>
+                    <option value="1">1 Barrette</option>
+                    <option value="2">2 Barrettes</option>
+                    <option value="3">3 Barrettes</option>
+                    <option value="4">4 Barrettes</option>
+                  </select>
+
+                  <button id="btnSaveGrade" onclick="sauvegarderGradeSheets()" class="px-4 py-2 rounded-lg bg-gold text-black font-extrabold hover:bg-gold-light transition">
+                    🏆 Valider Grade
+                  </button>
+                </div>
+              </div>
+
+              <div class="bg-carbone/80 p-4 rounded-xl border border-red-500/30 flex flex-col justify-between gap-3">
+                <div>
+                  <h3 class="text-xs font-bold text-red-400 uppercase">2. Sécurité PIN, Cotisation & Accès Application</h3>
+                  <p class="text-[10px] text-gray-400">Gérez le blocage des cours, la suspension de compte ou le PIN membre</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                  <button id="btnToggleBloqueCours" onclick="basculerBlocageMembre('BLOQUE_COURS')" class="px-3 py-2 rounded-lg font-bold border transition">
+                    🟢 Inscriptions Cours : Autorisées
+                  </button>
+                  <button id="btnToggleBloqueAcces" onclick="basculerBlocageMembre('BLOQUE_ACCES')" class="px-3 py-2 rounded-lg font-bold border transition">
+                    🟢 Accès Compte App : Actif
+                  </button>
+                  <button onclick="reinitialiserPinParProf()" class="px-3 py-2 rounded-lg font-bold bg-carbone border border-gold/40 text-gold hover:bg-gold/10 transition">
+                    🔑 Définir / Reset PIN
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div class="flex flex-col items-center justify-center space-y-3 bg-carbone/60 p-4 rounded-xl border border-white/5">
+                <img id="profilePhotoDisplay" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-28 h-28 rounded-2xl border-2 border-gold object-cover shadow-xl">
+                <label id="btnUploadPhotoLabel" class="hidden cursor-pointer px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold text-xs font-bold hover:bg-gold hover:text-black transition">
+                  📷 Modifier Photo
+                  <input type="file" accept="image/*" class="hidden" onchange="uploadPhotoProfil(event)">
+                </label>
+              </div>
+
+              <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label class="text-gray-400 font-semibold">Prénom</label>
+                  <input type="text" id="fieldPrenom" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Nom</label>
+                  <input type="text" id="fieldNom" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Genre (Homme / Femme)</label>
+                  <select id="fieldGenre" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+                    <option value="Homme">Homme</option>
+                    <option value="Femme">Femme</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Date de Naissance</label>
+                  <input type="text" id="fieldDateNaissance" value="" placeholder="JJ/MM/AAAA" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Adresse Email (Identifiant Compte)</label>
+                  <input type="email" id="fieldEmail" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Numéro de Téléphone</label>
+                  <input type="text" id="fieldTel" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Ville</label>
+                  <input type="text" id="fieldVille" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Licence CFJJB / Assurance</label>
+                  <input type="text" id="fieldLicence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-emerald-400 font-bold mt-1">
+                </div>
+
+                <div class="md:col-span-2">
+                  <label class="text-gray-400 font-semibold">Adresse Postale Complète</label>
+                  <input type="text" id="fieldAdresse" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Personne à Contacter en Cas d'Urgence</label>
+                  <input type="text" id="fieldUrgence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Informations Médicales / Allergies</label>
+                  <input type="text" id="fieldAllergies" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Club Précédent</label>
+                  <input type="text" id="fieldClubPrecedent" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+                </div>
+
+                <div>
+                  <label class="text-gray-400 font-semibold">Total Cours Validés</label>
+                  <input type="number" id="fieldTotalCours" min="0" value="0" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
+                </div>
+              </div>
+            </div>
+
+            <div id="boxSaveProfilFooter" class="hidden flex justify-end pt-4 border-t border-white/10">
+              <button id="btnSaveProfil" onclick="sauvegarderProfilSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
+                💾 Enregistrer les Modifications (Professeur)
+              </button>
+            </div>
+          </div>
+
+          <!-- FICHE PUBLIQUE DU PROFESSEUR VISIBLE PAR LES ÉLÈVES -->
+          <div id="studentCoachProfileSection" class="hidden card-luxe p-6 rounded-2xl border-gold/40 space-y-4">
+            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+              <div>
+                <h3 class="text-base font-bold text-gold uppercase tracking-wider">Informations du Professeur (Head Coach)</h3>
+                <p class="text-xs text-gray-400">Contact direct et grade officiel de votre enseignant</p>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-gold/10 text-gold border border-gold/30 text-xs font-bold">Soul System JJ</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-6">
+              <img id="studentViewCoachPhoto" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-24 h-24 rounded-2xl border-2 border-gold object-cover shadow-xl">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-2 text-xs">
+                <div>
+                  <span class="text-gray-400">Nom & Prénom :</span>
+                  <p id="studentViewCoachFullName" class="text-sm font-extrabold text-white">Martin Huambachano</p>
+                </div>
+                <div>
+                  <span class="text-gray-400">Grade & Barrettes :</span>
+                  <p id="studentViewCoachGrade" class="text-sm font-extrabold text-gold">Ceinture Marron • 0 Barrette</p>
+                </div>
+                <div>
+                  <span class="text-gray-400">Date de Naissance :</span>
+                  <p id="studentViewCoachDob" class="text-sm font-bold text-white">—</p>
+                </div>
+                <div>
+                  <span class="text-gray-400">Numéro de Téléphone :</span>
+                  <p id="studentViewCoachPhone" class="text-sm font-extrabold text-emerald-400">—</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ONGLET 4 : CLASSEMENT GENERAL -->
+        <div id="sectionClassement" class="hidden card-luxe p-6 rounded-2xl">
+          <div class="flex flex-wrap items-center justify-between mb-6">
+            <div>
+              <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement Général du Club</h2>
+              <p class="text-xs text-gray-400">Assiduité officielle et grades des membres Soul System Jiu Jitsu</p>
+            </div>
+            <span class="px-3 py-1 rounded-lg bg-gold text-xs text-black font-bold">Saison 2026-2027</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-white/10 text-gray-400 uppercase">
+                  <th class="py-3 px-4">Rang</th>
+                  <th class="py-3 px-4">Nom & Prénom</th>
+                  <th class="py-3 px-4">Grade & Barrettes</th>
+                  <th class="py-3 px-4 text-right">Statut</th>
+                </tr>
+              </thead>
+              <tbody id="classementBody" class="divide-y divide-white/5">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ONGLET 5 : ANALYTICS CLUB DE LUXE (100% RÉSERVÉ AU PROFESSEUR) -->
+        <div id="sectionAnalytics" class="hidden space-y-6">
+          
+          <div class="card-luxe p-6 rounded-2xl">
+            <div class="flex flex-wrap justify-between items-center gap-3 border-b border-white/10 pb-4 mb-5">
+              <div>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/15 text-gold border border-gold/40 uppercase">Executive Business Intelligence</span>
+                <h2 class="text-xl font-extrabold text-white uppercase tracking-wider mt-1">Analytics Démographique & Grades — Soul System JJ</h2>
+                <p class="text-xs text-gray-400">Analyse croisée temps réel par catégories d'âge, genre, ceintures et implantation géographique</p>
+              </div>
+              <button onclick="actualiserGraphiquesAnalytics()" class="px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light">
+                🔄 Recalculer les Indicateurs
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4 text-center">
+              <div class="bg-carbone/90 p-3.5 rounded-xl border border-gold/30">
+                <p id="kpiTotalMembres" class="text-2xl font-black gold-gradient-text">0</p>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Effectif Total</p>
+              </div>
+              <div class="bg-carbone/90 p-3.5 rounded-xl border border-white/10">
+                <p id="kpiEnfants" class="text-2xl font-black text-sky-400">0</p>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Enfants (4–11 ans)</p>
+              </div>
+              <div class="bg-carbone/90 p-3.5 rounded-xl border border-white/10">
+                <p id="kpiAdos" class="text-2xl font-black text-purple-400">0</p>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Ados (12–15 ans)</p>
+              </div>
+              <div class="bg-carbone/90 p-3.5 rounded-xl border border-white/10">
+                <p id="kpiAdultes" class="text-2xl font-black text-emerald-400">0</p>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Adultes (16+ ans)</p>
+              </div>
+              <div class="bg-carbone/90 p-3.5 rounded-xl border border-white/10">
+                <p id="kpiRatioHF" class="text-lg font-black text-white mt-1">0% / 0%</p>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mt-1">Hommes / Femmes</p>
+              </div>
+              <div class="bg-carbone/90 p-3.5 rounded-xl border border-white/10">
+                <p id="kpiVillesCount" class="text-2xl font-black silver-gradient-text">0</p>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Villes Représentées</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="card-luxe p-5 rounded-2xl flex flex-col justify-between">
+              <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider mb-3">1. Catégories d'Âge</h3>
+              <div class="relative h-56"><canvas id="chartAgeSimple"></canvas></div>
+            </div>
+
+            <div class="card-luxe p-5 rounded-2xl flex flex-col justify-between">
+              <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider mb-3">2. Répartition Hommes / Femmes</h3>
+              <div class="relative h-56"><canvas id="chartGenreSimple"></canvas></div>
+            </div>
+
+            <div class="card-luxe p-5 rounded-2xl flex flex-col justify-between">
+              <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider mb-3">3. Couleurs de Ceintures</h3>
+              <div class="relative h-56"><canvas id="chartBeltSimple"></canvas></div>
+            </div>
+
+            <div class="card-luxe p-5 rounded-2xl flex flex-col justify-between">
+              <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider mb-3">4. Répartition par Ville</h3>
+              <div class="relative h-56"><canvas id="chartCitySimple"></canvas></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="card-luxe p-6 rounded-2xl">
+              <div class="mb-3">
+                <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">5. Croisement : Hommes & Femmes par Ville</h3>
+                <p class="text-[11px] text-gray-400">Distribution géographique croisée selon le genre</p>
+              </div>
+              <div class="relative h-72"><canvas id="chartCrossGenreCity"></canvas></div>
+            </div>
+
+            <div class="card-luxe p-6 rounded-2xl">
+              <div class="mb-3">
+                <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">6. Croisement : Couleur de Ceinture par Genre</h3>
+                <p class="text-[11px] text-gray-400">Répartition des grades Hommes vs Femmes</p>
+              </div>
+              <div class="relative h-72"><canvas id="chartCrossGenreBelt"></canvas></div>
+            </div>
+
+            <div class="card-luxe p-6 rounded-2xl">
+              <div class="mb-3">
+                <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">7. Croisement : Catégorie d'Âge × Couleur de Ceinture</h3>
+                <p class="text-[11px] text-gray-400">Enfants (4-11), Ados (12-15) et Adultes (16+) par grade</p>
+              </div>
+              <div class="relative h-72"><canvas id="chartCrossAgeBelt"></canvas></div>
+            </div>
+
+            <div class="card-luxe p-6 rounded-2xl">
+              <div class="mb-3">
+                <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">8. Croisement : Catégorie d'Âge × Hommes / Femmes</h3>
+                <p class="text-[11px] text-gray-400">Structure démographique croisée par tranche d'âge</p>
+              </div>
+              <div class="relative h-72"><canvas id="chartCrossAgeGenre"></canvas></div>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
     </div>
 
-  </main>
+    <footer class="w-full max-w-7xl mx-auto text-center text-xs text-gray-500 py-6 mt-8 border-t border-white/5">
+      Soul System Jiu Jitsu © 2026 — Soul System JJ
+    </footer>
+  </div>
+
+  <!-- MODALE AJOUT D'UN ENFANT SUR LE COMPTE PARENT -->
+  <div id="modalAddChild" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="card-luxe w-full max-w-md rounded-2xl border border-gold/50 p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-white/10 pb-3">
+        <div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold/15 text-gold uppercase">Espace Famille</span>
+          <h3 class="text-base font-extrabold text-white mt-1">Ajouter un Enfant sur mon Compte</h3>
+        </div>
+        <button onclick="fermerModalAjoutEnfant()" class="text-gray-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+      <form onsubmit="enregistrerNouvelEnfant(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-gray-400 font-semibold">Prénom de l'enfant</label>
+            <input type="text" id="childPrenomInput" required class="w-full bg-carbone border border-gold/40 rounded-xl p-2.5 text-white font-bold mt-1">
+          </div>
+          <div>
+            <label class="text-gray-400 font-semibold">Nom</label>
+            <input type="text" id="childNomInput" required class="w-full bg-carbone border border-gold/40 rounded-xl p-2.5 text-white font-bold mt-1">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-gray-400 font-semibold">Date de Naissance</label>
+            <input type="text" id="childDobInput" required placeholder="JJ/MM/AAAA" class="w-full bg-carbone border border-white/10 rounded-xl p-2.5 text-white mt-1">
+          </div>
+          <div>
+            <label class="text-gray-400 font-semibold">Genre</label>
+            <select id="childGenreInput" class="w-full bg-carbone border border-white/10 rounded-xl p-2.5 text-white font-bold mt-1">
+              <option value="Homme">Garçon (Homme)</option>
+              <option value="Femme">Fille (Femme)</option>
+            </select>
+          </div>
+        </div>
+        <p class="text-[11px] text-gray-400">
+          L'enfant sera rattaché à votre adresse email (<strong id="parentEmailDisplayModal" class="text-gold"></strong>) et accessible avec le même code PIN.
+        </p>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="fermerModalAjoutEnfant()" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold">Annuler</button>
+          <button type="submit" id="btnSaveChildSubmit" class="px-5 py-2 rounded-xl bg-gold text-black font-extrabold hover:bg-gold-light">
+            ➕ Ajouter l'Enfant
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- MODALE APPEL TATAMI -->
   <div id="modalAppelTatami" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
@@ -886,17 +1047,17 @@
     </div>
   </div>
 
-  <footer class="w-full max-w-7xl mx-auto text-center text-xs text-gray-500 py-6 mt-8 border-t border-white/5">
-    Soul System Jiu Jitsu © 2026 — Soul System JJ
-  </footer>
-
   <script>
     let listeEleves = [];
     let listeSessions = [];
     let currentEleveIndex = 0;
-    let firstLoadDone = false;
     let radarChart = null;
     let analyticsCharts = {};
+
+    // SESSION AUTHENTIFIÉE
+    let loggedUserEmail = "";
+    let loggedUserIsProf = false;
+    let familyMemberIndices = [];
 
     function getVal(obj, keys, fallback = "") {
       if (!obj) return fallback;
@@ -962,7 +1123,6 @@
 
     document.addEventListener("DOMContentLoaded", function() {
       initRadar();
-      changerRoleCompte();
       chargerElevesSheets();
     });
 
@@ -1014,6 +1174,7 @@
 
     function chargerElevesSheets() {
       const badge = document.getElementById("syncStatusBadge");
+      const authBanner = document.getElementById("authStatusBanner");
       const oldScript = document.getElementById("sheetsJsonpScript");
       if (oldScript) oldScript.remove();
 
@@ -1022,38 +1183,30 @@
       script.src = GOOGLE_SHEETS_API_URL + "?callback=traiterSheetsData&t=" + Date.now();
       script.onerror = function() {
         badge.textContent = "⚠️ Hors ligne";
-        badge.className = "prof-only-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/30";
+        authBanner.textContent = "⚠️ Impossible de joindre la base des adhérents. Vérifiez votre connexion.";
+        authBanner.className = "text-center text-[11px] font-semibold px-3 py-2 rounded-xl bg-red-500/15 text-red-300 border border-red-500/40";
       };
       document.body.appendChild(script);
     }
 
     function traiterSheetsData(data) {
       const badge = document.getElementById("syncStatusBadge");
+      const authBanner = document.getElementById("authStatusBanner");
       const rawList = Array.isArray(data) ? data : (data && data.eleves ? data.eleves : []);
       
       if (rawList.length > 0) {
         listeEleves = rawList.filter(e => getVal(e, ['NOM', 'PRENOM', 'Nom', 'Prenom']) !== "");
         badge.textContent = `🟢 Connecté (${listeEleves.length} membres)`;
-        badge.className = "prof-only-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
         document.getElementById("totalElevesCount").textContent = `${listeEleves.length} inscrits`;
 
+        authBanner.textContent = "🟢 Base adhérents synchronisée — Entrez votre email et votre PIN";
+        authBanner.className = "text-center text-[11px] font-semibold px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/30";
+
+        // Remplissage listes Professeur
         const selectDash = document.getElementById("eleveSelect");
         const selectProf = document.getElementById("eleveSelectProfil");
         selectDash.innerHTML = "";
         selectProf.innerHTML = "";
-        
-        if (!firstLoadDone) {
-          const profIdx = listeEleves.findIndex(e => {
-            const nom = String(getVal(e, ['NOM'], '')).toLowerCase();
-            const email = String(getVal(e, ['EMAIL'], '')).toLowerCase();
-            const role = String(getVal(e, ['ROLE'], '')).toLowerCase();
-            return nom.includes('huambachano') || email.includes('huambachano') || role.includes('prof');
-          });
-          if (profIdx !== -1) currentEleveIndex = profIdx;
-          firstLoadDone = true;
-        }
-
-        const prevIdx = currentEleveIndex < listeEleves.length ? currentEleveIndex : 0;
 
         listeEleves.forEach((eleve, index) => {
           const prenom = getVal(eleve, ['PRENOM', 'Prenom'], '');
@@ -1076,15 +1229,23 @@
           selectProf.appendChild(opt2);
         });
 
-        selectDash.value = String(prevIdx);
-        selectProf.value = String(prevIdx);
-
         actualiserCarteCoachPourEleves();
-        verifierAnniversairesDuJour();
-        actualiserAlerteBarrettes();
         genererClassement();
-        changerEleve();
-        actualiserGraphiquesAnalytics();
+
+        // Restauration automatique de la session si déjà connecté
+        if (!loggedUserEmail) {
+          const savedEmail = localStorage.getItem("ssjj_auth_email");
+          const savedPin = localStorage.getItem("ssjj_auth_pin");
+          if (savedEmail && savedPin) {
+            authentifierAvecIdentifiants(savedEmail, savedPin, true);
+          }
+        } else {
+          reconstruireEspaceFamille();
+          changerEleve();
+          actualiserAlerteBarrettes();
+          verifierAnniversairesDuJour();
+          actualiserGraphiquesAnalytics();
+        }
       }
 
       if (data && Array.isArray(data.sessions)) {
@@ -1095,6 +1256,399 @@
       afficherSessionsPlanning();
     }
 
+    // =========================================================
+    // AUTHENTIFICATION SÉCURISÉE & GESTION FAMILLE
+    // =========================================================
+    function basculerModeAuth(mode) {
+      if (mode === 'setupPin') {
+        document.getElementById("loginForm").classList.add("hidden");
+        document.getElementById("setupPinForm").classList.remove("hidden");
+        const typedEmail = document.getElementById("loginEmailInput").value.trim();
+        if (typedEmail) document.getElementById("setupEmailInput").value = typedEmail;
+      } else {
+        document.getElementById("setupPinForm").classList.add("hidden");
+        document.getElementById("loginForm").classList.remove("hidden");
+      }
+    }
+
+    function tenterConnexion(e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmailInput").value.trim().toLowerCase();
+      const pin = document.getElementById("loginPinInput").value.trim();
+      authentifierAvecIdentifiants(email, pin, false);
+    }
+
+    function authentifierAvecIdentifiants(email, pin, silencieux) {
+      if (listeEleves.length === 0) {
+        if (!silencieux) alert("⏳ Chargement de la base en cours, réessayez dans 2 secondes.");
+        return;
+      }
+
+      const matchingMembers = listeEleves
+        .map((el, idx) => ({ el, idx }))
+        .filter(({ el }) => String(getVal(el, ['EMAIL', 'Email'], '')).trim().toLowerCase() === email);
+
+      if (matchingMembers.length === 0) {
+        if (!silencieux) {
+          alert("❌ Adresse email introuvable dans la liste des adhérents du club.\nVérifiez l'orthographe ou contactez le professeur.");
+        } else {
+          localStorage.removeItem("ssjj_auth_email");
+          localStorage.removeItem("ssjj_auth_pin");
+        }
+        return;
+      }
+
+      // Vérifie si au moins un profil du foyer a un PIN défini
+      const storedPins = matchingMembers
+        .map(({ el }) => String(getVal(el, ['CODE_PIN'], '')).trim())
+        .filter(Boolean);
+
+      if (storedPins.length === 0) {
+        if (!silencieux) {
+          alert("🔑 Aucun code PIN n'est encore activé pour cette adresse email.\nVeuillez créer votre code PIN à 4 chiffres.");
+          basculerModeAuth('setupPin');
+          document.getElementById("setupEmailInput").value = email;
+        }
+        return;
+      }
+
+      if (!storedPins.includes(pin)) {
+        if (!silencieux) {
+          alert("🚫 Code PIN incorrect.");
+        } else {
+          localStorage.removeItem("ssjj_auth_email");
+          localStorage.removeItem("ssjj_auth_pin");
+        }
+        return;
+      }
+
+      // Connexion validée
+      loggedUserEmail = email;
+      localStorage.setItem("ssjj_auth_email", email);
+      localStorage.setItem("ssjj_auth_pin", pin);
+
+      const isProfAccount = (email === PROF_MASTER_EMAIL) || matchingMembers.some(({ el }) =>
+        String(getVal(el, ['ROLE'], '')).toLowerCase().includes('prof') ||
+        String(getVal(el, ['NOM'], '')).toLowerCase().includes('huambachano')
+      );
+
+      loggedUserIsProf = isProfAccount;
+      familyMemberIndices = matchingMembers.map(m => m.idx);
+
+      // Profil par défaut à l'ouverture (Adulte/Parent en priorité pour un compte famille)
+      let defaultIdx = familyMemberIndices[0];
+      if (!isProfAccount && familyMemberIndices.length > 1) {
+        const parentEntry = matchingMembers.find(({ el }) => {
+          const age = calculerAge(getVal(el, ['DATE_NAISSANCE'], ''));
+          return age === null || age >= 18;
+        });
+        if (parentEntry) defaultIdx = parentEntry.idx;
+      }
+
+      currentEleveIndex = defaultIdx;
+      document.getElementById("eleveSelect").value = String(defaultIdx);
+      document.getElementById("eleveSelectProfil").value = String(defaultIdx);
+
+      // Basculer vers l'interface authentifiée
+      document.getElementById("authGateScreen").classList.add("hidden");
+      document.getElementById("authenticatedShell").classList.remove("hidden");
+
+      appliquerDroitsSession();
+      reconstruireEspaceFamille();
+      changerEleve();
+    }
+
+    async function enregistrerNouveauPin(e) {
+      e.preventDefault();
+      const email = document.getElementById("setupEmailInput").value.trim().toLowerCase();
+      const pin1 = document.getElementById("setupPin1").value.trim();
+      const pin2 = document.getElementById("setupPin2").value.trim();
+
+      if (!/^\d{4}$/.test(pin1)) {
+        alert("⚠️ Le code PIN doit contenir exactement 4 chiffres.");
+        return;
+      }
+      if (pin1 !== pin2) {
+        alert("⚠️ Les deux codes PIN ne correspondent pas.");
+        return;
+      }
+
+      const matchingMembers = listeEleves.filter(el =>
+        String(getVal(el, ['EMAIL', 'Email'], '')).trim().toLowerCase() === email
+      );
+
+      if (matchingMembers.length === 0) {
+        alert("❌ Cette adresse email n'est pas enregistrée dans le fichier des adhérents du club.");
+        return;
+      }
+
+      const btn = document.getElementById("btnSetupPinSubmit");
+      btn.disabled = true;
+      btn.textContent = "⏳ Enregistrement du PIN...";
+
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "setPin",
+            email: email,
+            pin: pin1
+          })
+        });
+
+        matchingMembers.forEach(el => {
+          el.CODE_PIN = pin1;
+          el.HAS_PIN = "OUI";
+        });
+
+        alert("✅ Votre Code PIN a été activé ! Connexion en cours...");
+        authentifierAvecIdentifiants(email, pin1, false);
+      } catch (err) {
+        alert("❌ Erreur réseau : " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "✅ Activer mon Code PIN & Entrer";
+      }
+    }
+
+    function deconnecterUtilisateur() {
+      loggedUserEmail = "";
+      loggedUserIsProf = false;
+      familyMemberIndices = [];
+      localStorage.removeItem("ssjj_auth_email");
+      localStorage.removeItem("ssjj_auth_pin");
+
+      document.getElementById("loginPinInput").value = "";
+      document.getElementById("authenticatedShell").classList.add("hidden");
+      document.getElementById("authGateScreen").classList.remove("hidden");
+    }
+
+    function appliquerDroitsSession() {
+      const isProf = loggedUserIsProf;
+      const roleBadge = document.getElementById("roleBadgeHeader");
+
+      if (isProf) {
+        roleBadge.textContent = "👑 Professeur (Head Coach)";
+        roleBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gold text-black uppercase";
+      } else {
+        roleBadge.textContent = familyMemberIndices.length > 1 ? "👨‍👧‍👦 Compte Famille" : "🥋 Compte Élève";
+        roleBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 uppercase";
+      }
+
+      document.getElementById("coachNotificationBox").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("boxCreateEvent").style.display = isProf ? 'block' : 'none';
+      document.getElementById("boxGradeEditCoach").style.display = isProf ? 'grid' : 'none';
+      document.getElementById("boxSaveProfilFooter").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("btnUploadPhotoLabel").style.display = isProf ? 'inline-block' : 'none';
+      
+      document.getElementById("boxSelectEleve").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("boxProfilMemberSwitch").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("boxHeadCoachCardStudent").style.display = isProf ? 'none' : 'flex';
+      document.getElementById("studentCoachProfileSection").style.display = isProf ? 'none' : 'block';
+      document.getElementById("familyManagementCard").style.display = isProf ? 'none' : 'block';
+
+      document.querySelectorAll(".prof-only-badge").forEach(b => b.style.display = isProf ? 'inline-block' : 'none');
+      document.querySelectorAll(".btnProfOnly").forEach(btn => btn.style.display = isProf ? 'inline-block' : 'none');
+
+      document.querySelectorAll(".profile-editable").forEach(input => {
+        input.disabled = !isProf;
+      });
+
+      const lockBadge = document.getElementById("profileLockBadge");
+      if (isProf) {
+        lockBadge.textContent = "🔓 Édition Professeur Active";
+        lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+        actualiserAlerteBarrettes();
+        verifierAnniversairesDuJour();
+      } else {
+        lockBadge.textContent = "🔒 Lecture Seule (Modifications réservées au Professeur)";
+        lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-gray-300 border border-white/10";
+        document.getElementById("birthdayNotificationBox").classList.add("hidden");
+      }
+    }
+
+    function reconstruireEspaceFamille() {
+      if (loggedUserIsProf) {
+        document.getElementById("headerFamilySwitcher").classList.add("hidden");
+        return;
+      }
+
+      // Recalculer les indices liés à l'email connecté (Parent + Enfants)
+      familyMemberIndices = listeEleves
+        .map((el, idx) => ({ el, idx }))
+        .filter(({ el }) => String(getVal(el, ['EMAIL', 'Email'], '')).trim().toLowerCase() === loggedUserEmail)
+        .map(m => m.idx);
+
+      const headerSwitcher = document.getElementById("headerFamilySwitcher");
+      const headerSelect = document.getElementById("familyProfileSelectHeader");
+      const grid = document.getElementById("familyMembersGrid");
+
+      headerSelect.innerHTML = "";
+      grid.innerHTML = "";
+
+      if (familyMemberIndices.length > 1) {
+        headerSwitcher.classList.remove("hidden");
+      } else {
+        headerSwitcher.classList.add("hidden");
+      }
+
+      familyMemberIndices.forEach(idx => {
+        const el = listeEleves[idx];
+        const prenom = getVal(el, ['PRENOM'], '');
+        const nom = getVal(el, ['NOM'], '');
+        const ceinture = getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE'], 'Ceinture Blanche');
+        const barrettes = parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0;
+        const age = calculerAge(getVal(el, ['DATE_NAISSANCE'], ''));
+        const catLabel = age !== null ? `${age} ans` : getVal(el, ['CATEGORIE'], 'Membre');
+        const isCurrent = (idx === currentEleveIndex);
+
+        const opt = document.createElement("option");
+        opt.value = String(idx);
+        opt.textContent = `${prenom} ${nom} (${catLabel})`;
+        headerSelect.appendChild(opt);
+
+        const card = document.createElement("div");
+        card.onclick = () => selectionnerMembreDepuisFamille(idx);
+        card.className = `p-3.5 rounded-xl border cursor-pointer transition flex items-center justify-between ${
+          isCurrent ? 'bg-gold/15 border-gold' : 'bg-carbone/80 border-white/10 hover:border-gold/50'
+        }`;
+        card.innerHTML = `
+          <div>
+            <p class="text-xs font-extrabold text-white">${prenom} ${nom}</p>
+            <p class="text-[11px] text-gold font-semibold">${ceinture} • ${barrettes} bar.</p>
+            <p class="text-[10px] text-gray-400">${catLabel}</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold ${
+            isCurrent ? 'bg-gold text-black' : 'bg-white/10 text-gray-300'
+          }">${isCurrent ? 'Actif' : 'Sélectionner'}</span>
+        `;
+        grid.appendChild(card);
+      });
+
+      headerSelect.value = String(currentEleveIndex);
+    }
+
+    function selectionnerMembreDepuisFamille(idx) {
+      const parsed = parseInt(idx);
+      if (!familyMemberIndices.includes(parsed)) return;
+      currentEleveIndex = parsed;
+      document.getElementById("eleveSelect").value = String(parsed);
+      reconstruireEspaceFamille();
+      changerEleve();
+    }
+
+    function ouvrirModalAjoutEnfant() {
+      document.getElementById("parentEmailDisplayModal").textContent = loggedUserEmail;
+      document.getElementById("childPrenomInput").value = "";
+      const activeEl = listeEleves[currentEleveIndex];
+      document.getElementById("childNomInput").value = activeEl ? getVal(activeEl, ['NOM'], '') : "";
+      document.getElementById("childDobInput").value = "";
+      document.getElementById("modalAddChild").classList.remove("hidden");
+    }
+
+    function fermerModalAjoutEnfant() {
+      document.getElementById("modalAddChild").classList.add("hidden");
+    }
+
+    async function enregistrerNouvelEnfant(e) {
+      e.preventDefault();
+      const prenom = document.getElementById("childPrenomInput").value.trim();
+      const nom = document.getElementById("childNomInput").value.trim();
+      const dob = document.getElementById("childDobInput").value.trim();
+      const genre = document.getElementById("childGenreInput").value;
+
+      if (!prenom || !nom || !dob) return;
+
+      const parentEl = listeEleves[currentEleveIndex] || {};
+      const parentPin = localStorage.getItem("ssjj_auth_pin") || String(getVal(parentEl, ['CODE_PIN'], '')).trim();
+      const age = calculerAge(dob);
+      const categorie = (age !== null && age < 12) ? "Enfant" : ((age !== null && age < 16) ? "Ados" : "Adulte");
+
+      const newMember = {
+        PRENOM: prenom,
+        NOM: nom,
+        GENRE: genre,
+        CATEGORIE: categorie,
+        DATE_NAISSANCE: dob,
+        EMAIL: loggedUserEmail,
+        TELEPHONE: getVal(parentEl, ['TELEPHONE'], ''),
+        ADRESSE: getVal(parentEl, ['ADRESSE'], ''),
+        VILLE: getVal(parentEl, ['VILLE'], ''),
+        CEINTURE_ACTuELLE: "Ceinture Blanche",
+        BARRETTES: 0,
+        TOTAL_COURS: 0,
+        LICENCE_CFJJB: "En cours",
+        STATUT_INSCRIPTION: "Actif",
+        ROLE: "Élève",
+        BLOQUE_COURS: "NON",
+        BLOQUE_ACCES: "NON",
+        CODE_PIN: parentPin
+      };
+
+      const btn = document.getElementById("btnSaveChildSubmit");
+      btn.disabled = true;
+      btn.textContent = "⏳ Ajout en cours...";
+
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "addFamilyMember",
+            member: newMember
+          })
+        });
+
+        listeEleves.push(newMember);
+        const newIdx = listeEleves.length - 1;
+        currentEleveIndex = newIdx;
+        reconstruireEspaceFamille();
+        changerEleve();
+        genererClassement();
+        fermerModalAjoutEnfant();
+        alert(`✅ ${prenom} ${nom} a été ajouté(e) à votre compte famille !`);
+      } catch (err) {
+        alert("❌ Erreur réseau : " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "➕ Ajouter l'Enfant";
+      }
+    }
+
+    async function reinitialiserPinParProf() {
+      if (!loggedUserIsProf) return;
+      const el = listeEleves[currentEleveIndex];
+      if (!el) return;
+      const prenom = getVal(el, ['PRENOM'], '');
+      const nom = getVal(el, ['NOM'], '');
+      const email = getVal(el, ['EMAIL'], '');
+      const currentPin = String(getVal(el, ['CODE_PIN'], '')).trim();
+
+      const nouveauPin = prompt(
+        `Gestion Code PIN pour ${prenom} ${nom} (${email || "Sans email"})\n` +
+        `PIN actuel : ${currentPin || "Non défini"}\n\n` +
+        `Entrez un nouveau code PIN à 4 chiffres :`,
+        currentPin || ""
+      );
+
+      if (nouveauPin === null) return;
+      if (!/^\d{4}$/.test(nouveauPin.trim())) {
+        alert("⚠️ Le code PIN doit comporter exactement 4 chiffres.");
+        return;
+      }
+
+      const ok = await envoyerMiseAJourSheets({ CODE_PIN: nouveauPin.trim(), HAS_PIN: "OUI" }, null, "");
+      if (ok) {
+        alert(`🔑 Code PIN mis à jour (${nouveauPin.trim()}) pour ${prenom} ${nom}.`);
+      }
+    }
+
+    // =========================================================
+    // FICHE COACH & ANNIVERSAIRES
+    // =========================================================
     function actualiserCarteCoachPourEleves() {
       const coach = listeEleves.find(e => {
         const nom = String(getVal(e, ['NOM'], '')).toLowerCase();
@@ -1127,11 +1681,10 @@
     }
 
     function verifierAnniversairesDuJour() {
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
       const box = document.getElementById("birthdayNotificationBox");
       const listEl = document.getElementById("birthdayNotifList");
 
-      if (!isProf) {
+      if (!loggedUserIsProf) {
         box.classList.add("hidden");
         return;
       }
@@ -1158,13 +1711,17 @@
     }
 
     function synchroniserSelecteurProfil(val) {
+      if (!loggedUserIsProf) return;
       document.getElementById("eleveSelect").value = val;
       changerEleve();
     }
 
+    // =========================================================
+    // PLANNING & INSCRIPTIONS
+    // =========================================================
     function afficherSessionsPlanning() {
       const container = document.getElementById("sessionsListContainer");
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      const isProf = loggedUserIsProf;
       const activeEl = listeEleves[currentEleveIndex];
       const activeFullName = activeEl
         ? `${getVal(activeEl, ['PRENOM', 'Prenom'], '')} ${getVal(activeEl, ['NOM', 'Nom'], '')}`.trim()
@@ -1246,7 +1803,7 @@
               ${btnLabel}
             </button>
 
-            <button onclick='ouvrirEditSession(${JSON.stringify(id)}, ${JSON.stringify(professeur)}, ${capacite})' style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-white/20 text-xs text-gray-200 font-bold hover:border-gold" title="Modifier limite de places ou professeur">
+            <button onclick='ouvrirEditSession(${JSON.stringify(id)}, ${JSON.stringify(professeur)}, ${capacite})' style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-white/20 text-xs text-gray-200 font-bold hover:border-gold">
               ⚙️ Limite / Prof
             </button>
 
@@ -1254,7 +1811,7 @@
               🥋 Appel
             </button>
 
-            <button onclick="supprimerSessionSheets('${id}')" style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-2.5 py-2 rounded-xl bg-carbone border border-red-500/30 text-xs text-red-400 hover:bg-red-500/10" title="Supprimer">
+            <button onclick="supprimerSessionSheets('${id}')" style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-2.5 py-2 rounded-xl bg-carbone border border-red-500/30 text-xs text-red-400 hover:bg-red-500/10">
               🗑️
             </button>
           </div>
@@ -1264,17 +1821,17 @@
     }
 
     function ouvrirEditSession(id, prof, cap) {
+      if (!loggedUserIsProf) return;
       document.getElementById("editSessionId").value = id;
       document.getElementById("editSessionProf").value = prof || "Martin Huambachano";
       document.getElementById("editSessionCap").value = cap || 16;
       document.getElementById("modalEditSession").classList.remove("hidden");
     }
 
-    function fermerEditSession() {
-      document.getElementById("modalEditSession").classList.add("hidden");
-    }
+    function fermerEditSession() { document.getElementById("modalEditSession").classList.add("hidden"); }
 
     async function sauvegarderEditSession() {
+      if (!loggedUserIsProf) return;
       const id = document.getElementById("editSessionId").value;
       const newProf = document.getElementById("editSessionProf").value.trim() || "Martin Huambachano";
       const newCap = Math.max(1, parseInt(document.getElementById("editSessionCap").value) || 16);
@@ -1303,6 +1860,7 @@
     }
 
     async function publierEvenementSheets() {
+      if (!loggedUserIsProf) return;
       const type = document.getElementById("eventType").value;
       const theme = document.getElementById("eventTheme").value.trim();
       const professeur = document.getElementById("eventProfesseur").value.trim() || "Martin Huambachano";
@@ -1352,7 +1910,7 @@
     }
 
     async function toggleInscriptionSession(sessionId, btn) {
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      const isProf = loggedUserIsProf;
       const activeEl = listeEleves[currentEleveIndex];
       if (!activeEl) return;
 
@@ -1404,6 +1962,7 @@
     }
 
     async function supprimerSessionSheets(sessionId) {
+      if (!loggedUserIsProf) return;
       if (!confirm("Supprimer définitivement cette session ?")) return;
       try {
         await fetch(GOOGLE_SHEETS_API_URL, {
@@ -1417,7 +1976,11 @@
       } catch (err) {}
     }
 
+    // =========================================================
+    // BLOCAGES & UPDATES SHEETS
+    // =========================================================
     async function basculerBlocageMembre(champ) {
+      if (!loggedUserIsProf) return;
       const el = listeEleves[currentEleveIndex];
       if (!el) return;
 
@@ -1508,7 +2071,7 @@
       const el = listeEleves[currentEleveIndex];
       if (!el) return false;
 
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      const isProf = loggedUserIsProf;
       const badge = document.getElementById("syncStatusBadge");
 
       if (isProf) {
@@ -1539,8 +2102,11 @@
       }
     }
 
+    // =========================================================
+    // APPEL TATAMI
+    // =========================================================
     function ouvrirAppelTatami(nomSession, inscritsArr = []) {
-      if (listeEleves.length === 0) return;
+      if (!loggedUserIsProf || listeEleves.length === 0) return;
 
       document.getElementById("modalSessionTitle").textContent = "Appel Tatami — " + nomSession;
       document.getElementById("searchAppelInput").value = "";
@@ -1613,6 +2179,7 @@
     }
 
     async function validerAppelTatamiSheets() {
+      if (!loggedUserIsProf) return;
       const checkedBoxes = Array.from(document.querySelectorAll(".appel-checkbox:checked"));
       if (checkedBoxes.length === 0) {
         alert("⚠️ Cochez au moins un élève présent.");
@@ -1645,10 +2212,14 @@
       }
     }
 
+    // =========================================================
+    // AFFICHAGE FICHE MEMBRE ACTIF
+    // =========================================================
     function changerEleve() {
       const select = document.getElementById("eleveSelect");
-      const idx = parseInt(select.value);
-      if (isNaN(idx) || !listeEleves[idx]) return;
+      let idx = loggedUserIsProf ? parseInt(select.value) : currentEleveIndex;
+      if (isNaN(idx) || !listeEleves[idx]) idx = currentEleveIndex;
+      if (!listeEleves[idx]) return;
 
       currentEleveIndex = idx;
       document.getElementById("eleveSelectProfil").value = String(idx);
@@ -1664,11 +2235,15 @@
       const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
       const role = getVal(el, ['ROLE', 'Role'], 'Élève');
 
+      document.getElementById("headerAccountName").textContent = fullName;
+      document.getElementById("headerAccountEmail").textContent = loggedUserEmail || getVal(el, ['EMAIL'], '');
+
       document.getElementById("activeCardName").textContent = fullName;
       document.getElementById("activeCardSub").textContent = `${role} • ${barrettes} Barrette(s)`;
       document.getElementById("activeCardBeltLabel").textContent = ceintureRaw.toLowerCase().includes('ceinture') ? ceintureRaw : `Ceinture ${ceintureRaw}`;
       
       const avatarUrl = formatAvatarUrl(getVal(el, ['PHOTO', 'AVATAR'], ''), fullName);
+      document.getElementById("headerAvatar").src = avatarUrl;
       document.getElementById("activeCardAvatar").src = avatarUrl;
       document.getElementById("profilePhotoDisplay").src = avatarUrl;
 
@@ -1732,8 +2307,7 @@
     }
 
     function verifierSuspensionCompte(el) {
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
-      const suspendu = !isProf && el && isOui(getVal(el, ['BLOQUE_ACCES'], 'NON'));
+      const suspendu = !loggedUserIsProf && el && isOui(getVal(el, ['BLOQUE_ACCES'], 'NON'));
       document.getElementById("blockedAccountOverlay").style.display = suspendu ? 'block' : 'none';
       document.getElementById("mainAppContainer").style.display = suspendu ? 'none' : 'block';
     }
@@ -1815,6 +2389,7 @@
     }
 
     async function sauvegarderGradeSheets() {
+      if (!loggedUserIsProf) return;
       const belt = document.getElementById("selectCeintureProf").value;
       const stripes = parseInt(document.getElementById("selectBarrettesProf").value) || 0;
       const btn = document.getElementById("btnSaveGrade");
@@ -1871,8 +2446,7 @@
     }
 
     async function sauvegarderProfilSheets() {
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
-      if (!isProf) return;
+      if (!loggedUserIsProf) return;
 
       const btn = document.getElementById("btnSaveProfil");
       const updates = {
@@ -1904,8 +2478,7 @@
     }
 
     function basculerOnglet(nom) {
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
-      if (nom === 'analytics' && !isProf) return;
+      if (nom === 'analytics' && !loggedUserIsProf) return;
 
       ["sectionDashboard", "sectionPlanning", "sectionMonProfil", "sectionClassement", "sectionAnalytics"].forEach(id => {
         document.getElementById(id).classList.add("hidden");
@@ -1914,7 +2487,7 @@
       ["tabDash", "tabPlan", "tabProf", "tabClass", "tabAnalytics"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.className = (id === "tabAnalytics")
-          ? "btnProfOnly px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10"
+          ? `btnProfOnly ${loggedUserIsProf ? '' : 'hidden'} px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10`
           : "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold";
       });
 
@@ -1937,55 +2510,6 @@
         document.getElementById("tabAnalytics").className = activeBtnClass;
         actualiserGraphiquesAnalytics();
       }
-    }
-
-    function changerRoleCompte() {
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
-      
-      if (!isProf && listeEleves.length > 1) {
-        const cur = listeEleves[currentEleveIndex];
-        if (cur && String(getVal(cur, ['ROLE'], '')).toLowerCase().includes('prof')) {
-          const firstStudentIdx = listeEleves.findIndex(e => !String(getVal(e, ['ROLE'], '')).toLowerCase().includes('prof'));
-          if (firstStudentIdx !== -1) {
-            currentEleveIndex = firstStudentIdx;
-            document.getElementById("eleveSelect").value = String(firstStudentIdx);
-            changerEleve();
-          }
-        }
-      }
-
-      document.getElementById("coachNotificationBox").style.display = isProf ? 'flex' : 'none';
-      document.getElementById("boxCreateEvent").style.display = isProf ? 'block' : 'none';
-      document.getElementById("boxGradeEditCoach").style.display = isProf ? 'grid' : 'none';
-      document.getElementById("boxSaveProfilFooter").style.display = isProf ? 'flex' : 'none';
-      document.getElementById("btnUploadPhotoLabel").style.display = isProf ? 'inline-block' : 'none';
-      
-      document.getElementById("boxSelectEleve").style.display = isProf ? 'flex' : 'none';
-      document.getElementById("boxProfilMemberSwitch").style.display = isProf ? 'flex' : 'none';
-      document.getElementById("boxHeadCoachCardStudent").style.display = isProf ? 'none' : 'flex';
-      document.getElementById("studentCoachProfileSection").style.display = isProf ? 'none' : 'block';
-      document.querySelectorAll(".prof-only-badge").forEach(b => b.style.display = isProf ? 'inline-block' : 'none');
-      document.querySelectorAll(".btnProfOnly").forEach(btn => btn.style.display = isProf ? 'inline-block' : 'none');
-
-      document.querySelectorAll(".profile-editable").forEach(input => {
-        input.disabled = !isProf;
-      });
-
-      const lockBadge = document.getElementById("profileLockBadge");
-      if (isProf) {
-        lockBadge.textContent = "🔓 Édition Professeur Active";
-        lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-      } else {
-        lockBadge.textContent = "🔒 Lecture Seule (Modifications réservées au Professeur)";
-        lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-gray-300 border border-white/10";
-        if (!document.getElementById("sectionAnalytics").classList.contains("hidden")) {
-          basculerOnglet('dashboard');
-        }
-      }
-
-      verifierAnniversairesDuJour();
-      verifierSuspensionCompte(listeEleves[currentEleveIndex]);
-      afficherSessionsPlanning();
     }
 
     function genererClassement() {
@@ -2019,6 +2543,9 @@
       });
     }
 
+    // =========================================================
+    // ANALYTICS CROISÉES (PROFESSEUR)
+    // =========================================================
     function getAgeGroup(el) {
       const age = calculerAge(getVal(el, ['DATE_NAISSANCE'], ''));
       if (age !== null) {
@@ -2067,7 +2594,7 @@
     }
 
     function actualiserGraphiquesAnalytics() {
-      if (listeEleves.length === 0) return;
+      if (!loggedUserIsProf || listeEleves.length === 0) return;
 
       const ageLabels = ["Enfants (4-11 ans)", "Ados (12-15 ans)", "Adultes (16+ ans)"];
       const beltLabels = ["Blanche", "Bleue", "Violette", "Marron", "Noire"];
@@ -2224,8 +2751,7 @@
     }
 
     function uploadPhotoProfil(event) {
-      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
-      if (!isProf) return;
+      if (!loggedUserIsProf) return;
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
