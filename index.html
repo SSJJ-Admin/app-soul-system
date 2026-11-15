@@ -149,7 +149,7 @@
       }
     }
 
-    input:disabled {
+    input:disabled, select:disabled {
       opacity: 0.78;
       cursor: not-allowed;
       border-color: rgba(255, 255, 255, 0.05) !important;
@@ -159,8 +159,25 @@
 
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
+  <!-- ÉCRAN DE BLOCAGE COMPTE ÉLÈVE (SI ACCES_BLOQUE === 'OUI') -->
+  <div id="blockedAccountOverlay" class="fixed inset-0 z-40 hidden bg-black/95 backdrop-blur-xl flex items-center justify-center p-6">
+    <div class="card-luxe max-w-md w-full rounded-2xl border border-red-500/50 p-8 text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/10 border border-red-500/40 flex items-center justify-center text-3xl">🔒</div>
+      <h2 class="text-xl font-extrabold text-white uppercase tracking-wider">Accès au Compte Suspendu</h2>
+      <p id="blockedAccountName" class="text-xs text-gold font-bold">Membre</p>
+      <p class="text-xs text-gray-300 leading-relaxed">
+        L'accès à votre espace membre <strong>Soul System Jiu Jitsu</strong> a été temporairement restreint par la direction du club. Veuillez vous rapprocher du professeur sur le tatami pour régulariser votre situation.
+      </p>
+      <div class="pt-3 border-t border-white/10">
+        <button onclick="document.getElementById('userRoleToggle').value='prof'; changerRoleCompte();" class="px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold text-xs font-bold hover:bg-gold/10">
+          🔑 Retourner en Mode Professeur
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- EN-TÊTE -->
-  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-5 rounded-2xl card-luxe mb-6">
+  <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-5 rounded-2xl card-luxe mb-6 relative z-50">
     <div class="flex flex-wrap items-center gap-4 md:gap-6">
       <div class="flex items-center justify-center flex-shrink-0">
         <img src="./Logo.png?v=5" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-[0_0_15px_rgba(212,175,55,0.35)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
@@ -174,12 +191,19 @@
       </div>
     </div>
     
-    <div class="flex items-center space-x-4 mt-4 md:mt-0">
+    <div class="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
+      <!-- Sélecteur du compte élève connecté (visible uniquement quand Mode Élève est activé) -->
+      <div id="studentLoginBox" class="hidden text-right">
+        <p class="text-[10px] text-gray-400">Compte Élève Connecté</p>
+        <select id="studentLoginSelect" onchange="changerCompteEleveConnecte(this.value)" class="bg-carbone border border-white/20 rounded px-2.5 py-1 text-xs text-white font-bold focus:outline-none">
+        </select>
+      </div>
+
       <div class="text-right">
         <p class="text-xs text-gray-400">Rôle Actif</p>
         <select id="userRoleToggle" onchange="changerRoleCompte()" class="bg-carbone border border-gold/40 rounded px-2.5 py-1 text-xs text-gold font-bold focus:outline-none">
           <option value="prof">Professeur (Martin Huambachano)</option>
-          <option value="eleve">Élève (Accès Restreint)</option>
+          <option value="eleve">Élève (Espace Personnel)</option>
         </select>
       </div>
       <div class="relative group cursor-pointer" onclick="basculerOnglet('monprofil')">
@@ -187,6 +211,18 @@
       </div>
     </div>
   </header>
+
+  <!-- NOTIFICATION ANNIVERSAIRE DU JOUR (PROFESSEUR UNIQUEMENT) -->
+  <div id="birthdayNotificationBox" class="hidden w-full max-w-7xl mx-auto mb-4 bg-gradient-to-r from-gold/20 via-amber-500/15 to-gold/20 border border-gold p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-lg">
+    <div class="flex items-center space-x-3">
+      <span class="text-3xl">🎂</span>
+      <div>
+        <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider">Anniversaire(s) du Jour au Club !</h3>
+        <div id="birthdayListText" class="text-xs text-white font-semibold mt-0.5 space-y-0.5"></div>
+      </div>
+    </div>
+    <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-gold text-black uppercase">Soul System JJ</span>
+  </div>
 
   <!-- NOTIFICATION BARRETTES PROFESSEUR -->
   <div id="coachNotificationBox" class="w-full max-w-7xl mx-auto mb-6 bg-gold/10 border border-gold/40 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
@@ -215,6 +251,7 @@
       <button onclick="basculerOnglet('planning')" id="tabPlan" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">📅 Planning & Inscriptions</button>
       <button onclick="basculerOnglet('monprofil')" id="tabProf" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">👤 Mon Profil & Grades</button>
       <button onclick="basculerOnglet('classement')" id="tabClass" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">🏆 Classement Général</button>
+      <button onclick="basculerOnglet('analytics')" id="tabAnalytics" class="btnProfOnly px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10">📈 Analytics Club (Prof)</button>
     </div>
 
     <!-- ONGLET 1 : DASHBOARD & RADAR COMPLET DES 10 POINTS -->
@@ -271,31 +308,21 @@
           </div>
         </div>
 
-        <!-- CARTE 3 : SÉLECTEUR DE MEMBRE (PROFESSEUR) / CONFIDENTIALITÉ (ÉLÈVE) -->
+        <!-- CARTE 3 : SÉLECTEUR DE MEMBRE (PROFESSEUR) OU STATUT PRIVÉ (ÉLÈVE) -->
         <div id="boxSelectEleve" class="card-luxe p-6 rounded-2xl flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-2">
-              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre (Professeur)</h2>
+              <h2 id="boxSelectTitle" class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre (Professeur)</h2>
               <span id="totalElevesCount" class="text-[10px] text-gold font-bold">0 inscrits</span>
             </div>
-            <p class="text-xs text-gray-400 mb-3">Sélectionnez votre profil ou celui d'un élève :</p>
+            <p id="boxSelectDesc" class="text-xs text-gray-400 mb-3">Sélectionnez votre profil ou celui d'un élève :</p>
           </div>
           <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
             <option value="">Chargement de la base...</option>
           </select>
-        </div>
-
-        <div id="boxPrivacyEleve" class="hidden card-luxe p-6 rounded-2xl flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-center mb-2">
-              <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Espace Élève Privé</h2>
-              <span class="text-[10px] text-emerald-400 font-bold">🔒 Protégé</span>
-            </div>
-            <p class="text-xs text-gray-400">L'accès aux profils des autres élèves est restreint. Vous pouvez vous inscrire aux cours dans le <strong>Planning</strong> et consulter le <strong>Classement Général</strong>.</p>
+          <div id="studentPrivateNotice" class="hidden bg-carbone/80 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-gray-300">
+            🔒 Espace personnel privé actif
           </div>
-          <button onclick="basculerOnglet('classement')" class="w-full py-2.5 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10 transition">
-            🏆 Voir le Classement Général
-          </button>
         </div>
       </div>
 
@@ -427,11 +454,11 @@
     <!-- ONGLET 2 : PLANNING & INSCRIPTIONS EN DIRECT -->
     <div id="sectionPlanning" class="hidden space-y-6">
       
-      <!-- FORMULAIRE CRÉATION DE SESSION (HEAD COACH) -->
+      <!-- FORMULAIRE CRÉATION DE SESSION (HEAD COACH UNIQUEMENT) -->
       <div id="boxCreateEvent" class="card-luxe p-6 rounded-2xl space-y-4">
-        <div class="flex flex-wrap justify-between items-center gap-2">
+        <div class="flex justify-between items-center">
           <h2 class="text-base font-bold text-white uppercase tracking-wider">Créer une Session / Stage / Master Class (Head Coach)</h2>
-          <span class="text-[10px] text-gold font-bold uppercase">Limite par défaut : 16 inscrits max</span>
+          <span class="text-[10px] text-gold font-bold uppercase">Limite initiale : 16 inscrits</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-6 gap-4 text-xs">
           <div>
@@ -451,17 +478,17 @@
             <input type="text" id="eventTheme" placeholder="ex: Guard Retention & Leg Locks" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
           <div>
-            <label class="text-gray-400 font-semibold">Professeur</label>
-            <input type="text" id="eventProfesseur" value="Martin Huambachano" placeholder="Nom du professeur" class="w-full bg-carbone border border-gold/40 rounded-lg p-2.5 text-white font-bold mt-1">
-          </div>
-          <div>
             <label class="text-gray-400 font-semibold">Date & Horaires</label>
             <input type="text" id="eventDate" placeholder="Mardi 17 Nov — 19h30" class="w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
           </div>
           <div>
-            <label class="text-gray-400 font-semibold">Places Max / Récurrence</label>
+            <label class="text-gray-400 font-semibold">Professeur</label>
+            <input type="text" id="eventProfesseur" value="Martin Huambachano" class="w-full bg-carbone border border-gold/40 rounded-lg p-2.5 text-white font-bold mt-1">
+          </div>
+          <div>
+            <label class="text-gray-400 font-semibold">Limite / Récurrence</label>
             <div class="flex gap-2 mt-1">
-              <input type="number" id="eventCapacite" value="16" min="1" max="150" title="Limite d'inscrits (initialement 16)" class="w-16 bg-carbone border border-gold/40 rounded-lg p-2.5 text-center text-gold font-bold">
+              <input type="number" id="eventCapacite" value="16" min="1" max="100" class="w-16 bg-carbone border border-gold/40 rounded-lg p-2.5 text-center text-gold font-bold" title="Limite d'inscrits">
               <select id="eventRecurrence" class="flex-1 bg-carbone border border-white/10 rounded-lg p-2 text-gray-300">
                 <option value="Ponctuel">Ponctuel</option>
                 <option value="Hebdomadaire">Hebdo</option>
@@ -477,7 +504,15 @@
         </div>
       </div>
 
-      <!-- LISTE DES SESSIONS DU PLANNING -->
+      <!-- ALERTE SI L'ÉLÈVE EST BLOQUÉ POUR LES INSCRIPTIONS AUX COURS -->
+      <div id="blockedCoursesBanner" class="hidden bg-red-500/10 border border-red-500/50 p-4 rounded-2xl flex items-center space-x-3">
+        <span class="text-2xl">🚫</span>
+        <div>
+          <h3 class="text-xs font-extrabold text-red-400 uppercase tracking-wider">Inscription aux cours temporairement bloquée</h3>
+          <p class="text-xs text-gray-300">Votre inscription aux séances est suspendue (régularisation de cotisation ou dossier requise). Contactez votre professeur.</p>
+        </div>
+      </div>
+
       <div class="card-luxe p-6 rounded-2xl space-y-4">
         <div class="flex flex-wrap justify-between items-center gap-2 border-b border-white/10 pb-3">
           <div>
@@ -503,140 +538,205 @@
 
     </div>
 
-    <!-- ONGLET 3 : MON PROFIL & GESTION DES GRADES -->
-    <div id="sectionMonProfil" class="hidden card-luxe p-6 rounded-2xl space-y-6">
-      <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 gap-3">
-        <div>
-          <h2 class="text-lg font-bold text-white uppercase tracking-wider">Fiche d'Informations Personnelles</h2>
-          <p class="text-xs text-gray-400">Synchronisée avec Base_Adherents_2026_2027 & App_Club_Soul_System_JJ</p>
+    <!-- ONGLET 3 : MON PROFIL, CONTRÔLE D'ACCÈS & FICHE PROFESSEUR POUR LES ÉLÈVES -->
+    <div id="sectionMonProfil" class="hidden space-y-6">
+
+      <!-- CARTE OFFICIELLE DU PROFESSEUR (VISIBLE PAR LES ÉLÈVES UNIQUEMENT AVEC LES 5 INFOS AUTORISÉES) -->
+      <div id="studentViewCoachCard" class="hidden card-luxe p-6 rounded-2xl border border-gold/50 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+          <div>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30 uppercase">Head Coach — Soul System Jiu Jitsu</span>
+            <h2 class="text-base font-extrabold text-white uppercase tracking-wider mt-1">Profil de Votre Professeur</h2>
+          </div>
+          <span class="text-xs text-gold font-bold">Contact Officiel</span>
         </div>
-        <div class="flex items-center gap-2">
-          <span id="profileLockBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-            🔓 Édition Professeur Active
-          </span>
+
+        <div class="flex flex-wrap items-center gap-6">
+          <img id="coachPublicPhoto" src="https://ui-avatars.com/api/?name=Martin+Huambachano&background=D4AF37&color=000" class="w-24 h-24 rounded-2xl border-2 border-gold object-cover shadow-xl">
+          
+          <div class="flex-1 min-w-[240px] space-y-3">
+            <div>
+              <h3 id="coachPublicName" class="text-lg font-extrabold text-white">Martin Huambachano</h3>
+              <p id="coachPublicGradeText" class="text-xs text-gold font-bold uppercase">Ceinture Marron — 0 Barrette</p>
+            </div>
+
+            <div id="coachPublicBeltBar" class="w-full max-w-xs h-6 rounded belt-marron relative flex items-center justify-end overflow-hidden shadow-inner">
+              <div id="coachPublicBeltTip" class="h-full w-14 bg-black flex items-center justify-evenly px-1 border-l border-white/20"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+              <div class="bg-carbone/80 px-3.5 py-2 rounded-xl border border-white/10">
+                <span class="text-gray-400 block text-[10px] uppercase">Date de Naissance</span>
+                <span id="coachPublicDob" class="text-white font-bold">—</span>
+              </div>
+              <div class="bg-carbone/80 px-3.5 py-2 rounded-xl border border-white/10">
+                <span class="text-gray-400 block text-[10px] uppercase">Numéro de Téléphone</span>
+                <span id="coachPublicPhone" class="text-gold font-bold">—</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- SÉLECTEUR DE MEMBRE SUR L'ONGLET PROFIL (VISIBLE UNIQUEMENT EN MODE PROFESSEUR) -->
-      <div id="boxProfilMemberSwitch" class="bg-carbone/70 p-3.5 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <span class="text-gray-300 font-semibold">👤 Fiche affichée actuellement (Accès Professeur) :</span>
-        <select id="eleveSelectProfil" onchange="synchroniserSelecteurProfil(this.value)" class="bg-anthracite border border-gold/40 rounded-lg px-3 py-1.5 text-gold font-bold focus:outline-none">
-          <option value="">Chargement...</option>
-        </select>
-      </div>
-
-      <!-- GESTION DU GRADE & BARRETTES (HEAD COACH UNIQUEMENT) -->
-      <div id="boxGradeEditCoach" class="bg-carbone/80 p-4 rounded-xl border border-gold/40 flex flex-wrap justify-between items-center gap-3">
-        <div>
-          <h3 class="text-xs font-bold text-gold uppercase">Gestion du Grade & Barrettes (Head Coach)</h3>
-          <p class="text-[10px] text-gray-400">Sélectionnez la ceinture et le nombre de barrettes puis validez</p>
+      <!-- FICHE D'INFORMATIONS PERSONNELLES -->
+      <div class="card-luxe p-6 rounded-2xl space-y-6">
+        <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 gap-3">
+          <div>
+            <h2 class="text-lg font-bold text-white uppercase tracking-wider">Fiche d'Informations Personnelles</h2>
+            <p id="profileEditSubtext" class="text-xs text-gray-400">Synchronisée automatiquement avec Base_Adherents_2026_2027 & App_Club_Soul_System_JJ</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="profileLockBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              🔓 Édition Professeur Active
+            </span>
+          </div>
         </div>
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <select id="selectCeintureProf" onchange="previsualiserGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-white font-bold">
-            <option value="Blanche">Ceinture Blanche</option>
-            <option value="Bleue">Ceinture Bleue</option>
-            <option value="Violette">Ceinture Violette</option>
-            <option value="Marron">Ceinture Marron</option>
-            <option value="Noire">Ceinture Noire</option>
-          </select>
 
-          <select id="selectBarrettesProf" onchange="previsualiserGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-gold font-bold">
-            <option value="0">0 Barrette</option>
-            <option value="1">1 Barrette</option>
-            <option value="2">2 Barrettes</option>
-            <option value="3">3 Barrettes</option>
-            <option value="4">4 Barrettes</option>
+        <!-- SÉLECTEUR DE MEMBRE SUR L'ONGLET PROFIL (PROFESSEUR UNIQUEMENT) -->
+        <div id="boxProfilMemberSwitch" class="bg-carbone/70 p-3.5 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <span class="text-gray-300 font-semibold">👤 Fiche affichée actuellement :</span>
+          <select id="eleveSelectProfil" onchange="synchroniserSelecteurProfil(this.value)" class="bg-anthracite border border-gold/40 rounded-lg px-3 py-1.5 text-gold font-bold focus:outline-none">
+            <option value="">Chargement...</option>
           </select>
+        </div>
 
-          <button id="btnSaveGrade" onclick="sauvegarderGradeSheets()" class="px-4 py-2 rounded-lg bg-gold text-black font-extrabold hover:bg-gold-light transition">
-            🏆 Valider Grade
+        <!-- CONTRÔLE D'ACCÈS & BLOCAGE ÉLÈVE (HEAD COACH UNIQUEMENT) -->
+        <div id="boxBlockControlsCoach" class="bg-carbone/90 p-4 rounded-xl border border-red-500/30 flex flex-wrap justify-between items-center gap-4">
+          <div>
+            <h3 class="text-xs font-bold text-white uppercase tracking-wider">Contrôle d'Accès & Cotisation (Professeur)</h3>
+            <p class="text-[11px] text-gray-400">Bloquez l'inscription aux cours (impayé) ou interdisez l'accès au compte de cet élève</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 text-xs">
+            <button id="btnToggleBlockCourses" type="button" onclick="basculerBlocageCours()" class="px-4 py-2 rounded-xl bg-carbone border border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/10 transition">
+              ✅ Inscriptions Cours : Autorisées
+            </button>
+            <button id="btnToggleBlockAccount" type="button" onclick="basculerBlocageCompte()" class="px-4 py-2 rounded-xl bg-carbone border border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/10 transition">
+              🔓 Accès Compte App : Autorisé
+            </button>
+          </div>
+        </div>
+
+        <!-- GESTION DU GRADE & BARRETTES (HEAD COACH UNIQUEMENT) -->
+        <div id="boxGradeEditCoach" class="bg-carbone/80 p-4 rounded-xl border border-gold/40 flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <h3 class="text-xs font-bold text-gold uppercase">Gestion du Grade & Barrettes (Head Coach)</h3>
+            <p class="text-[10px] text-gray-400">Sélectionnez la ceinture et le nombre de barrettes puis validez</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <select id="selectCeintureProf" onchange="previsualiserGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-white font-bold">
+              <option value="Blanche">Ceinture Blanche</option>
+              <option value="Bleue">Ceinture Bleue</option>
+              <option value="Violette">Ceinture Violette</option>
+              <option value="Marron">Ceinture Marron</option>
+              <option value="Noire">Ceinture Noire</option>
+            </select>
+
+            <select id="selectBarrettesProf" onchange="previsualiserGradeActif()" class="bg-anthracite border border-gold/40 rounded p-2 text-gold font-bold">
+              <option value="0">0 Barrette</option>
+              <option value="1">1 Barrette</option>
+              <option value="2">2 Barrettes</option>
+              <option value="3">3 Barrettes</option>
+              <option value="4">4 Barrettes</option>
+            </select>
+
+            <button id="btnSaveGrade" onclick="sauvegarderGradeSheets()" class="px-4 py-2 rounded-lg bg-gold text-black font-extrabold hover:bg-gold-light transition">
+              🏆 Valider Grade
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="flex flex-col items-center justify-center space-y-3 bg-carbone/60 p-4 rounded-xl border border-white/5">
+            <img id="profilePhotoDisplay" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-28 h-28 rounded-2xl border-2 border-gold object-cover shadow-xl">
+            <label id="btnUploadPhotoLabel" class="cursor-pointer px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold text-xs font-bold hover:bg-gold hover:text-black transition">
+              📷 Modifier Photo
+              <input type="file" accept="image/*" class="hidden" onchange="uploadPhotoProfil(event)">
+            </label>
+          </div>
+
+          <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label class="text-gray-400 font-semibold">Prénom</label>
+              <input type="text" id="fieldPrenom" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Nom</label>
+              <input type="text" id="fieldNom" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Genre (Homme / Femme)</label>
+              <select id="fieldSexe" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+                <option value="Homme">Homme</option>
+                <option value="Femme">Femme</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Date de Naissance</label>
+              <input type="text" id="fieldDateNaissance" value="" placeholder="JJ/MM/AAAA" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Adresse Email</label>
+              <input type="email" id="fieldEmail" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Numéro de Téléphone</label>
+              <input type="text" id="fieldTel" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Adresse Postale</label>
+              <input type="text" id="fieldAdresse" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Ville</label>
+              <input type="text" id="fieldVille" value="" placeholder="ex: Gaillard" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Licence CFJJB / Assurance</label>
+              <input type="text" id="fieldLicence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-emerald-400 font-bold mt-1">
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Personne à Contacter en Cas d'Urgence</label>
+              <input type="text" id="fieldUrgence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Informations Médicales / Allergies</label>
+              <input type="text" id="fieldAllergies" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
+            </div>
+
+            <div>
+              <label class="text-gray-400 font-semibold">Total Cours Validés</label>
+              <input type="number" id="fieldTotalCours" min="0" value="0" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
+            </div>
+          </div>
+        </div>
+
+        <div id="boxSaveProfilFooter" class="flex justify-end pt-4 border-t border-white/10">
+          <button id="btnSaveProfil" onclick="sauvegarderProfilSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
+            💾 Enregistrer les Modifications (Professeur)
           </button>
         </div>
       </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="flex flex-col items-center justify-center space-y-3 bg-carbone/60 p-4 rounded-xl border border-white/5">
-          <img id="profilePhotoDisplay" src="https://ui-avatars.com/api/?name=Soul+System&background=D4AF37&color=000" class="w-28 h-28 rounded-2xl border-2 border-gold object-cover shadow-xl">
-          <label id="btnUploadPhotoLabel" class="cursor-pointer px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold text-xs font-bold hover:bg-gold hover:text-black transition">
-            📷 Modifier Photo
-            <input type="file" accept="image/*" class="hidden" onchange="uploadPhotoProfil(event)">
-          </label>
-        </div>
-
-        <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div>
-            <label class="text-gray-400 font-semibold">Prénom</label>
-            <input type="text" id="fieldPrenom" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
-          </div>
-
-          <div>
-            <label class="text-gray-400 font-semibold">Nom</label>
-            <input type="text" id="fieldNom" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
-          </div>
-
-          <div>
-            <label class="text-gray-400 font-semibold">Adresse Email</label>
-            <input type="email" id="fieldEmail" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
-          </div>
-
-          <div>
-            <label class="text-gray-400 font-semibold">Numéro de Téléphone</label>
-            <input type="text" id="fieldTel" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white font-bold mt-1">
-          </div>
-
-          <div>
-            <label class="text-gray-400 font-semibold">Date de Naissance</label>
-            <input type="text" id="fieldDateNaissance" value="" placeholder="JJ/MM/AAAA" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-          </div>
-
-          <div>
-            <label class="text-gray-400 font-semibold">Licence CFJJB / Assurance</label>
-            <input type="text" id="fieldLicence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-emerald-400 font-bold mt-1">
-          </div>
-
-          <div class="md:col-span-2">
-            <label class="text-gray-400 font-semibold">Adresse Postale Complète</label>
-            <input type="text" id="fieldAdresse" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-          </div>
-
-          <div>
-            <label class="text-gray-400 font-semibold">Personne à Contacter en Cas d'Urgence</label>
-            <input type="text" id="fieldUrgence" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-          </div>
-
-          <div>
-            <label class="text-gray-400 font-semibold">Informations Médicales / Allergies</label>
-            <input type="text" id="fieldAllergies" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-          </div>
-
-          <div>
-            <label class="text-gray-400 font-semibold">Club Précédent</label>
-            <input type="text" id="fieldClubPrecedent" value="" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-white mt-1">
-          </div>
-
-          <div>
-            <label class="text-gray-400 font-semibold">Total Cours Validés</label>
-            <input type="number" id="fieldTotalCours" min="0" value="0" class="profile-editable w-full bg-carbone border border-white/10 rounded-lg p-2.5 text-gold font-bold mt-1">
-          </div>
-        </div>
-      </div>
-
-      <div id="boxSaveProfilFooter" class="flex justify-end pt-4 border-t border-white/10">
-        <button id="btnSaveProfil" onclick="sauvegarderProfilSheets()" class="px-5 py-2.5 rounded-xl bg-gold text-black font-bold text-xs hover:bg-gold-light transition">
-          💾 Enregistrer les Modifications (Professeur)
-        </button>
-      </div>
     </div>
 
-    <!-- ONGLET 4 : CLASSEMENT GÉNÉRAL (ACCESSIBLE AUX ÉLÈVES : NOM, PRÉNOM, GRADE + BARRETTES) -->
+    <!-- ONGLET 4 : CLASSEMENT GENERAL (ACCESSIBLE AUX ÉLÈVES) -->
     <div id="sectionClassement" class="hidden card-luxe p-6 rounded-2xl">
-      <div class="flex flex-wrap items-center justify-between mb-6 gap-2">
+      <div class="flex flex-wrap items-center justify-between mb-6">
         <div>
-          <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement Général du Club</h2>
-          <p class="text-xs text-gray-400">Nom, Prénom et Grade officiel avec barrettes</p>
+          <h2 class="text-lg font-bold text-white uppercase tracking-wider">🏆 Classement & Challenge Assiduité</h2>
+          <p class="text-xs text-gray-400">Nom, Prénom & Grade avec Barrette — Saison 2026-2027</p>
         </div>
         <div class="flex space-x-2">
-          <span class="px-3 py-1 rounded-lg bg-gold text-xs text-black font-bold">Saison 2026-2027</span>
+          <span class="px-3 py-1 rounded-lg bg-gold text-xs text-black font-bold">Classement Officiel</span>
         </div>
       </div>
 
@@ -645,15 +745,96 @@
           <thead>
             <tr class="border-b border-white/10 text-gray-400 uppercase">
               <th class="py-3 px-4">Rang</th>
-              <th class="py-3 px-4">Nom</th>
-              <th class="py-3 px-4">Prénom</th>
-              <th class="py-3 px-4">Grade & Barrettes</th>
+              <th class="py-3 px-4">Nom & Prénom</th>
+              <th class="py-3 px-4">Grade & Barrette</th>
               <th class="py-3 px-4 text-center">Cours Suivis</th>
+              <th class="py-3 px-4 text-right">Statut</th>
             </tr>
           </thead>
           <tbody id="classementBody" class="divide-y divide-white/5">
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- ONGLET 5 : ANALYTICS CLUB DE LUXE (RÉSERVÉ AU PROFESSEUR) -->
+    <div id="sectionAnalytics" class="hidden space-y-6">
+      <div class="card-luxe p-6 rounded-2xl flex flex-wrap items-center justify-between gap-4 border border-gold/40">
+        <div>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30 uppercase">Executive Club Intelligence</span>
+          <h2 class="text-lg font-extrabold text-white uppercase tracking-wider mt-1">Statistiques & Démographie — Soul System Jiu Jitsu</h2>
+          <p class="text-xs text-gray-400">Vue analytique temps réel réservée au Head Coach (Martin Huambachano)</p>
+        </div>
+        <div class="flex gap-3 text-center">
+          <div class="bg-carbone/90 px-4 py-2 rounded-xl border border-gold/30">
+            <p id="statTotalClub" class="text-xl font-black gold-gradient-text">0</p>
+            <p class="text-[10px] text-gray-400 uppercase">Membres Actifs</p>
+          </div>
+          <div class="bg-carbone/90 px-4 py-2 rounded-xl border border-white/10">
+            <p id="statTotalVilles" class="text-xl font-black silver-gradient-text">0</p>
+            <p class="text-[10px] text-gray-400 uppercase">Villes Représentées</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- GRAPHIQUE 1 : CATÉGORIES D'ÂGE (ENFANTS 4-11, ADOS 12-15, ADULTES 16+) -->
+        <div class="card-luxe p-6 rounded-2xl space-y-4">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <div>
+              <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">1. Répartition par Catégorie d'Âge</h3>
+              <p class="text-[11px] text-gold">Enfants (4–11 ans) • Ados (12–15 ans) • Adultes (16 ans et +)</p>
+            </div>
+            <span class="text-lg">🥋</span>
+          </div>
+          <div class="relative h-[260px] w-full flex items-center justify-center">
+            <canvas id="chartAgeCategories"></canvas>
+          </div>
+        </div>
+
+        <!-- GRAPHIQUE 2 : HOMMES / FEMMES -->
+        <div class="card-luxe p-6 rounded-2xl space-y-4">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <div>
+              <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">2. Répartition Hommes / Femmes</h3>
+              <p class="text-[11px] text-gold">Équilibre des effectifs du club</p>
+            </div>
+            <span class="text-lg">⚖️</span>
+          </div>
+          <div class="relative h-[260px] w-full flex items-center justify-center">
+            <canvas id="chartGender"></canvas>
+          </div>
+        </div>
+
+        <!-- GRAPHIQUE 3 : COULEURS DE CEINTURES -->
+        <div class="card-luxe p-6 rounded-2xl space-y-4">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <div>
+              <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">3. Répartition par Couleur de Ceinture</h3>
+              <p class="text-[11px] text-gold">Blanche • Bleue • Violette • Marron • Noire</p>
+            </div>
+            <span class="text-lg">🏆</span>
+          </div>
+          <div class="relative h-[260px] w-full flex items-center justify-center">
+            <canvas id="chartBelts"></canvas>
+          </div>
+        </div>
+
+        <!-- GRAPHIQUE 4 : RÉPARTITION PAR VILLE -->
+        <div class="card-luxe p-6 rounded-2xl space-y-4">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <div>
+              <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">4. Répartition Géographique par Ville</h3>
+              <p class="text-[11px] text-gold">Provenance des adhérents</p>
+            </div>
+            <span class="text-lg">📍</span>
+          </div>
+          <div class="relative h-[260px] w-full flex items-center justify-center">
+            <canvas id="chartCities"></canvas>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -710,6 +891,10 @@
     let currentEleveIndex = 0;
     let firstLoadDone = false;
     let radarChart = null;
+    let chartAge = null;
+    let chartGender = null;
+    let chartBelts = null;
+    let chartCities = null;
 
     function getVal(obj, keys, fallback = "") {
       if (!obj) return fallback;
@@ -740,6 +925,42 @@
         return rawUrl;
       }
       return `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=D4AF37&color=000`;
+    }
+
+    function parseBirthDate(dobStr) {
+      if (!dobStr) return null;
+      const s = String(dobStr).trim();
+      // Format DD/MM/YYYY ou D/M/YYYY
+      const frMatch = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (frMatch) {
+        return {
+          day: parseInt(frMatch[1], 10),
+          month: parseInt(frMatch[2], 10),
+          year: parseInt(frMatch[3], 10)
+        };
+      }
+      // Format YYYY-MM-DD
+      const isoMatch = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+      if (isoMatch) {
+        return {
+          year: parseInt(isoMatch[1], 10),
+          month: parseInt(isoMatch[2], 10),
+          day: parseInt(isoMatch[3], 10)
+        };
+      }
+      return null;
+    }
+
+    function calculerAgeExact(dobStr) {
+      const parsed = parseBirthDate(dobStr);
+      if (!parsed) return null;
+      const today = new Date();
+      let age = today.getFullYear() - parsed.year;
+      const mDiff = (today.getMonth() + 1) - parsed.month;
+      if (mDiff < 0 || (mDiff === 0 && today.getDate() < parsed.day)) {
+        age--;
+      }
+      return age;
     }
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -821,8 +1042,10 @@
 
         const selectDash = document.getElementById("eleveSelect");
         const selectProf = document.getElementById("eleveSelectProfil");
+        const studentLoginSel = document.getElementById("studentLoginSelect");
         selectDash.innerHTML = "";
         selectProf.innerHTML = "";
+        studentLoginSel.innerHTML = "";
         
         if (!firstLoadDone) {
           const profIdx = listeEleves.findIndex(e => {
@@ -842,7 +1065,11 @@
           const nom = getVal(eleve, ['NOM', 'Nom'], '');
           const ceinture = getVal(eleve, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE', 'Grade'], 'Ceinture Blanche');
           const barrettes = parseInt(getVal(eleve, ['BARRETTES', 'NOMBRE_BARRETTES', 'Barrettes'], 0)) || 0;
-          const labelOpt = `${prenom} ${nom} — ${ceinture} (${barrettes} bar.)`;
+          const role = String(getVal(eleve, ['ROLE'], '')).toLowerCase();
+          const blkC = String(getVal(eleve, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
+          const blkA = String(getVal(eleve, ['ACCES_BLOQUE'], 'NON')).toUpperCase() === 'OUI';
+          const statusTag = (blkA ? ' [🔒 COMPTE BLOQUÉ]' : '') + (blkC ? ' [🚫 COURS BLOQUÉS]' : '');
+          const labelOpt = `${prenom} ${nom} — ${ceinture} (${barrettes} bar.)${statusTag}`;
 
           const opt1 = document.createElement("option");
           opt1.value = index;
@@ -853,12 +1080,22 @@
           opt2.value = index;
           opt2.textContent = labelOpt;
           selectProf.appendChild(opt2);
+
+          if (!role.includes('prof')) {
+            const optS = document.createElement("option");
+            optS.value = index;
+            optS.textContent = `${prenom} ${nom}`;
+            studentLoginSel.appendChild(optS);
+          }
         });
 
         selectDash.value = String(prevIdx);
         selectProf.value = String(prevIdx);
         actualiserAlerteBarrettes();
+        verifierAnniversaires();
         genererClassement();
+        actualiserCartePubliqueProfesseur();
+        genererGraphiquesLuxeProfesseur();
         changerEleve();
       }
 
@@ -870,12 +1107,96 @@
       afficherSessionsPlanning();
     }
 
+    // --- VÉRIFICATION DES ANNIVERSAIRES DU JOUR (PROFESSEUR) ---
+    function verifierAnniversaires() {
+      const today = new Date();
+      const dToday = today.getDate();
+      const mToday = today.getMonth() + 1;
+      const yToday = today.getFullYear();
+
+      const anniversaires = [];
+      listeEleves.forEach(el => {
+        const dob = getVal(el, ['DATE_NAISSANCE', 'Date_Naissance'], '');
+        const parsed = parseBirthDate(dob);
+        if (parsed && parsed.day === dToday && parsed.month === mToday) {
+          const prenom = getVal(el, ['PRENOM', 'Prenom'], '');
+          const nom = getVal(el, ['NOM', 'Nom'], '');
+          const ceinture = getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
+          const barrettes = parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0;
+          const age = yToday - parsed.year;
+          anniversaires.push(`🎉 <strong>${prenom} ${nom}</strong> fête ses <strong>${age} ans</strong> aujourd'hui — <span class="text-gold">${ceinture} (${barrettes} barrette${barrettes > 1 ? 's' : ''})</span>`);
+        }
+      });
+
+      const box = document.getElementById("birthdayNotificationBox");
+      const listText = document.getElementById("birthdayListText");
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+
+      if (anniversaires.length > 0 && isProf) {
+        listText.innerHTML = anniversaires.map(line => `<p>${line}</p>`).join("");
+        box.classList.remove("hidden");
+      } else {
+        box.classList.add("hidden");
+      }
+    }
+
+    // --- REMPLISSAGE DE LA CARTE OFFICIELLE DU PROFESSEUR (VUE ÉLÈVE) ---
+    function actualiserCartePubliqueProfesseur() {
+      const prof = listeEleves.find(e => {
+        const nom = String(getVal(e, ['NOM'], '')).toLowerCase();
+        const email = String(getVal(e, ['EMAIL'], '')).toLowerCase();
+        const role = String(getVal(e, ['ROLE'], '')).toLowerCase();
+        return nom.includes('huambachano') || email.includes('huambachano') || role.includes('prof');
+      });
+
+      if (!prof) return;
+
+      const prenom = getVal(prof, ['PRENOM', 'Prenom'], 'Martin');
+      const nom = getVal(prof, ['NOM', 'Nom'], 'Huambachano');
+      const fullName = `${prenom} ${nom}`.trim();
+      const ceintureRaw = String(getVal(prof, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Marron'));
+      const barrettes = Math.min(4, Math.max(0, parseInt(getVal(prof, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0));
+      const dob = getVal(prof, ['DATE_NAISSANCE', 'Date_Naissance'], 'Non renseignée');
+      const tel = getVal(prof, ['TELEPHONE', 'TEL'], 'Non renseigné');
+      const rawPhoto = getVal(prof, ['PHOTO', 'AVATAR'], '');
+
+      document.getElementById("coachPublicPhoto").src = formatAvatarUrl(rawPhoto, fullName);
+      document.getElementById("coachPublicName").textContent = fullName;
+      const ceintureLabel = ceintureRaw.toLowerCase().includes('ceinture') ? ceintureRaw : `Ceinture ${ceintureRaw}`;
+      document.getElementById("coachPublicGradeText").textContent = `${ceintureLabel} — ${barrettes} Barrette${barrettes > 1 ? 's' : ''}`;
+      document.getElementById("coachPublicDob").textContent = dob;
+      document.getElementById("coachPublicPhone").textContent = tel;
+
+      // Dessin ceinture du professeur
+      const beltEl = document.getElementById("coachPublicBeltBar");
+      const tipEl = document.getElementById("coachPublicBeltTip");
+      const lower = ceintureRaw.toLowerCase();
+      beltEl.className = "w-full max-w-xs h-6 rounded relative flex items-center justify-end overflow-hidden shadow-inner ";
+      tipEl.className = "h-full w-14 flex items-center justify-evenly px-1 border-l border-white/20 ";
+
+      if (lower.includes("noire")) { beltEl.className += "belt-noire"; tipEl.className += "bg-red-700"; }
+      else if (lower.includes("marron")) { beltEl.className += "belt-marron"; tipEl.className += "bg-black"; }
+      else if (lower.includes("violet")) { beltEl.className += "belt-violette"; tipEl.className += "bg-black"; }
+      else if (lower.includes("bleu")) { beltEl.className += "belt-bleue"; tipEl.className += "bg-black"; }
+      else { beltEl.className += "belt-blanche"; tipEl.className += "bg-black"; }
+
+      tipEl.innerHTML = "";
+      for (let i = 0; i < barrettes; i++) {
+        tipEl.innerHTML += '<div class="w-1.5 h-3.5 bg-white rounded-xs shadow"></div>';
+      }
+    }
+
     function synchroniserSelecteurProfil(val) {
       document.getElementById("eleveSelect").value = val;
       changerEleve();
     }
 
-    // --- GESTION DYNAMIQUE DU PLANNING (LIMITE 16 CONFIGURABLE + PROFESSEUR + CONFIDENTIALITÉ ÉLÈVE) ---
+    function changerCompteEleveConnecte(val) {
+      document.getElementById("eleveSelect").value = val;
+      changerEleve();
+    }
+
+    // --- GESTION DYNAMIQUE DU PLANNING (LIMITE 16 + PROFESSEUR + CONFIDENTIALITÉ ÉLÈVE) ---
     function afficherSessionsPlanning() {
       const container = document.getElementById("sessionsListContainer");
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
@@ -883,14 +1204,22 @@
       const activeFullName = activeEl
         ? `${getVal(activeEl, ['PRENOM', 'Prenom'], '')} ${getVal(activeEl, ['NOM', 'Nom'], '')}`.trim()
         : "";
+      const estBloqueCours = activeEl && String(getVal(activeEl, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
 
       document.getElementById("planningActiveMemberName").textContent = activeFullName || "Membre actif";
+
+      const blockedBanner = document.getElementById("blockedCoursesBanner");
+      if (!isProf && estBloqueCours) {
+        blockedBanner.classList.remove("hidden");
+      } else {
+        blockedBanner.classList.add("hidden");
+      }
 
       if (listeSessions.length === 0) {
         container.innerHTML = `
           <div class="bg-carbone/60 border border-white/10 rounded-xl p-6 text-center space-y-2">
             <p class="text-sm font-bold text-white">Aucune session publiée pour le moment</p>
-            <p class="text-xs text-gray-400">Le professeur peut publier les cours ci-dessus (limite initiale : 16 inscrits).</p>
+            <p class="text-xs text-gray-400">Le planning officiel apparaîtra ici dès la publication des cours.</p>
           </div>
         `;
         return;
@@ -905,79 +1234,77 @@
         const dateHeure = getVal(ses, ['DATE_HEURE'], '');
         const recurrence = getVal(ses, ['RECURRENCE'], 'Ponctuel');
         const capacite = parseInt(getVal(ses, ['CAPACITE'], 16)) || 16;
-        const professeur = getVal(ses, ['PROFESSEUR'], 'Martin Huambachano');
+        const professeurCours = getVal(ses, ['PROFESSEUR'], 'Martin Huambachano');
         const inscritsRaw = String(getVal(ses, ['INSCRITS'], '')).trim();
         const inscritsArr = inscritsRaw ? inscritsRaw.split(",").map(x => x.trim()).filter(Boolean) : [];
 
         const estInscrit = activeFullName && inscritsArr.some(n => n.toLowerCase() === activeFullName.toLowerCase());
         const complet = inscritsArr.length >= capacite && !estInscrit;
+        const btnDisabled = complet || (!estInscrit && estBloqueCours);
 
         const card = document.createElement("div");
-        card.className = "bg-carbone/80 p-5 rounded-xl border border-gold/30 space-y-4";
+        card.className = "bg-carbone/80 p-5 rounded-xl border border-gold/30 flex flex-wrap justify-between items-center gap-4";
 
-        // CONFIDENTIALITÉ : Le professeur voit la liste nominative ; l'élève voit UNIQUEMENT le nombre d'inscrits
-        const blocInscrits = isProf
+        // CONFIDENTIALITÉ : Le professeur voit la liste des noms inscrits ; les élèves voient uniquement le compteur !
+        const inscritsInfoHtml = isProf
           ? (inscritsArr.length > 0
-              ? `<p class="text-[11px] text-gray-300 mt-2">🥋 Élèves inscrits (${inscritsArr.length}) : <span class="text-gold font-semibold">${inscritsArr.join(", ")}</span></p>`
-              : `<p class="text-[11px] text-gray-500 mt-2">Aucun élève inscrit pour le moment.</p>`)
-          : `<p class="text-[11px] text-gray-400 mt-2">👥 Effectif actuel : <strong class="text-white">${inscritsArr.length} / ${capacite} inscrits</strong> ${complet ? '<span class="text-red-400 font-bold">(Cours complet — inscriptions fermées)</span>' : ''}</p>`;
+              ? `<p class="text-[11px] text-gray-400 mt-1.5">🥋 Inscrits (${inscritsArr.length}/${capacite}) : <span class="text-gray-200 font-semibold">${inscritsArr.join(", ")}</span></p>`
+              : `<p class="text-[11px] text-gray-500 mt-1.5">Aucun élève inscrit pour le moment.</p>`)
+          : `<p class="text-[11px] text-gray-400 mt-1.5">🔒 Liste nominative réservée au professeur</p>`;
 
-        // CONTRÔLES PROFESSEUR SUR LA CARTE (MODIFIER LIMITE & PROFESSEUR À TOUT MOMENT)
-        const blocAdminProf = isProf ? `
-          <div class="pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div class="flex flex-wrap items-center gap-3">
-              <div class="flex items-center gap-1.5">
-                <label class="text-gray-400">Professeur :</label>
-                <input type="text" id="profInput_${id}" value="${professeur.replace(/"/g, '&quot;')}" class="bg-anthracite border border-gold/40 rounded-lg px-2.5 py-1 text-white font-bold w-44">
-              </div>
-              <div class="flex items-center gap-1.5">
-                <label class="text-gray-400">Limite inscrits :</label>
-                <input type="number" id="capInput_${id}" value="${capacite}" min="1" max="150" class="bg-anthracite border border-gold/40 rounded-lg px-2 py-1 text-center text-gold font-bold w-16">
-              </div>
-              <button onclick="modifierSessionSheets('${id}', this)" class="px-3 py-1.5 rounded-lg bg-gold/20 border border-gold text-gold font-bold hover:bg-gold hover:text-black transition">
-                💾 Mettre à jour
-              </button>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick='ouvrirAppelTatami(${JSON.stringify(type + " — " + theme)}, ${JSON.stringify(inscritsArr)})' class="px-3 py-1.5 rounded-lg bg-carbone border border-gold/40 text-gold font-bold hover:bg-gold/10">
-                🥋 Appel Tatami
-              </button>
-              <button onclick="supprimerSessionSheets('${id}')" class="px-2.5 py-1.5 rounded-lg bg-carbone border border-red-500/30 text-red-400 hover:bg-red-500/10" title="Supprimer cette session">
-                🗑️
-              </button>
-            </div>
+        // CONTRÔLES PROFESSEUR EN DIRECT (MODIFIER LIMITE D'INSCRITS + NOM DU PROFESSEUR)
+        const profEditControls = isProf ? `
+          <div class="mt-3 pt-2.5 border-t border-white/5 flex flex-wrap items-center gap-2 text-[11px]">
+            <span class="text-gray-400 font-semibold">Professeur :</span>
+            <input type="text" id="profInput_${id}" value="${professeurCours}" class="bg-anthracite border border-white/15 rounded px-2 py-1 text-white font-semibold w-44">
+            <span class="text-gray-400 font-semibold ml-1">Limite max :</span>
+            <input type="number" id="capInput_${id}" value="${capacite}" min="1" max="100" class="bg-anthracite border border-gold/40 rounded px-2 py-1 text-gold font-bold w-14 text-center">
+            <button onclick="sauvegarderParametresSession('${id}')" class="px-2.5 py-1 rounded bg-gold/20 border border-gold/50 text-gold font-bold hover:bg-gold hover:text-black transition">
+              💾 Mettre à jour
+            </button>
           </div>
         ` : '';
 
+        let btnLabel = "S'inscrire";
+        if (estInscrit) btnLabel = "✓ Inscrit (Annuler)";
+        else if (estBloqueCours) btnLabel = "🚫 Inscription Bloquée";
+        else if (complet) btnLabel = `Complet (${inscritsArr.length}/${capacite})`;
+
         card.innerHTML = `
-          <div class="flex flex-wrap justify-between items-center gap-4">
-            <div class="space-y-1 flex-1 min-w-[240px]">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">${type}</span>
-                <span class="text-xs text-gray-400">● ${dateHeure}</span>
-                <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400">${recurrence}</span>
-                <span class="text-[10px] px-2 py-0.5 rounded bg-gold/10 text-gold font-semibold">👨‍🏫 Prof. ${professeur}</span>
-              </div>
-              <h3 class="font-extrabold text-base text-white">${theme}</h3>
-              ${blocInscrits}
+          <div class="space-y-1 flex-1 min-w-[260px]">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/10 text-gold border border-gold/30">${type}</span>
+              <span class="text-xs text-gray-400">● ${dateHeure}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 text-gray-400">${recurrence}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-gold/10 text-gold font-semibold">🥋 Prof : ${professeurCours}</span>
             </div>
-
-            <div class="flex items-center gap-3">
-              <div class="text-right mr-1">
-                <p class="text-xs font-extrabold ${complet ? 'text-red-400' : 'text-gold'}">${inscritsArr.length} / ${capacite} Inscrits</p>
-                <p class="text-[10px] text-gray-400">${complet ? 'Limite atteinte' : (capacite - inscritsArr.length) + ' place(s) libre(s)'}</p>
-              </div>
-
-              <button onclick="toggleInscriptionSession('${id}', this)" ${complet ? 'disabled' : ''} class="px-4 py-2 rounded-xl font-extrabold text-xs transition ${
-                estInscrit
-                  ? 'bg-emerald-500 text-black hover:bg-emerald-400'
-                  : (complet ? 'bg-gray-800 border border-red-500/40 text-red-400 cursor-not-allowed' : 'bg-gold text-black hover:bg-gold-light')
-              }">
-                ${estInscrit ? '✓ Inscrit (Annuler)' : (complet ? '🔒 Complet' : "S'inscrire")}
-              </button>
-            </div>
+            <h3 class="font-extrabold text-base text-white">${theme}</h3>
+            ${inscritsInfoHtml}
+            ${profEditControls}
           </div>
-          ${blocAdminProf}
+
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="text-right mr-1">
+              <p class="text-xs font-extrabold ${complet ? 'text-red-400' : 'text-gold'}">${inscritsArr.length} / ${capacite} Inscrits</p>
+              <p class="text-[10px] text-gray-400">${complet ? 'Cours Complet' : (capacite - inscritsArr.length) + ' place(s) restante(s)'}</p>
+            </div>
+
+            <button onclick="toggleInscriptionSession('${id}', this)" ${btnDisabled ? 'disabled' : ''} class="px-4 py-2 rounded-xl font-extrabold text-xs transition ${
+              estInscrit
+                ? 'bg-emerald-500 text-black hover:bg-emerald-400'
+                : (btnDisabled ? 'bg-gray-800 text-gray-400 border border-white/10 cursor-not-allowed' : 'bg-gold text-black hover:bg-gold-light')
+            }">
+              ${btnLabel}
+            </button>
+
+            <button onclick='ouvrirAppelTatami(${JSON.stringify(type + " — " + theme)}, ${JSON.stringify(inscritsArr)})' style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-3 py-2 rounded-xl bg-carbone border border-gold/40 text-xs text-gold font-bold hover:bg-gold/10">
+              🥋 Appel Tatami
+            </button>
+
+            <button onclick="supprimerSessionSheets('${id}')" style="display:${isProf ? 'inline-block' : 'none'}" class="btnProfOnly px-2.5 py-2 rounded-xl bg-carbone border border-red-500/30 text-xs text-red-400 hover:bg-red-500/10" title="Supprimer cette session">
+              🗑️
+            </button>
+          </div>
         `;
         container.appendChild(card);
       });
@@ -986,10 +1313,10 @@
     async function publierEvenementSheets() {
       const type = document.getElementById("eventType").value;
       const theme = document.getElementById("eventTheme").value.trim();
-      const professeur = document.getElementById("eventProfesseur").value.trim() || "Martin Huambachano";
       const dateHeure = document.getElementById("eventDate").value.trim();
       const recurrence = document.getElementById("eventRecurrence").value;
       const capacite = parseInt(document.getElementById("eventCapacite").value) || 16;
+      const professeur = document.getElementById("eventProfesseur").value.trim() || "Martin Huambachano";
 
       if (!theme || !dateHeure) {
         alert("⚠️ Renseignez au minimum le thème et la date/horaire de la session.");
@@ -999,18 +1326,18 @@
       const btn = document.getElementById("btnPublierSession");
       const badge = document.getElementById("syncStatusBadge");
       btn.disabled = true;
-      btn.textContent = "⏳ Publication dans Google Sheets...";
+      btn.textContent = "⏳ Publication...";
       badge.textContent = "⏳ Publication session...";
 
       const newSession = {
         ID: "SES-" + Date.now(),
         TYPE: type,
         THEME: theme,
-        PROFESSEUR: professeur,
         DATE_HEURE: dateHeure,
         RECURRENCE: recurrence,
         CAPACITE: capacite,
-        INSCRITS: ""
+        INSCRITS: "",
+        PROFESSEUR: professeur
       };
 
       try {
@@ -1028,7 +1355,7 @@
         document.getElementById("eventDate").value = "";
         badge.textContent = "✅ Session publiée";
         badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-        alert(`📅 Session publiée (${capacite} places max — Professeur : ${professeur}) !`);
+        alert(`📅 Session publiée (Prof : ${professeur} — Limite : ${capacite} places) !`);
       } catch (err) {
         alert("❌ Erreur lors de la publication : " + err.message);
       } finally {
@@ -1037,16 +1364,19 @@
       }
     }
 
-    async function modifierSessionSheets(sessionId, btn) {
-      const capInput = document.getElementById("capInput_" + sessionId);
-      const profInput = document.getElementById("profInput_" + sessionId);
-      if (!capInput || !profInput) return;
+    async function sauvegarderParametresSession(sessionId) {
+      const capEl = document.getElementById("capInput_" + sessionId);
+      const profEl = document.getElementById("profInput_" + sessionId);
+      if (!capEl || !profEl) return;
 
-      const newCap = Math.max(1, parseInt(capInput.value) || 16);
-      const newProf = profInput.value.trim() || "Martin Huambachano";
+      const newCap = Math.max(1, parseInt(capEl.value) || 16);
+      const newProf = profEl.value.trim() || "Martin Huambachano";
 
-      btn.disabled = true;
-      btn.textContent = "⏳...";
+      const ses = listeSessions.find(s => String(getVal(s, ['ID'], '')) === String(sessionId));
+      if (ses) {
+        ses.CAPACITE = newCap;
+        ses.PROFESSEUR = newProf;
+      }
 
       try {
         await fetch(GOOGLE_SHEETS_API_URL, {
@@ -1060,18 +1390,12 @@
             PROFESSEUR: newProf
           })
         });
-
-        const ses = listeSessions.find(s => String(getVal(s, ['ID'], '')) === String(sessionId));
-        if (ses) {
-          ses.CAPACITE = newCap;
-          ses.PROFESSEUR = newProf;
-        }
         afficherSessionsPlanning();
         const badge = document.getElementById("syncStatusBadge");
-        badge.textContent = "✅ Session mise à jour";
+        badge.textContent = `✅ Cours mis à jour (Limite: ${newCap})`;
         badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
       } catch (err) {
-        alert("❌ Erreur lors de la modification : " + err.message);
+        alert("❌ Erreur lors de la mise à jour du cours : " + err.message);
       }
     }
 
@@ -1089,20 +1413,24 @@
       const pos = liste.findIndex(n => n.toLowerCase() === memberName.toLowerCase());
       const etaitInscrit = pos !== -1;
 
-      if (!etaitInscrit && liste.length >= capacite) {
-        alert(`🔒 Cours complet : la limite de ${capacite} inscrits est atteinte.`);
-        afficherSessionsPlanning();
-        return;
+      if (!etaitInscrit) {
+        const estBloqueCours = String(getVal(activeEl, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
+        if (estBloqueCours) {
+          alert("🚫 Votre inscription aux cours est bloquée. Veuillez contacter votre professeur.");
+          return;
+        }
+        if (liste.length >= capacite) {
+          alert(`⚠️ Cours complet ! La limite de ${capacite} inscrits est atteinte.`);
+          afficherSessionsPlanning();
+          return;
+        }
+        liste.push(memberName);
+      } else {
+        liste.splice(pos, 1);
       }
 
       btn.disabled = true;
       btn.textContent = "⏳ Sync...";
-
-      if (etaitInscrit) {
-        liste.splice(pos, 1);
-      } else {
-        liste.push(memberName);
-      }
       ses.INSCRITS = liste.join(", ");
 
       try {
@@ -1141,6 +1469,74 @@
         afficherSessionsPlanning();
       } catch (err) {
         alert("❌ Erreur lors de la suppression : " + err.message);
+      }
+    }
+
+    // --- BLOCAGE / DÉBLOCAGE INSCRIPTIONS COURS & ACCÈS COMPTE (PROFESSEUR) ---
+    function actualiserBoutonsBlocage(el) {
+      const blkCours = String(getVal(el, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
+      const blkCompte = String(getVal(el, ['ACCES_BLOQUE'], 'NON')).toUpperCase() === 'OUI';
+
+      const btnC = document.getElementById("btnToggleBlockCourses");
+      const btnA = document.getElementById("btnToggleBlockAccount");
+
+      if (blkCours) {
+        btnC.textContent = "🚫 Inscriptions Cours : BLOQUÉES (Débloquer)";
+        btnC.className = "px-4 py-2 rounded-xl bg-red-500/20 border border-red-500 text-red-300 font-extrabold hover:bg-red-500/30 transition";
+      } else {
+        btnC.textContent = "✅ Inscriptions Cours : Autorisées (Bloquer)";
+        btnC.className = "px-4 py-2 rounded-xl bg-carbone border border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/10 transition";
+      }
+
+      if (blkCompte) {
+        btnA.textContent = "🔒 Accès Compte App : INTERDIT (Autoriser)";
+        btnA.className = "px-4 py-2 rounded-xl bg-red-500/20 border border-red-500 text-red-300 font-extrabold hover:bg-red-500/30 transition";
+      } else {
+        btnA.textContent = "🔓 Accès Compte App : Autorisé (Interdire)";
+        btnA.className = "px-4 py-2 rounded-xl bg-carbone border border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/10 transition";
+      }
+    }
+
+    async function basculerBlocageCours() {
+      const el = listeEleves[currentEleveIndex];
+      if (!el) return;
+      const role = String(getVal(el, ['ROLE'], '')).toLowerCase();
+      if (role.includes('prof')) {
+        alert("⚠️ Impossible de bloquer le compte du Professeur.");
+        return;
+      }
+
+      const actuellementBloque = String(getVal(el, ['BLOQUE_COURS'], 'NON')).toUpperCase() === 'OUI';
+      const nouvelleValeur = actuellementBloque ? "NON" : "OUI";
+
+      const ok = await envoyerMiseAJourSheets({ BLOQUE_COURS: nouvelleValeur }, null, "");
+      if (ok) {
+        actualiserBoutonsBlocage(el);
+        afficherSessionsPlanning();
+        alert(nouvelleValeur === "OUI"
+          ? "🚫 L'inscription aux cours est désormais BLOQUÉE pour cet élève."
+          : "✅ L'inscription aux cours est à nouveau AUTORISÉE pour cet élève.");
+      }
+    }
+
+    async function basculerBlocageCompte() {
+      const el = listeEleves[currentEleveIndex];
+      if (!el) return;
+      const role = String(getVal(el, ['ROLE'], '')).toLowerCase();
+      if (role.includes('prof')) {
+        alert("⚠️ Impossible de bloquer le compte du Professeur.");
+        return;
+      }
+
+      const actuellementBloque = String(getVal(el, ['ACCES_BLOQUE'], 'NON')).toUpperCase() === 'OUI';
+      const nouvelleValeur = actuellementBloque ? "NON" : "OUI";
+
+      const ok = await envoyerMiseAJourSheets({ ACCES_BLOQUE: nouvelleValeur }, null, "");
+      if (ok) {
+        actualiserBoutonsBlocage(el);
+        alert(nouvelleValeur === "OUI"
+          ? "🔒 L'accès à l'application est désormais INTERDIT pour cet élève."
+          : "🔓 L'accès à l'application est à nouveau AUTORISÉ pour cet élève.");
       }
     }
 
@@ -1184,15 +1580,12 @@
     async function envoyerMiseAJourSheets(updatesObj, btnElement, originalText) {
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
       if (!isProf) {
-        alert("🔒 Accès refusé : seul le Professeur (Martin Huambachano) peut modifier les informations.");
+        alert("🔒 Accès refusé : seul le Professeur peut modifier les informations.");
         return false;
       }
 
       const el = listeEleves[currentEleveIndex];
-      if (!el) {
-        alert("⚠️ Aucun membre sélectionné.");
-        return false;
-      }
+      if (!el) return false;
 
       const badge = document.getElementById("syncStatusBadge");
       badge.textContent = "⏳ Sauvegarde en cours...";
@@ -1223,10 +1616,7 @@
 
     // --- MODALE D'APPEL TATAMI ---
     function ouvrirAppelTatami(nomSession, inscritsArr = []) {
-      if (listeEleves.length === 0) {
-        alert("⏳ Chargement des élèves en cours, veuillez patienter quelques secondes.");
-        return;
-      }
+      if (listeEleves.length === 0) return;
 
       document.getElementById("modalSessionTitle").textContent = "Appel Tatami — " + nomSession;
       document.getElementById("searchAppelInput").value = "";
@@ -1314,7 +1704,6 @@
       btn.disabled = true;
       btn.textContent = `⏳ Mise à jour de ${checkedBoxes.length} élève(s)...`;
       badge.textContent = "⏳ Enregistrement Appel Tatami...";
-      badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30";
 
       try {
         for (const cb of checkedBoxes) {
@@ -1323,9 +1712,7 @@
           if (!el) continue;
 
           const currentCourses = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
-          const newTotal = currentCourses + 1;
-
-          await envoyerMiseAJourPourEleve(el, { TOTAL_COURS: newTotal });
+          await envoyerMiseAJourPourEleve(el, { TOTAL_COURS: currentCourses + 1 });
         }
 
         actualiserAlerteBarrettes();
@@ -1333,12 +1720,10 @@
         changerEleve();
 
         badge.textContent = `✅ +1 cours validé (${checkedBoxes.length} élèves)`;
-        badge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
-
         fermerAppelTatami();
         alert(`🥋 Appel Tatami validé ! +1 cours ajouté dans Google Sheets pour ${checkedBoxes.length} élève(s).`);
       } catch (err) {
-        alert("❌ Une erreur s'est produite lors de l'enregistrement de l'appel : " + err.message);
+        alert("❌ Erreur lors de l'enregistrement de l'appel : " + err.message);
       } finally {
         btn.disabled = false;
         btn.textContent = "✅ Valider les Présences (+1 Cours)";
@@ -1353,6 +1738,7 @@
       currentEleveIndex = idx;
       document.getElementById("eleveSelectProfil").value = String(idx);
       const el = listeEleves[idx];
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
 
       const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Membre');
       const nom = getVal(el, ['NOM', 'Nom'], '');
@@ -1361,6 +1747,16 @@
       const barrettes = Math.min(4, Math.max(0, parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES', 'Barrettes'], 0)) || 0));
       const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
       const role = getVal(el, ['ROLE', 'Role', 'STATUT'], 'Élève');
+
+      // Vérifie si le compte élève est bloqué (lorsqu'on est en Mode Élève)
+      const accesBloque = String(getVal(el, ['ACCES_BLOQUE'], 'NON')).toUpperCase() === 'OUI';
+      const overlay = document.getElementById("blockedAccountOverlay");
+      if (!isProf && accesBloque) {
+        document.getElementById("blockedAccountName").textContent = fullName;
+        overlay.classList.remove("hidden");
+      } else {
+        overlay.classList.add("hidden");
+      }
 
       document.getElementById("activeCardName").textContent = fullName;
       document.getElementById("activeCardSub").textContent = `${role} • ${barrettes} Barrette(s)`;
@@ -1380,17 +1776,21 @@
       document.getElementById("activeCardProgressText").textContent = `${cours} / ${cibleProchaineBarrette} cours`;
       document.getElementById("activeCardProgressBar").style.width = `${pct}%`;
 
+      // Remplissage automatique complet des champs de "Mon Profil"
       document.getElementById("fieldPrenom").value = prenom;
       document.getElementById("fieldNom").value = nom;
+      document.getElementById("fieldSexe").value = getVal(el, ['SEXE', 'Genre'], 'Homme') === 'Femme' ? 'Femme' : 'Homme';
       document.getElementById("fieldEmail").value = getVal(el, ['EMAIL', 'Email', 'MAIL'], '');
       document.getElementById("fieldTel").value = getVal(el, ['TELEPHONE', 'TEL', 'Telephone'], '');
       document.getElementById("fieldDateNaissance").value = getVal(el, ['DATE_NAISSANCE', 'Date_Naissance'], '');
       document.getElementById("fieldLicence").value = getVal(el, ['LICENCE_CFJJB', 'LICENCE', 'Licence'], 'En cours');
       document.getElementById("fieldAdresse").value = getVal(el, ['ADRESSE', 'Adresse'], '');
+      document.getElementById("fieldVille").value = getVal(el, ['VILLE', 'Ville'], '');
       document.getElementById("fieldUrgence").value = getVal(el, ['URGENCE', 'Contact_Urgence'], '');
       document.getElementById("fieldAllergies").value = getVal(el, ['ALLERGIES', 'Allergies'], 'Aucunes');
-      document.getElementById("fieldClubPrecedent").value = getVal(el, ['CLUB_PRECEDENT', 'Club_Precedent'], 'Aucun');
       document.getElementById("fieldTotalCours").value = cours;
+
+      actualiserBoutonsBlocage(el);
 
       const selectBelt = document.getElementById("selectCeintureProf");
       for (let opt of selectBelt.options) {
@@ -1540,7 +1940,9 @@
         }
         previsualiserGradeActif();
         actualiserAlerteBarrettes();
+        actualiserCartePubliqueProfesseur();
         genererClassement();
+        genererGraphiquesLuxeProfesseur();
         alert(`✅ Grade enregistré dans Google Sheets : Ceinture ${belt} (${stripes} barrette(s)) !`);
       }
     }
@@ -1584,14 +1986,15 @@
       const updates = {
         PRENOM: document.getElementById("fieldPrenom").value.trim(),
         NOM: document.getElementById("fieldNom").value.trim(),
+        SEXE: document.getElementById("fieldSexe").value,
         EMAIL: document.getElementById("fieldEmail").value.trim(),
         TELEPHONE: document.getElementById("fieldTel").value.trim(),
         DATE_NAISSANCE: document.getElementById("fieldDateNaissance").value.trim(),
         LICENCE_CFJJB: document.getElementById("fieldLicence").value.trim(),
         ADRESSE: document.getElementById("fieldAdresse").value.trim(),
+        VILLE: document.getElementById("fieldVille").value.trim(),
         URGENCE: document.getElementById("fieldUrgence").value.trim(),
         ALLERGIES: document.getElementById("fieldAllergies").value.trim(),
-        CLUB_PRECEDENT: document.getElementById("fieldClubPrecedent").value.trim(),
         TOTAL_COURS: parseInt(document.getElementById("fieldTotalCours").value) || 0
       };
 
@@ -1608,21 +2011,220 @@
         }
         changerEleve();
         actualiserAlerteBarrettes();
+        actualiserCartePubliqueProfesseur();
+        verifierAnniversaires();
         genererClassement();
+        genererGraphiquesLuxeProfesseur();
         alert("✅ Fiche personnelle mise à jour dans Google Sheets !");
       }
     }
 
+    // --- GRAPHIQUES DE LUXE DU PROFESSEUR (ÂGE, GENRE, CEINTURES, VILLES) ---
+    function genererGraphiquesLuxeProfesseur() {
+      if (listeEleves.length === 0) return;
+
+      let enfants = 0; // 4 à 11 ans
+      let ados = 0;    // 12 à 15 ans
+      let adultes = 0; // 16 ans et +
+
+      let hommes = 0;
+      let femmes = 0;
+
+      const beltsCount = {
+        "Blanche": 0,
+        "Bleue": 0,
+        "Violette": 0,
+        "Marron": 0,
+        "Noire": 0
+      };
+
+      const citiesMap = {};
+
+      listeEleves.forEach(el => {
+        // 1. Catégorie d'âge (4-11, 12-15, 16+)
+        const dob = getVal(el, ['DATE_NAISSANCE', 'Date_Naissance'], '');
+        const age = calculerAgeExact(dob);
+        if (age !== null) {
+          if (age >= 4 && age <= 11) enfants++;
+          else if (age >= 12 && age <= 15) ados++;
+          else if (age >= 16) adultes++;
+        } else {
+          const cat = String(getVal(el, ['CATEGORIE'], 'Adulte')).toLowerCase();
+          if (cat.includes('enfant')) enfants++;
+          else if (cat.includes('ado')) ados++;
+          else adultes++;
+        }
+
+        // 2. Homme / Femme
+        const sexe = String(getVal(el, ['SEXE', 'Genre'], 'Homme')).toLowerCase();
+        if (sexe.startsWith('f') || sexe.includes('fem')) femmes++;
+        else hommes++;
+
+        // 3. Couleur de ceinture
+        const cStr = String(getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE'], 'Blanche')).toLowerCase();
+        if (cStr.includes('noire')) beltsCount["Noire"]++;
+        else if (cStr.includes('marron')) beltsCount["Marron"]++;
+        else if (cStr.includes('violet')) beltsCount["Violette"]++;
+        else if (cStr.includes('bleu')) beltsCount["Bleue"]++;
+        else beltsCount["Blanche"]++;
+
+        // 4. Ville
+        let ville = String(getVal(el, ['VILLE', 'Ville'], '')).trim();
+        if (!ville) {
+          const adr = String(getVal(el, ['ADRESSE'], '')).trim();
+          const parts = adr.split(",");
+          if (parts.length > 1) {
+            ville = parts[parts.length - 1].replace(/\d{4,5}/g, '').trim();
+          }
+        }
+        if (!ville) ville = "Non renseignée";
+        ville = ville.charAt(0).toUpperCase() + ville.slice(1).toLowerCase();
+        citiesMap[ville] = (citiesMap[ville] || 0) + 1;
+      });
+
+      document.getElementById("statTotalClub").textContent = listeEleves.length;
+      document.getElementById("statTotalVilles").textContent = Object.keys(citiesMap).filter(v => v !== "Non renseignée").length;
+
+      const commonLegend = {
+        position: 'bottom',
+        labels: { color: '#CBD5E1', font: { size: 11, weight: 'bold' }, padding: 14 }
+      };
+
+      // Chart 1 : Catégories d'âge
+      if (chartAge) chartAge.destroy();
+      chartAge = new Chart(document.getElementById("chartAgeCategories").getContext("2d"), {
+        type: 'doughnut',
+        data: {
+          labels: ['Enfants (4-11 ans)', 'Ados (12-15 ans)', 'Adultes (16 ans et +)'],
+          datasets: [{
+            data: [enfants, ados, adultes],
+            backgroundColor: ['#38BDF8', '#A855F7', '#D4AF37'],
+            borderColor: '#08090B',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: { legend: commonLegend }
+        }
+      });
+
+      // Chart 2 : Hommes / Femmes
+      if (chartGender) chartGender.destroy();
+      chartGender = new Chart(document.getElementById("chartGender").getContext("2d"), {
+        type: 'doughnut',
+        data: {
+          labels: ['Hommes', 'Femmes'],
+          datasets: [{
+            data: [hommes, femmes],
+            backgroundColor: ['#D4AF37', '#F472B6'],
+            borderColor: '#08090B',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: { legend: commonLegend }
+        }
+      });
+
+      // Chart 3 : Couleurs de ceinture
+      if (chartBelts) chartBelts.destroy();
+      chartBelts = new Chart(document.getElementById("chartBelts").getContext("2d"), {
+        type: 'bar',
+        data: {
+          labels: ['Blanche', 'Bleue', 'Violette', 'Marron', 'Noire'],
+          datasets: [{
+            label: 'Membres',
+            data: [
+              beltsCount["Blanche"],
+              beltsCount["Bleue"],
+              beltsCount["Violette"],
+              beltsCount["Marron"],
+              beltsCount["Noire"]
+            ],
+            backgroundColor: ['#F8FAFC', '#2563EB', '#7C3AED', '#6D4C41', '#18181B'],
+            borderColor: ['#94A3B8', '#60A5FA', '#A78BFA', '#A1887F', '#D4AF37'],
+            borderWidth: 1.5,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: '#94A3B8', stepSize: 1 },
+              grid: { color: 'rgba(255,255,255,0.06)' }
+            },
+            x: {
+              ticks: { color: '#E2E8F0', font: { weight: 'bold', size: 11 } },
+              grid: { display: false }
+            }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Chart 4 : Villes
+      const sortedCities = Object.entries(citiesMap).sort((a, b) => b[1] - a[1]);
+      if (chartCities) chartCities.destroy();
+      chartCities = new Chart(document.getElementById("chartCities").getContext("2d"), {
+        type: 'bar',
+        data: {
+          labels: sortedCities.map(c => c[0]),
+          datasets: [{
+            label: 'Adhérents',
+            data: sortedCities.map(c => c[1]),
+            backgroundColor: 'rgba(212, 175, 55, 0.75)',
+            borderColor: '#FFF099',
+            borderWidth: 1.5,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              beginAtZero: true,
+              ticks: { color: '#94A3B8', stepSize: 1 },
+              grid: { color: 'rgba(255,255,255,0.06)' }
+            },
+            y: {
+              ticks: { color: '#E2E8F0', font: { weight: 'bold', size: 11 } },
+              grid: { display: false }
+            }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
     function basculerOnglet(nom) {
+      const isProf = (document.getElementById("userRoleToggle").value === 'prof');
+      if (nom === 'analytics' && !isProf) nom = 'dashboard';
+
       document.getElementById("sectionDashboard").classList.add("hidden");
       document.getElementById("sectionPlanning").classList.add("hidden");
       document.getElementById("sectionMonProfil").classList.add("hidden");
       document.getElementById("sectionClassement").classList.add("hidden");
+      document.getElementById("sectionAnalytics").classList.add("hidden");
 
-      document.getElementById("tabDash").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
-      document.getElementById("tabPlan").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
-      document.getElementById("tabProf").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
-      document.getElementById("tabClass").className = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      const inactiveClass = "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs";
+      document.getElementById("tabDash").className = inactiveClass;
+      document.getElementById("tabPlan").className = inactiveClass;
+      document.getElementById("tabProf").className = inactiveClass;
+      document.getElementById("tabClass").className = inactiveClass;
+      document.getElementById("tabAnalytics").className = isProf
+        ? "btnProfOnly px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs"
+        : "hidden";
 
       if (nom === 'dashboard') {
         document.getElementById("sectionDashboard").classList.remove("hidden");
@@ -1636,34 +2238,59 @@
       } else if (nom === 'classement') {
         document.getElementById("sectionClassement").classList.remove("hidden");
         document.getElementById("tabClass").className = "px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+      } else if (nom === 'analytics' && isProf) {
+        document.getElementById("sectionAnalytics").classList.remove("hidden");
+        document.getElementById("tabAnalytics").className = "btnProfOnly px-4 py-2 rounded-xl bg-gold text-black font-bold text-xs";
+        genererGraphiquesLuxeProfesseur();
       }
     }
 
-    // GESTION DES DROITS : CONFIDENTIALITÉ PROFILS EN MODE ÉLÈVE & ÉDITION RÉSERVÉE AU PROFESSEUR
+    // GESTION DES DROITS PROFESSEUR VS ÉLÈVE
     function changerRoleCompte() {
       const isProf = (document.getElementById("userRoleToggle").value === 'prof');
       
       document.getElementById("coachNotificationBox").style.display = isProf ? 'flex' : 'none';
       document.getElementById("boxCreateEvent").style.display = isProf ? 'block' : 'none';
       document.getElementById("boxGradeEditCoach").style.display = isProf ? 'flex' : 'none';
+      document.getElementById("boxBlockControlsCoach").style.display = isProf ? 'flex' : 'none';
       document.getElementById("boxSaveProfilFooter").style.display = isProf ? 'flex' : 'none';
       document.getElementById("btnUploadPhotoLabel").style.display = isProf ? 'inline-block' : 'none';
+      document.getElementById("boxProfilMemberSwitch").style.display = isProf ? 'flex' : 'none';
       document.querySelectorAll(".btnProfOnly").forEach(btn => btn.style.display = isProf ? 'inline-block' : 'none');
 
-      // Masque les sélecteurs de membres aux élèves pour empêcher l'accès aux profils des autres élèves
-      document.getElementById("boxSelectEleve").style.display = isProf ? 'flex' : 'none';
-      document.getElementById("boxPrivacyEleve").style.display = isProf ? 'none' : 'flex';
-      document.getElementById("boxProfilMemberSwitch").style.display = isProf ? 'flex' : 'none';
+      // Carte publique du Professeur visible uniquement en Mode Élève
+      const coachCard = document.getElementById("studentViewCoachCard");
+      const studentLoginBox = document.getElementById("studentLoginBox");
+      const eleveSelectDash = document.getElementById("eleveSelect");
+      const studentPrivateNotice = document.getElementById("studentPrivateNotice");
 
-      // Si on bascule en mode Élève alors que le profil du Professeur était affiché, bascule sur un profil Élève
-      if (!isProf && listeEleves.length > 0) {
-        const currentRole = String(getVal(listeEleves[currentEleveIndex], ['ROLE'], '')).toLowerCase();
-        if (currentRole.includes('prof')) {
+      if (isProf) {
+        coachCard.classList.add("hidden");
+        studentLoginBox.classList.add("hidden");
+        eleveSelectDash.classList.remove("hidden");
+        studentPrivateNotice.classList.add("hidden");
+        document.getElementById("boxSelectTitle").textContent = "Sélection Membre (Professeur)";
+        document.getElementById("boxSelectDesc").textContent = "Sélectionnez votre profil ou celui d'un élève :";
+        document.getElementById("blockedAccountOverlay").classList.add("hidden");
+      } else {
+        coachCard.classList.remove("hidden");
+        studentLoginBox.classList.remove("hidden");
+        eleveSelectDash.classList.add("hidden");
+        studentPrivateNotice.classList.remove("hidden");
+        document.getElementById("boxSelectTitle").textContent = "Confidentialité Membre";
+        document.getElementById("boxSelectDesc").textContent = "Les profils des autres élèves sont masqués.";
+
+        // Si le profil actif était le professeur, bascule sur le 1er élève
+        const curEl = listeEleves[currentEleveIndex];
+        if (curEl && String(getVal(curEl, ['ROLE'], '')).toLowerCase().includes('prof')) {
           const firstStudentIdx = listeEleves.findIndex(e => !String(getVal(e, ['ROLE'], '')).toLowerCase().includes('prof'));
           if (firstStudentIdx !== -1) {
+            document.getElementById("studentLoginSelect").value = String(firstStudentIdx);
             document.getElementById("eleveSelect").value = String(firstStudentIdx);
-            changerEleve();
           }
+        }
+        if (!document.getElementById("sectionAnalytics").classList.contains("hidden")) {
+          basculerOnglet('dashboard');
         }
       }
 
@@ -1680,10 +2307,10 @@
         lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/30";
       }
 
-      afficherSessionsPlanning();
+      verifierAnniversaires();
+      changerEleve();
     }
 
-    // CLASSEMENT GÉNÉRAL : NOM, PRÉNOM, GRADE & BARRETTES
     function genererClassement() {
       const body = document.getElementById("classementBody");
       body.innerHTML = "";
@@ -1700,22 +2327,18 @@
         else if (idx === 1) mark = `🥈 <span class="text-silver font-bold">2ème</span>`;
         else if (idx === 2) mark = `🥉 <span class="text-amber-700 font-bold">3ème</span>`;
 
-        const nom = getVal(el, ['NOM', 'Nom'], '');
         const prenom = getVal(el, ['PRENOM', 'Prenom'], 'Élève');
+        const nom = getVal(el, ['NOM', 'Nom'], '');
         const ceinture = getVal(el, ['CEINTURE_ACTuELLE', 'CEINTURE_ACTUELLE', 'CEINTURE'], 'Ceinture Blanche');
         const barrettes = parseInt(getVal(el, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0;
         const cours = parseInt(getVal(el, ['TOTAL_COURS', 'COURS'], 0)) || 0;
 
-        const barrettesVisuel = barrettes > 0
-          ? `<span class="ml-1.5 px-2 py-0.5 rounded bg-gold/15 border border-gold/40 text-gold font-bold text-[10px]">${barrettes} barrette${barrettes > 1 ? 's' : ''}</span>`
-          : `<span class="ml-1.5 px-2 py-0.5 rounded bg-white/5 text-gray-400 text-[10px]">0 barrette</span>`;
-
         tr.innerHTML = `
           <td class="py-3 px-4">${mark}</td>
-          <td class="py-3 px-4 font-extrabold text-white uppercase">${nom}</td>
-          <td class="py-3 px-4 font-bold text-gray-200">${prenom}</td>
-          <td class="py-3 px-4 text-gold font-semibold">${ceinture} ${barrettesVisuel}</td>
+          <td class="py-3 px-4 font-bold text-white">${nom.toUpperCase()} ${prenom}</td>
+          <td class="py-3 px-4 text-gold font-semibold">${ceinture} (${barrettes} barrette${barrettes > 1 ? 's' : ''})</td>
           <td class="py-3 px-4 text-center font-extrabold text-white">${cours}</td>
+          <td class="py-3 px-4 text-right text-gray-400 text-xs">${idx < 3 ? '🔥 Podium' : 'Adhérent'}</td>
         `;
         body.appendChild(tr);
       });
