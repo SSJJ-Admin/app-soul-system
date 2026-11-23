@@ -3448,9 +3448,8 @@ renderOrReplaceChart("chartCrossGenreCity", {
             { label: 'Femmes', data: cities.map(c => crossGenreCity[c].Femmes), backgroundColor: '#F472B6', borderRadius: 4 }
           ]
         },
-        options: {
-      }
-    });
+        options: commonBarOptions
+      });
       , {
         type: 'bar',
         data: {
