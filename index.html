@@ -3439,14 +3439,16 @@
         options: { ...commonBarOptions, plugins: { legend: { display: false } } }
       });
 
-      renderOrReplaceChart("chartCitySimple", {
+renderOrReplaceChart("chartCrossGenreCity", {
         type: 'bar',
         data: {
           labels: cities,
-        datasets: [
-          { label: 'Hommes', data: cities.map(c => crossGenreCity[c].Hommes), backgroundColor: '#3B82F6', borderRadius: 4 },
+          datasets: [
+            { label: 'Hommes', data: cities.map(c => crossGenreCity[c].Hommes), backgroundColor: '#3B82F6', borderRadius: 4 },
+            { label: 'Femmes', data: cities.map(c => crossGenreCity[c].Femmes), backgroundColor: '#F472B6', borderRadius: 4 }
+          ]
         },
-        options: { ...commonBarOptions, indexAxis: 'y', plugins: { legend: { display: false } } }
+        options: {
       });
 
       , {
