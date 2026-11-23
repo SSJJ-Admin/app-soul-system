@@ -3450,18 +3450,6 @@ renderOrReplaceChart("chartCrossGenreCity", {
         },
         options: commonBarOptions
       });
-      
-       {
-        type: 'bar',
-        data: {
-          labels: cities,
-          datasets: [
-            { label: 'Hommes', data: cities.map(c => crossGenreCity[c].Hommes), backgroundColor: '#D4AF37', borderRadius: 4 },
-            { label: 'Femmes', data: cities.map(c => crossGenreCity[c].Femmes), backgroundColor: '#F472B6', borderRadius: 4 }
-          ]
-        },
-        options: commonBarOptions
-      });
 
       renderOrReplaceChart("chartCrossGenreBelt", {
         type: 'bar',
