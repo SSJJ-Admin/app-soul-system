@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Soul System JJ">
-  <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="./Icon.jpeg?v=6">
-  <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=6">
+  <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="./Icon.jpeg?v=7">
+  <link rel="icon" type="image/jpeg" href="./Icon.jpeg?v=7">
 
   <script>
     (function() {
@@ -53,7 +53,7 @@
         link.href = URL.createObjectURL(blob);
         document.head.appendChild(link);
       };
-      img.src = "./Icon.jpeg?v=6";
+      img.src = "./Icon.jpeg?v=7";
     })();
   </script>
 
@@ -62,6 +62,7 @@
   <script>
     const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbz8NPvlTaWe2zB4FPQZScEDYrVu0aVuJXX5IguXPUgAqALQO4IlRbaadHN4f_efURjt/exec";
     const PROF_MASTER_EMAIL = "huambachano.martin@gmail.com";
+    const INSCRIPTIONS_DRIVE_URL = "https://drive.google.com/drive/folders/11A-Gsoos00W2sFCkydkVUTQKZeiJ69TD";
 
     tailwind.config = {
       darkMode: 'class',
@@ -146,7 +147,7 @@
   <div id="authGateScreen" class="min-h-[82vh] flex items-center justify-center p-2">
     <div class="card-luxe w-full max-w-md rounded-3xl p-7 md:p-9 space-y-6 border border-gold/40 shadow-2xl">
       <div class="flex flex-col items-center text-center space-y-3">
-        <img src="./Logo.png?v=6" alt="Soul System Jiu Jitsu" class="h-28 w-auto object-contain filter drop-shadow-[0_0_18px_rgba(212,175,55,0.4)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
+        <img src="./Logo.png?v=7" alt="Soul System Jiu Jitsu" class="h-28 w-auto object-contain filter drop-shadow-[0_0_18px_rgba(212,175,55,0.4)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
         <div>
           <h1 class="font-extrabold text-xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
           <p class="text-xs text-silver tracking-wider uppercase mt-0.5">Espace Membre & Professeur Sécurisé</p>
@@ -183,7 +184,7 @@
       <!-- FORMULAIRE 2 : CRÉATION / RÉINITIALISATION CODE PIN -->
       <form id="setupPinForm" onsubmit="enregistrerNouveauPin(event)" class="hidden space-y-4">
         <div class="bg-carbone/80 p-3 rounded-xl border border-white/10 text-[11px] text-gray-300">
-          Renseignez l'adresse email enregistrée lors de votre inscription au club (ou celle du parent pour un compte famille) afin d'activer votre code PIN à 4 chiffres.
+          Renseignez l'adresse email enregistrée lors de votre inscription au club afin d'activer votre code PIN à 4 chiffres.
         </div>
 
         <div>
@@ -224,7 +225,7 @@
       <header class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between p-5 rounded-2xl card-luxe mb-6">
         <div class="flex flex-wrap items-center gap-4 md:gap-6">
           <div class="flex items-center justify-center flex-shrink-0">
-            <img src="./Logo.png?v=6" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-[0_0_15px_rgba(212,175,55,0.35)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
+            <img src="./Logo.png?v=7" alt="Soul System Jiu Jitsu" class="logo-header-img filter drop-shadow-[0_0_15px_rgba(212,175,55,0.35)]" onerror="this.onerror=null; this.src='./Icon.jpeg';">
           </div>
           <div>
             <h1 class="font-extrabold text-xl md:text-2xl tracking-widest uppercase gold-gradient-text">Soul System Jiu Jitsu</h1>
@@ -237,7 +238,7 @@
         </div>
         
         <div class="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
-          <!-- SÉLECTEUR PROFIL FAMILLE (AFFICHÉ SI LE COMPTE A PARENT + ENFANT(S) OU POUR AJOUTER UN ENFANT) -->
+          <!-- SÉLECTEUR PROFIL FAMILLE -->
           <div id="headerFamilySwitcher" class="hidden text-right">
             <p class="text-[10px] text-gold font-bold uppercase">👨‍👧‍👦 Profil Famille Actif</p>
             <select id="familyProfileSelectHeader" onchange="selectionnerMembreDepuisFamille(this.value)" class="bg-carbone border border-gold/50 rounded-lg px-2.5 py-1 text-xs text-white font-bold focus:outline-none">
@@ -258,6 +259,37 @@
           </button>
         </div>
       </header>
+
+      <!-- NOTIFICATION NOUVELLES INSCRIPTIONS & ACTIVATIONS (PROFESSEUR / SECRÉTARIAT) -->
+      <div id="inscriptionsPendingBanner" class="hidden w-full max-w-7xl mx-auto mb-4 bg-gradient-to-r from-red-500/20 via-amber-500/20 to-gold/20 border border-gold p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-lg">
+        <div class="flex items-center space-x-3">
+          <span class="text-3xl">📩</span>
+          <div>
+            <h3 class="text-xs font-extrabold text-gold uppercase tracking-wider">Nouvelle(s) Inscription(s) en attente d'approbation & facturation</h3>
+            <p id="inscriptionsPendingBannerText" class="text-xs text-white font-semibold mt-0.5">Des dossiers attendent validation.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="https://drive.google.com/drive/folders/11A-Gsoos00W2sFCkydkVUTQKZeiJ69TD" target="_blank" class="px-3 py-1.5 rounded-xl bg-carbone border border-gold/50 text-gold font-bold text-xs hover:bg-gold/10">
+            📁 Dossier Drive
+          </a>
+          <button onclick="basculerOnglet('compta')" class="px-4 py-1.5 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light">
+            💳 Approuver & Facturer
+          </button>
+        </div>
+      </div>
+
+      <!-- NOTIFICATION D'ACTIVATION DE COMPTE ÉLÈVE (PROFESSEUR) -->
+      <div id="profActivationToast" class="hidden w-full max-w-7xl mx-auto mb-4 bg-emerald-500/20 border border-emerald-400 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-lg">
+        <div class="flex items-center space-x-3">
+          <span class="text-2xl">✅</span>
+          <div>
+            <h3 class="text-xs font-extrabold text-emerald-300 uppercase tracking-wider">Accès Élève Débloqué & Notifié</h3>
+            <p id="profActivationToastText" class="text-xs text-white font-semibold mt-0.5"></p>
+          </div>
+        </div>
+        <button onclick="document.getElementById('profActivationToast').classList.add('hidden')" class="text-xs text-gray-300 hover:text-white font-bold px-2">✕</button>
+      </div>
 
       <!-- NOTIFICATION ANNIVERSAIRES DU JOUR (PROFESSEUR UNIQUEMENT) -->
       <div id="birthdayNotificationBox" class="hidden w-full max-w-7xl mx-auto mb-4 bg-gradient-to-r from-gold/20 via-amber-500/15 to-gold/20 border border-gold p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-lg">
@@ -290,12 +322,12 @@
         </div>
       </div>
 
-      <!-- ÉCRAN DE SUSPENSION DE COMPTE (SI BLOQUE_ACCES = OUI EN MODE ÉLÈVE) -->
+      <!-- ÉCRAN DE SUSPENSION / ATTENTE DE VALIDATION (SI BLOQUE_ACCES = OUI EN MODE ÉLÈVE) -->
       <div id="blockedAccountOverlay" class="hidden w-full max-w-3xl mx-auto my-8 card-luxe border-red-500/50 p-8 rounded-2xl text-center space-y-4">
-        <div class="text-4xl">🚫</div>
-        <h2 class="text-xl font-extrabold text-red-400 uppercase tracking-wider">Accès au Compte Suspendu</h2>
-        <p class="text-sm text-gray-300">Votre accès à l'application <strong>Soul System Jiu Jitsu</strong> a été temporairement restreint par le professeur.</p>
-        <p class="text-xs text-gray-400">Veuillez vous rapprocher de <strong>Martin Huambachano</strong> au club pour régulariser votre situation.</p>
+        <div class="text-4xl">⏳</div>
+        <h2 class="text-xl font-extrabold text-gold uppercase tracking-wider">Inscription en attente de validation / règlement</h2>
+        <p class="text-sm text-gray-300">Votre dossier d'adhésion <strong>Soul System Jiu Jitsu</strong> est enregistré mais votre accès élève n'est pas encore activé.</p>
+        <p class="text-xs text-gray-400">Dès l'approbation par le secrétariat et la validation de votre règlement (ou premier versement auprès de <strong>Martin Huambachano</strong>), votre espace complet se débloquera automatiquement.</p>
       </div>
 
       <main id="mainAppContainer" class="w-full max-w-7xl mx-auto space-y-8">
@@ -306,10 +338,13 @@
           <button onclick="basculerOnglet('planning')" id="tabPlan" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">📅 Planning & Inscriptions</button>
           <button onclick="basculerOnglet('monprofil')" id="tabProf" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">👤 Mon Profil & Famille</button>
           <button onclick="basculerOnglet('classement')" id="tabClass" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold">🏆 Classement Général</button>
-          <button onclick="basculerOnglet('analytics')" id="tabAnalytics" class="btnProfOnly hidden px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10">📈 Analytics Club (Prof)</button>
+          <button onclick="basculerOnglet('compta')" id="tabCompta" class="btnProfOnly hidden px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10">💳 Comptabilité, Paheko & HelloAsso</button>
+          <button onclick="basculerOnglet('analytics')" id="tabAnalytics" class="btnProfOnly hidden px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10">📈 Analytics Club</button>
         </div>
 
-        <!-- ONGLET 1 : DASHBOARD & RADAR COMPLET DES 10 POINTS -->
+        <!-- ========================================================= -->
+        <!-- ONGLET 1 : DASHBOARD & RADAR COMPLET DES 10 POINTS        -->
+        <!-- ========================================================= -->
         <div id="sectionDashboard" class="space-y-8">
           
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -370,7 +405,7 @@
                   <h2 class="text-xs font-semibold text-silver uppercase tracking-widest">Sélection Membre (Prof)</h2>
                   <span id="totalElevesCount" class="text-[10px] text-gold font-bold">0 inscrits</span>
                 </div>
-                <p class="text-xs text-gray-400 mb-3">Sélectionnez un adhérent pour gérer son grade, son PIN ou ses statistiques :</p>
+                <p class="text-xs text-gray-400 mb-3">Sélectionnez un adhérent pour gérer son grade, son accès ou sa cotisation :</p>
               </div>
               <select id="eleveSelect" onchange="changerEleve()" class="bg-carbone border border-gold/40 rounded-xl px-4 py-2.5 text-xs text-gold font-bold focus:outline-none w-full">
                 <option value="">Chargement...</option>
@@ -513,10 +548,11 @@
           </div>
         </div>
 
-        <!-- ONGLET 2 : PLANNING & INSCRIPTIONS EN DIRECT -->
+        <!-- ========================================================= -->
+        <!-- ONGLET 2 : PLANNING & INSCRIPTIONS EN DIRECT              -->
+        <!-- ========================================================= -->
         <div id="sectionPlanning" class="hidden space-y-6">
           
-          <!-- CRÉATION DE SESSION (HEAD COACH UNIQUEMENT) -->
           <div id="boxCreateEvent" class="hidden card-luxe p-6 rounded-2xl space-y-4">
             <div class="flex justify-between items-center">
               <h2 class="text-base font-bold text-white uppercase tracking-wider">Créer une Session / Stage / Master Class (Head Coach)</h2>
@@ -566,7 +602,6 @@
             </div>
           </div>
 
-          <!-- LISTE DES SESSIONS -->
           <div class="card-luxe p-6 rounded-2xl space-y-4">
             <div class="flex flex-wrap justify-between items-center gap-2 border-b border-white/10 pb-3">
               <div>
@@ -594,10 +629,11 @@
 
         </div>
 
-        <!-- ONGLET 3 : MON PROFIL, FAMILLE & GESTION DES GRADES -->
+        <!-- ========================================================= -->
+        <!-- ONGLET 3 : MON PROFIL, FAMILLE & GESTION DES GRADES       -->
+        <!-- ========================================================= -->
         <div id="sectionMonProfil" class="hidden space-y-6">
           
-          <!-- ESPACE FAMILLE (PARENT + ENFANTS RATTACHÉS SUR LE COMPTE) -->
           <div id="familyManagementCard" class="hidden card-luxe p-6 rounded-2xl border-gold/40 space-y-4">
             <div class="flex flex-wrap justify-between items-center gap-3 border-b border-white/10 pb-3">
               <div>
@@ -612,7 +648,6 @@
             </div>
           </div>
 
-          <!-- FICHE PERSONNELLE DU MEMBRE ACTIF -->
           <div class="card-luxe p-6 rounded-2xl space-y-6">
             <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 gap-3">
               <div>
@@ -624,7 +659,6 @@
               </span>
             </div>
 
-            <!-- SÉLECTEUR DE MEMBRE SUR L'ONGLET PROFIL (PROFESSEUR UNIQUEMENT) -->
             <div id="boxProfilMemberSwitch" class="hidden bg-carbone/70 p-3.5 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
               <span class="text-gray-300 font-semibold">👤 Fiche affichée actuellement (Professeur) :</span>
               <select id="eleveSelectProfil" onchange="synchroniserSelecteurProfil(this.value)" class="bg-anthracite border border-gold/40 rounded-lg px-3 py-1.5 text-gold font-bold focus:outline-none">
@@ -632,7 +666,7 @@
               </select>
             </div>
 
-            <!-- GESTION DU GRADE, CODE PIN & CONTRÔLE D'ACCÈS (HEAD COACH UNIQUEMENT) -->
+            <!-- GESTION DU GRADE, CODE PIN & ACTIVATION COMPTE (HEAD COACH UNIQUEMENT) -->
             <div id="boxGradeEditCoach" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-4">
               
               <div class="bg-carbone/80 p-4 rounded-xl border border-gold/40 flex flex-col justify-between gap-3">
@@ -665,18 +699,21 @@
 
               <div class="bg-carbone/80 p-4 rounded-xl border border-red-500/30 flex flex-col justify-between gap-3">
                 <div>
-                  <h3 class="text-xs font-bold text-red-400 uppercase">2. Sécurité PIN, Cotisation & Accès Application</h3>
-                  <p class="text-[10px] text-gray-400">Gérez le blocage des cours, la suspension de compte ou le PIN membre</p>
+                  <h3 class="text-xs font-bold text-red-400 uppercase">2. Sécurité PIN, Facturation & Activation Manuelle</h3>
+                  <p class="text-[10px] text-gray-400">Activez manuellement un élève, offrez son inscription ou gérez son PIN</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2 text-xs">
+                  <button onclick="ouvrirModalFacturation(currentEleveIndex)" class="px-3 py-2 rounded-lg font-extrabold bg-gold text-black hover:bg-gold-light transition">
+                    💳 Facturer / Offrir Inscription
+                  </button>
                   <button id="btnToggleBloqueCours" onclick="basculerBlocageMembre('BLOQUE_COURS')" class="px-3 py-2 rounded-lg font-bold border transition">
-                    🟢 Inscriptions Cours : Autorisées
+                    🟢 Cours : Autorisés
                   </button>
                   <button id="btnToggleBloqueAcces" onclick="basculerBlocageMembre('BLOQUE_ACCES')" class="px-3 py-2 rounded-lg font-bold border transition">
-                    🟢 Accès Compte App : Actif
+                    🟢 Compte : Actif
                   </button>
                   <button onclick="reinitialiserPinParProf()" class="px-3 py-2 rounded-lg font-bold bg-carbone border border-gold/40 text-gold hover:bg-gold/10 transition">
-                    🔑 Définir / Reset PIN
+                    🔑 PIN
                   </button>
                 </div>
               </div>
@@ -770,7 +807,6 @@
             </div>
           </div>
 
-          <!-- FICHE PUBLIQUE DU PROFESSEUR VISIBLE PAR LES ÉLÈVES -->
           <div id="studentCoachProfileSection" class="hidden card-luxe p-6 rounded-2xl border-gold/40 space-y-4">
             <div class="flex justify-between items-center border-b border-white/10 pb-3">
               <div>
@@ -804,7 +840,9 @@
 
         </div>
 
-        <!-- ONGLET 4 : CLASSEMENT GENERAL -->
+        <!-- ========================================================= -->
+        <!-- ONGLET 4 : CLASSEMENT GENERAL                             -->
+        <!-- ========================================================= -->
         <div id="sectionClassement" class="hidden card-luxe p-6 rounded-2xl">
           <div class="flex flex-wrap items-center justify-between mb-6">
             <div>
@@ -830,7 +868,161 @@
           </div>
         </div>
 
-        <!-- ONGLET 5 : ANALYTICS CLUB DE LUXE (100% RÉSERVÉ AU PROFESSEUR) -->
+        <!-- ========================================================= -->
+        <!-- ONGLET 5 : COMPTABILITÉ, PAHEKO, HELLOASSO & CRÉDIT MUTUEL -->
+        <!-- ========================================================= -->
+        <div id="sectionCompta" class="hidden space-y-6">
+          
+          <!-- BANDEAU OUTILS EXTERNES : PAHEKO, HELLOASSO TAP-TO-PAY, CRÉDIT MUTUEL, DOSSIER DRIVE -->
+          <div class="card-luxe p-6 rounded-2xl space-y-4">
+            <div class="flex flex-wrap justify-between items-center gap-3 border-b border-white/10 pb-4">
+              <div>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gold/15 text-gold border border-gold/40 uppercase">Trésorerie & Comptabilité Associative</span>
+                <h2 class="text-xl font-extrabold text-white uppercase tracking-wider mt-1">Paheko • Terminal HelloAsso • Crédit Mutuel</h2>
+                <p class="text-xs text-gray-400">Validation des inscriptions Drive, encaissement CB/QR Code/Espèces/Virement et export comptable automatisé</p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <a href="https://paheko.cloud/" target="_blank" class="px-3.5 py-2 rounded-xl bg-carbone border border-emerald-500/40 text-emerald-300 font-bold text-xs hover:bg-emerald-500/15 transition">
+                  📒 Ouvrir Paheko
+                </a>
+                <a href="https://www.helloasso.com/associations" target="_blank" class="px-3.5 py-2 rounded-xl bg-carbone border border-sky-500/40 text-sky-300 font-bold text-xs hover:bg-sky-500/15 transition">
+                  📱 Terminal HelloAsso
+                </a>
+                <a href="https://www.creditmutuel.fr/" target="_blank" class="px-3.5 py-2 rounded-xl bg-carbone border border-red-500/40 text-red-300 font-bold text-xs hover:bg-red-500/15 transition">
+                  🏦 Crédit Mutuel
+                </a>
+                <button onclick="exporterCsvPaheko()" class="px-4 py-2 rounded-xl bg-gold text-black font-extrabold text-xs hover:bg-gold-light transition shadow-lg">
+                  📥 Exporter CSV Paheko
+                </button>
+              </div>
+            </div>
+
+            <!-- KPIs TRÉSORERIE -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+              <div class="bg-carbone/90 p-3.5 rounded-xl border border-gold/30">
+                <p id="kpiComptaEncaisse" class="text-2xl font-black gold-gradient-text">0 €</p>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Total Encaissé</p>
+              </div>
+              <div class="bg-carbone/90 p-3.5 rounded-xl border border-amber-500/30">
+                <p id="kpiComptaReste" class="text-2xl font-black text-amber-400">0 €</p>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Reste à Percevoir (Échéances)</p>
+              </div>
+              <div class="bg-carbone/90 p-3.5 rounded-xl border border-red-500/30">
+                <p id="kpiComptaAttente" class="text-2xl font-black text-red-400">0</p>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Inscriptions à Approuver</p>
+              </div>
+              <div class="bg-carbone/90 p-3.5 rounded-xl border border-emerald-500/30">
+                <p id="kpiComptaActifs" class="text-2xl font-black text-emerald-400">0</p>
+                <p class="text-[10px] text-gray-400 uppercase font-bold mt-0.5">Comptes Élèves Activés</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION A : APPROBATION DES INSCRIPTIONS EN ATTENTE + DOSSIER GOOGLE DRIVE -->
+          <div class="card-luxe p-6 rounded-2xl border-gold/40 space-y-4">
+            <div class="flex flex-wrap justify-between items-center gap-3 border-b border-white/10 pb-3">
+              <div>
+                <h3 class="text-base font-extrabold text-gold uppercase tracking-wider">1. Approbation des Inscriptions & Facturation en 1 Clic</h3>
+                <p class="text-xs text-gray-400">Dossiers reçus dans le dossier Drive et adhérents en attente de validation / règlement</p>
+              </div>
+              <a href="https://drive.google.com/drive/folders/11A-Gsoos00W2sFCkydkVUTQKZeiJ69TD" target="_blank" class="px-3.5 py-2 rounded-xl bg-carbone border border-gold/50 text-gold font-bold text-xs hover:bg-gold/10">
+                📂 Ouvrir Dossier Drive Inscriptions
+              </a>
+            </div>
+
+            <!-- FICHIERS DÉTECTÉS DANS LE DOSSIER DRIVE -->
+            <div id="driveFilesListContainer" class="hidden bg-carbone/70 p-3.5 rounded-xl border border-white/10 space-y-2 text-xs">
+              <p class="font-bold text-silver uppercase text-[11px]">📄 Fichiers récents dans le dossier Google Drive :</p>
+              <div id="driveFilesItems" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- LISTE DES ÉLÈVES EN ATTENTE D'APPROBATION OU AVEC ÉCHÉANCES RESTANTES -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-white/10 text-gray-400 uppercase">
+                    <th class="py-3 px-3">Élève</th>
+                    <th class="py-3 px-3">Contact & Catégorie</th>
+                    <th class="py-3 px-3">Statut Cotisation</th>
+                    <th class="py-3 px-3">Accès App</th>
+                    <th class="py-3 px-3 text-right">Action Secrétariat / Prof</th>
+                  </tr>
+                </thead>
+                <tbody id="approbationTableBody" class="divide-y divide-white/5">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- SECTION B : TERMINAL MOBILE HELLOASSO & QR CODE DE PAIEMENT RAPIDE -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-5 card-luxe p-6 rounded-2xl space-y-4">
+              <div class="border-b border-white/10 pb-3">
+                <h3 class="text-sm font-extrabold text-gold uppercase tracking-wider">2. Terminal Mobile HelloAsso & QR Code</h3>
+                <p class="text-[11px] text-gray-400">Encaissez sans contact sur votre téléphone ou faites scanner le QR Code à l'élève</p>
+              </div>
+
+              <div class="space-y-3 text-xs">
+                <div>
+                  <label class="text-gray-400 font-semibold">Lien HelloAsso du Club (Paiement / Cotisation)</label>
+                  <div class="flex gap-2 mt-1">
+                    <input type="url" id="helloAssoClubUrlInput" placeholder="https://www.helloasso.com/associations/soul-system-jj/adhesions/..." onchange="sauvegarderLienHelloAsso()" class="flex-1 bg-carbone border border-gold/40 rounded-xl p-2 text-white text-xs">
+                    <button onclick="genererQrCodeHelloAsso()" class="px-3 py-2 rounded-xl bg-gold text-black font-extrabold hover:bg-gold-light">QR</button>
+                  </div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center bg-carbone/80 p-4 rounded-2xl border border-white/10 space-y-2">
+                  <img id="helloAssoQrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://www.helloasso.com/associations" alt="QR Code Paiement HelloAsso" class="w-40 h-40 rounded-xl border-2 border-gold bg-white p-1.5">
+                  <p class="text-[11px] text-center text-gray-300 font-semibold">Scannez ce QR Code avec le smartphone de l'élève pour payer par Carte / Apple Pay / Google Pay (0 € de frais HelloAsso)</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                  <a href="https://www.helloasso.com/associations" target="_blank" class="py-2.5 px-3 rounded-xl bg-sky-500/20 border border-sky-400 text-sky-300 font-extrabold text-center hover:bg-sky-500/30 transition">
+                    📲 Lancer Tap-to-Pay HelloAsso
+                  </a>
+                  <button onclick="ouvrirModalOperationCompta()" class="py-2.5 px-3 rounded-xl bg-carbone border border-gold/50 text-gold font-extrabold hover:bg-gold/10 transition">
+                    ➕ Saisir Dépense / Recette
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION C : JOURNAL COMPTABLE & RAPPROCHEMENT BANCAIRE CRÉDIT MUTUEL -->
+            <div class="lg:col-span-7 card-luxe p-6 rounded-2xl space-y-4">
+              <div class="flex flex-wrap justify-between items-center gap-2 border-b border-white/10 pb-3">
+                <div>
+                  <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">3. Journal Comptable & Rapprochement Crédit Mutuel</h3>
+                  <p class="text-[11px] text-gray-400">Synchronisation des encaissements avec le relevé bancaire Crédit Mutuel et export Paheko</p>
+                </div>
+                <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-carbone border border-emerald-500/40 text-emerald-300 font-bold text-xs hover:bg-emerald-500/15 transition">
+                  🏦 Importer Relevé Crédit Mutuel (CSV)
+                  <input type="file" accept=".csv,.txt" class="hidden" onchange="importerReleveCreditMutuel(event)">
+                </label>
+              </div>
+
+              <div class="overflow-x-auto max-h-[340px] overflow-y-auto">
+                <table class="w-full text-left text-xs">
+                  <thead>
+                    <tr class="border-b border-white/10 text-gray-400 uppercase">
+                      <th class="py-2.5 px-2">Date</th>
+                      <th class="py-2.5 px-2">Libellé / Membre</th>
+                      <th class="py-2.5 px-2">Mode</th>
+                      <th class="py-2.5 px-2 text-right">Encaissé</th>
+                      <th class="py-2.5 px-2 text-right">Crédit Mutuel</th>
+                    </tr>
+                  </thead>
+                  <tbody id="comptaJournalBody" class="divide-y divide-white/5">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- ONGLET 6 : ANALYTICS CLUB DE LUXE (PROFESSEUR)            -->
+        <!-- ========================================================= -->
         <div id="sectionAnalytics" class="hidden space-y-6">
           
           <div class="card-luxe p-6 rounded-2xl">
@@ -939,6 +1131,129 @@
     </footer>
   </div>
 
+  <!-- ========================================================= -->
+  <!-- MODALE FACTURATION, ENCAISSEMENT MULTI-MODES & GRATUITÉ   -->
+  <!-- ========================================================= -->
+  <div id="modalFacturationEleve" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="card-luxe w-full max-w-lg rounded-2xl border border-gold/50 p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-white/10 pb-3">
+        <div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold/15 text-gold uppercase">Approbation & Encaissement</span>
+          <h3 id="factureMembreTitle" class="text-base font-extrabold text-white mt-1">Facturation Adhérent</h3>
+        </div>
+        <button onclick="fermerModalFacturation()" class="text-gray-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+
+      <input type="hidden" id="factureEleveIndex">
+
+      <form onsubmit="validerFacturationEtActiver(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-gray-400 font-semibold">Montant Total Cotisation (€)</label>
+            <input type="number" id="factureMontantTotal" step="0.01" min="0" value="250" oninput="recalculerMontantEcheance()" required class="w-full bg-carbone border border-gold/40 rounded-xl p-2.5 text-gold font-extrabold text-sm mt-1">
+          </div>
+          <div>
+            <label class="text-gray-400 font-semibold">Nombre d'échéances</label>
+            <select id="factureNbEcheances" onchange="recalculerMontantEcheance()" class="w-full bg-carbone border border-white/10 rounded-xl p-2.5 text-white font-bold mt-1">
+              <option value="1">1 fois (Comptant)</option>
+              <option value="2">2 fois</option>
+              <option value="3">3 fois</option>
+              <option value="4">4 fois</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-gray-400 font-semibold">Montant encaissé ce jour (€)</label>
+            <input type="number" id="factureMontantEncaisse" step="0.01" min="0" value="250" required class="w-full bg-carbone border border-emerald-500/40 rounded-xl p-2.5 text-emerald-400 font-extrabold text-sm mt-1">
+          </div>
+          <div>
+            <label class="text-gray-400 font-semibold">Mode de Règlement</label>
+            <select id="factureModePaiement" onchange="gererAffichageModePaiement()" class="w-full bg-carbone border border-gold/40 rounded-xl p-2.5 text-white font-bold mt-1">
+              <option value="Carte HelloAsso (Terminal Mobile)">💳 Carte (Terminal HelloAsso)</option>
+              <option value="QR Code HelloAsso">📱 QR Code HelloAsso</option>
+              <option value="Virement Bancaire Crédit Mutuel">🏦 Virement Bancaire (Crédit Mutuel)</option>
+              <option value="Espèces">💶 Espèces (Caisse Club)</option>
+              <option value="Offert / Gratuit">🎁 Offrir l'inscription (0 €)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- APERÇU QR CODE DIRECT SI MODE QR CODE SÉLECTIONNÉ -->
+        <div id="factureQrPreviewBox" class="hidden bg-carbone/90 p-3 rounded-xl border border-gold/40 flex items-center gap-4">
+          <img id="factureQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://www.helloasso.com/associations" class="w-20 h-20 rounded-lg bg-white p-1">
+          <div class="text-[11px] text-gray-300 space-y-1">
+            <p class="font-bold text-gold">Paiement par QR Code HelloAsso</p>
+            <p>Faites scanner ce QR Code à l'élève. Dès confirmation sur votre téléphone, validez ci-dessous pour débloquer son compte.</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-gray-400 font-semibold">Libellé comptable (Paheko / Crédit Mutuel)</label>
+          <input type="text" id="factureLibelle" value="Cotisation Saison 2026-2027 Soul System JJ" class="w-full bg-carbone border border-white/10 rounded-xl p-2.5 text-white mt-1">
+        </div>
+
+        <div class="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl text-[11px] text-emerald-300">
+          ✅ Dès validation, l'accès élève sera <strong>immédiatement débloqué</strong>, vous recevrez une notification et l'écriture sera enregistrée pour <strong>Paheko</strong>.
+        </div>
+
+        <div class="flex flex-wrap justify-between items-center gap-2 pt-2">
+          <button type="button" onclick="offrirInscriptionDirectement()" class="px-3.5 py-2.5 rounded-xl bg-purple-500/20 border border-purple-400 text-purple-200 font-extrabold hover:bg-purple-500/30 transition">
+            🎁 Offrir & Activer (0 €)
+          </button>
+          <div class="flex gap-2">
+            <button type="button" onclick="fermerModalFacturation()" class="px-4 py-2.5 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold">Annuler</button>
+            <button type="submit" id="btnValiderFactureSubmit" class="px-5 py-2.5 rounded-xl bg-gold text-black font-extrabold hover:bg-gold-light transition shadow-lg">
+              ✅ Valider & Débloquer Accès
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODALE OPÉRATION COMPTABLE MANUELLE (RECETTE / DÉPENSE) -->
+  <div id="modalOperationCompta" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="card-luxe w-full max-w-md rounded-2xl border border-gold/50 p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-white/10 pb-3">
+        <h3 class="text-base font-extrabold text-gold uppercase">Nouvelle Écriture Comptable (Paheko)</h3>
+        <button onclick="document.getElementById('modalOperationCompta').classList.add('hidden')" class="text-gray-400 hover:text-white text-lg font-bold">✕</button>
+      </div>
+      <form onsubmit="enregistrerOperationComptaManuelle(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="text-gray-400 font-semibold">Type d'opération</label>
+          <select id="opComptaType" class="w-full bg-carbone border border-gold/40 rounded-xl p-2.5 text-white font-bold mt-1">
+            <option value="recette">➕ Recette (Stage, Équipement, Sponsoring, Cotisation)</option>
+            <option value="depense">➖ Dépense (Tatamis, Affiliation CFJJB, Assurance, Loyer)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-gray-400 font-semibold">Libellé de l'opération</label>
+          <input type="text" id="opComptaLibelle" required placeholder="ex: Affiliation CFJJB 2026" class="w-full bg-carbone border border-white/10 rounded-xl p-2.5 text-white mt-1">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-gray-400 font-semibold">Montant (€)</label>
+            <input type="number" id="opComptaMontant" step="0.01" required class="w-full bg-carbone border border-gold/40 rounded-xl p-2.5 text-gold font-extrabold mt-1">
+          </div>
+          <div>
+            <label class="text-gray-400 font-semibold">Compte / Mode</label>
+            <select id="opComptaMode" class="w-full bg-carbone border border-white/10 rounded-xl p-2.5 text-white font-bold mt-1">
+              <option value="Virement Crédit Mutuel">Banque Crédit Mutuel (512)</option>
+              <option value="Carte HelloAsso">HelloAsso (511)</option>
+              <option value="Espèces">Caisse Espèces (530)</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="document.getElementById('modalOperationCompta').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold">Annuler</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-gold text-black font-extrabold hover:bg-gold-light">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODALE AJOUT D'UN ENFANT SUR LE COMPTE PARENT -->
   <div id="modalAddChild" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
     <div class="card-luxe w-full max-w-md rounded-2xl border border-gold/50 p-6 space-y-4 shadow-2xl">
@@ -974,7 +1289,7 @@
           </div>
         </div>
         <p class="text-[11px] text-gray-400">
-          L'enfant sera rattaché à votre adresse email (<strong id="parentEmailDisplayModal" class="text-gold"></strong>) et accessible avec le même code PIN.
+          L'enfant sera rattaché à votre email (<strong id="parentEmailDisplayModal" class="text-gold"></strong>) et soumis à validation du secrétariat.
         </p>
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="fermerModalAjoutEnfant()" class="px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold">Annuler</button>
@@ -1050,11 +1365,12 @@
   <script>
     let listeEleves = [];
     let listeSessions = [];
+    let listeEcrituresCompta = [];
+    let driveFilesPending = [];
     let currentEleveIndex = 0;
     let radarChart = null;
     let analyticsCharts = {};
 
-    // SESSION AUTHENTIFIÉE
     let loggedUserEmail = "";
     let loggedUserIsProf = false;
     let familyMemberIndices = [];
@@ -1123,6 +1439,9 @@
 
     document.addEventListener("DOMContentLoaded", function() {
       initRadar();
+      const savedHelloUrl = localStorage.getItem("ssjj_helloasso_url") || "https://www.helloasso.com/associations";
+      document.getElementById("helloAssoClubUrlInput").value = savedHelloUrl;
+      genererQrCodeHelloAsso();
       chargerElevesSheets();
     });
 
@@ -1202,7 +1521,6 @@
         authBanner.textContent = "🟢 Base adhérents synchronisée — Entrez votre email et votre PIN";
         authBanner.className = "text-center text-[11px] font-semibold px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/30";
 
-        // Remplissage listes Professeur
         const selectDash = document.getElementById("eleveSelect");
         const selectProf = document.getElementById("eleveSelectProfil");
         selectDash.innerHTML = "";
@@ -1215,7 +1533,7 @@
           const barrettes = parseInt(getVal(eleve, ['BARRETTES', 'NOMBRE_BARRETTES'], 0)) || 0;
           const bCours = isOui(getVal(eleve, ['BLOQUE_COURS'], 'NON'));
           const bAcces = isOui(getVal(eleve, ['BLOQUE_ACCES'], 'NON'));
-          const flag = bAcces ? " 🚫" : (bCours ? " ⚠️" : "");
+          const flag = bAcces ? " ⏳" : (bCours ? " ⚠️" : "");
           const labelOpt = `${prenom} ${nom} — ${ceinture} (${barrettes} bar.)${flag}`;
 
           const opt1 = document.createElement("option");
@@ -1231,28 +1549,27 @@
 
         actualiserCarteCoachPourEleves();
         genererClassement();
+      }
 
-        // Restauration automatique de la session si déjà connecté
-        if (!loggedUserEmail) {
-          const savedEmail = localStorage.getItem("ssjj_auth_email");
-          const savedPin = localStorage.getItem("ssjj_auth_pin");
-          if (savedEmail && savedPin) {
-            authentifierAvecIdentifiants(savedEmail, savedPin, true);
-          }
-        } else {
-          reconstruireEspaceFamille();
-          changerEleve();
-          actualiserAlerteBarrettes();
-          verifierAnniversairesDuJour();
-          actualiserGraphiquesAnalytics();
+      listeSessions = (data && Array.isArray(data.sessions)) ? data.sessions : [];
+      listeEcrituresCompta = (data && Array.isArray(data.ecritures)) ? data.ecritures : [];
+      driveFilesPending = (data && Array.isArray(data.driveFilesPending)) ? data.driveFilesPending : [];
+
+      if (!loggedUserEmail) {
+        const savedEmail = localStorage.getItem("ssjj_auth_email");
+        const savedPin = localStorage.getItem("ssjj_auth_pin");
+        if (savedEmail && savedPin) {
+          authentifierAvecIdentifiants(savedEmail, savedPin, true);
         }
+      } else {
+        reconstruireEspaceFamille();
+        changerEleve();
+        actualiserAlerteBarrettes();
+        verifierAnniversairesDuJour();
+        actualiserTableauComptaEtApprovals();
+        actualiserGraphiquesAnalytics();
       }
 
-      if (data && Array.isArray(data.sessions)) {
-        listeSessions = data.sessions;
-      } else {
-        listeSessions = [];
-      }
       afficherSessionsPlanning();
     }
 
@@ -1290,7 +1607,7 @@
 
       if (matchingMembers.length === 0) {
         if (!silencieux) {
-          alert("❌ Adresse email introuvable dans la liste des adhérents du club.\nVérifiez l'orthographe ou contactez le professeur.");
+          alert("❌ Adresse email introuvable dans la liste des adhérents du club.");
         } else {
           localStorage.removeItem("ssjj_auth_email");
           localStorage.removeItem("ssjj_auth_pin");
@@ -1298,7 +1615,6 @@
         return;
       }
 
-      // Vérifie si au moins un profil du foyer a un PIN défini
       const storedPins = matchingMembers
         .map(({ el }) => String(getVal(el, ['CODE_PIN'], '')).trim())
         .filter(Boolean);
@@ -1322,7 +1638,6 @@
         return;
       }
 
-      // Connexion validée
       loggedUserEmail = email;
       localStorage.setItem("ssjj_auth_email", email);
       localStorage.setItem("ssjj_auth_pin", pin);
@@ -1335,7 +1650,6 @@
       loggedUserIsProf = isProfAccount;
       familyMemberIndices = matchingMembers.map(m => m.idx);
 
-      // Profil par défaut à l'ouverture (Adulte/Parent en priorité pour un compte famille)
       let defaultIdx = familyMemberIndices[0];
       if (!isProfAccount && familyMemberIndices.length > 1) {
         const parentEntry = matchingMembers.find(({ el }) => {
@@ -1349,13 +1663,13 @@
       document.getElementById("eleveSelect").value = String(defaultIdx);
       document.getElementById("eleveSelectProfil").value = String(defaultIdx);
 
-      // Basculer vers l'interface authentifiée
       document.getElementById("authGateScreen").classList.add("hidden");
       document.getElementById("authenticatedShell").classList.remove("hidden");
 
       appliquerDroitsSession();
       reconstruireEspaceFamille();
       changerEleve();
+      actualiserTableauComptaEtApprovals();
     }
 
     async function enregistrerNouveauPin(e) {
@@ -1466,16 +1780,436 @@
         lockBadge.textContent = "🔒 Lecture Seule (Modifications réservées au Professeur)";
         lockBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-gray-300 border border-white/10";
         document.getElementById("birthdayNotificationBox").classList.add("hidden");
+        document.getElementById("inscriptionsPendingBanner").classList.add("hidden");
       }
     }
 
+    // =========================================================
+    // COMPTABILITÉ, PAHEKO, HELLOASSO & APPROBATION INSCRIPTIONS
+    // =========================================================
+    function sauvegarderLienHelloAsso() {
+      const url = document.getElementById("helloAssoClubUrlInput").value.trim() || "https://www.helloasso.com/associations";
+      localStorage.setItem("ssjj_helloasso_url", url);
+      genererQrCodeHelloAsso();
+    }
+
+    function genererQrCodeHelloAsso() {
+      const url = document.getElementById("helloAssoClubUrlInput").value.trim() || "https://www.helloasso.com/associations";
+      const qrApi = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}`;
+      document.getElementById("helloAssoQrImage").src = qrApi;
+      const modalQr = document.getElementById("factureQrImg");
+      if (modalQr) modalQr.src = qrApi;
+    }
+
+    function actualiserTableauComptaEtApprovals() {
+      if (!loggedUserIsProf) return;
+
+      const tbody = document.getElementById("approbationTableBody");
+      tbody.innerHTML = "";
+
+      let totalEncaisse = 0;
+      let totalReste = 0;
+      let nbAttente = 0;
+      let nbActifs = 0;
+
+      // Fichiers Drive détectés
+      const driveBox = document.getElementById("driveFilesListContainer");
+      const driveItems = document.getElementById("driveFilesItems");
+      if (driveFilesPending.length > 0) {
+        driveBox.classList.remove("hidden");
+        driveItems.innerHTML = driveFilesPending.map(f =>
+          `<a href="${f.url}" target="_blank" class="px-2.5 py-1 rounded-lg bg-anthracite border border-gold/40 text-gold hover:bg-gold/15 transition">📄 ${f.name} (${f.date})</a>`
+        ).join("");
+      } else {
+        driveBox.classList.add("hidden");
+      }
+
+      listeEleves.forEach((el, idx) => {
+        const role = String(getVal(el, ['ROLE'], 'Élève')).toLowerCase();
+        if (role.includes('prof')) return;
+
+        const prenom = getVal(el, ['PRENOM'], '');
+        const nom = getVal(el, ['NOM'], '');
+        const email = getVal(el, ['EMAIL'], '');
+        const cat = getVal(el, ['CATEGORIE'], 'Adulte');
+        const statutIns = String(getVal(el, ['STATUT_INSCRIPTION'], 'Actif'));
+        const bloqueAcces = isOui(getVal(el, ['BLOQUE_ACCES'], 'NON'));
+        const mTotal = parseFloat(getVal(el, ['MONTANT_COTISATION'], 0)) || 0;
+        const mPaye = parseFloat(getVal(el, ['MONTANT_PAYE'], 0)) || 0;
+        const reste = Math.max(0, mTotal - mPaye);
+        const modeP = getVal(el, ['MODE_PAIEMENT'], '');
+        const statutP = getVal(el, ['STATUT_PAIEMENT'], bloqueAcces ? 'En attente' : 'Validé');
+
+        totalEncaisse += mPaye;
+        totalReste += reste;
+
+        const isEnAttente = bloqueAcces || statutIns.toLowerCase().includes('attente');
+        if (isEnAttente) nbAttente++;
+        else nbActifs++;
+
+        const tr = document.createElement("tr");
+        tr.className = isEnAttente ? "bg-red-500/5 hover:bg-red-500/10" : "hover:bg-white/5";
+
+        const badgeAcces = isEnAttente
+          ? `<span class="px-2 py-0.5 rounded bg-red-500/20 text-red-300 font-bold text-[10px]">🔒 En attente</span>`
+          : `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">🟢 Débloqué</span>`;
+
+        const infoPaiement = mTotal > 0
+          ? `<span class="text-white font-bold">${mPaye} € / ${mTotal} €</span> <span class="text-gray-400">(${modeP})</span>`
+          : `<span class="text-gray-400">${statutP}</span>`;
+
+        tr.innerHTML = `
+          <td class="py-3 px-3 font-bold text-white">${nom.toUpperCase()} ${prenom}</td>
+          <td class="py-3 px-3 text-gray-300">${email || '—'} • <span class="text-gold">${cat}</span></td>
+          <td class="py-3 px-3">${infoPaiement}</td>
+          <td class="py-3 px-3">${badgeAcces}</td>
+          <td class="py-3 px-3 text-right space-x-1.5">
+            <button onclick="ouvrirModalFacturation(${idx})" class="px-3 py-1.5 rounded-lg bg-gold text-black font-extrabold text-[11px] hover:bg-gold-light">
+              ${isEnAttente ? '✅ Approuver & Facturer' : (reste > 0 ? '💳 Encaisser Échéance' : '💳 Modifier / Offrir')}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Ajouter les recettes/dépenses manuelles du journal comptable
+      listeEcrituresCompta.forEach(ec => {
+        if (String(getVal(ec, ['MEMBRE'], '')).toLowerCase() === 'opération club') {
+          totalEncaisse += (parseFloat(getVal(ec, ['MONTANT_ENCAISSE'], 0)) || 0);
+        }
+      });
+
+      document.getElementById("kpiComptaEncaisse").textContent = `${totalEncaisse.toFixed(0)} €`;
+      document.getElementById("kpiComptaReste").textContent = `${totalReste.toFixed(0)} €`;
+      document.getElementById("kpiComptaAttente").textContent = nbAttente;
+      document.getElementById("kpiComptaActifs").textContent = nbActifs;
+
+      // Bannière notification globale en haut de l'application
+      const banner = document.getElementById("inscriptionsPendingBanner");
+      const bannerTxt = document.getElementById("inscriptionsPendingBannerText");
+      if (nbAttente > 0) {
+        bannerTxt.textContent = `${nbAttente} élève(s) en attente d'approbation / règlement (${driveFilesPending.length} document(s) dans le dossier Drive).`;
+        banner.classList.remove("hidden");
+      } else {
+        banner.classList.add("hidden");
+      }
+
+      // Rendu du journal comptable Paheko / Crédit Mutuel
+      const jBody = document.getElementById("comptaJournalBody");
+      jBody.innerHTML = "";
+      if (listeEcrituresCompta.length === 0) {
+        jBody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">Aucune écriture comptable enregistrée pour le moment.</td></tr>`;
+      } else {
+        [...listeEcrituresCompta].reverse().forEach(ec => {
+          const idEc = getVal(ec, ['ID_ECRITURE'], '');
+          const dateEc = getVal(ec, ['DATE'], '');
+          const membreEc = getVal(ec, ['MEMBRE'], '');
+          const libelleEc = getVal(ec, ['LIBELLE'], '');
+          const modeEc = getVal(ec, ['MODE_PAIEMENT'], '');
+          const montantEc = parseFloat(getVal(ec, ['MONTANT_ENCAISSE'], 0)) || 0;
+          const statutRapp = getVal(ec, ['STATUT_RAPPROCHEMENT'], 'À rapprocher');
+          const estRapproche = statutRapp.toLowerCase().includes('rapproché');
+
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-white/5";
+          tr.innerHTML = `
+            <td class="py-2.5 px-2 text-gray-400">${dateEc}</td>
+            <td class="py-2.5 px-2"><p class="font-bold text-white">${membreEc}</p><p class="text-[10px] text-gray-400">${libelleEc}</p></td>
+            <td class="py-2.5 px-2 text-gold font-semibold">${modeEc}</td>
+            <td class="py-2.5 px-2 text-right font-extrabold ${montantEc >= 0 ? 'text-emerald-400' : 'text-red-400'}">${montantEc.toFixed(2)} €</td>
+            <td class="py-2.5 px-2 text-right">
+              <button onclick="basculerRapprochementCM('${idEc}', ${estRapproche})" class="px-2 py-1 rounded text-[10px] font-bold border ${
+                estRapproche ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300' : 'bg-amber-500/15 border-amber-500/40 text-amber-300'
+              }">
+                ${estRapproche ? '✓ Rapproché CM' : '⏳ Pointer CM'}
+              </button>
+            </td>
+          `;
+          jBody.appendChild(tr);
+        });
+      }
+    }
+
+    function ouvrirModalFacturation(idx) {
+      if (!loggedUserIsProf) return;
+      const el = listeEleves[idx];
+      if (!el) return;
+
+      document.getElementById("factureEleveIndex").value = String(idx);
+      const prenom = getVal(el, ['PRENOM'], '');
+      const nom = getVal(el, ['NOM'], '');
+      document.getElementById("factureMembreTitle").textContent = `${prenom} ${nom}`;
+
+      const existTotal = parseFloat(getVal(el, ['MONTANT_COTISATION'], 0)) || 250;
+      const existPaye = parseFloat(getVal(el, ['MONTANT_PAYE'], 0)) || 0;
+      const reste = Math.max(0, existTotal - existPaye);
+
+      document.getElementById("factureMontantTotal").value = existTotal;
+      document.getElementById("factureNbEcheances").value = getVal(el, ['ECHEANCES_TOTAL'], '1') || '1';
+      document.getElementById("factureMontantEncaisse").value = existPaye > 0 && reste > 0 ? reste : existTotal;
+      document.getElementById("factureModePaiement").value = "Carte HelloAsso (Terminal Mobile)";
+      gererAffichageModePaiement();
+      genererQrCodeHelloAsso();
+
+      document.getElementById("modalFacturationEleve").classList.remove("hidden");
+    }
+
+    function fermerModalFacturation() {
+      document.getElementById("modalFacturationEleve").classList.add("hidden");
+    }
+
+    function recalculerMontantEcheance() {
+      const total = parseFloat(document.getElementById("factureMontantTotal").value) || 0;
+      const nb = parseInt(document.getElementById("factureNbEcheances").value) || 1;
+      document.getElementById("factureMontantEncaisse").value = (total / nb).toFixed(2);
+    }
+
+    function gererAffichageModePaiement() {
+      const mode = document.getElementById("factureModePaiement").value;
+      const qrBox = document.getElementById("factureQrPreviewBox");
+      if (mode.includes("QR Code")) {
+        qrBox.classList.remove("hidden");
+      } else {
+        qrBox.classList.add("hidden");
+      }
+      if (mode.includes("Offert")) {
+        document.getElementById("factureMontantTotal").value = "0";
+        document.getElementById("factureMontantEncaisse").value = "0";
+      }
+    }
+
+    function offrirInscriptionDirectement() {
+      document.getElementById("factureModePaiement").value = "Offert / Gratuit";
+      document.getElementById("factureMontantTotal").value = "0";
+      document.getElementById("factureMontantEncaisse").value = "0";
+      document.getElementById("factureLibelle").value = "Inscription Offerte par le Professeur";
+      validerFacturationEtActiver(new Event('submit'));
+    }
+
+    async function validerFacturationEtActiver(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      if (!loggedUserIsProf) return;
+
+      const idx = parseInt(document.getElementById("factureEleveIndex").value, 10);
+      const el = listeEleves[idx];
+      if (!el) return;
+
+      const prenom = getVal(el, ['PRENOM'], '');
+      const nom = getVal(el, ['NOM'], '');
+      const fullName = `${prenom} ${nom}`.trim();
+      const email = getVal(el, ['EMAIL'], '');
+
+      const mTotal = parseFloat(document.getElementById("factureMontantTotal").value) || 0;
+      const mEncaisse = parseFloat(document.getElementById("factureMontantEncaisse").value) || 0;
+      const nbEch = parseInt(document.getElementById("factureNbEcheances").value) || 1;
+      const mode = document.getElementById("factureModePaiement").value;
+      const libelle = document.getElementById("factureLibelle").value.trim() || "Cotisation Soul System JJ";
+
+      const prevPaye = parseFloat(getVal(el, ['MONTANT_PAYE'], 0)) || 0;
+      const nouveauCumulPaye = mode.includes("Offert") ? 0 : (prevPaye + mEncaisse);
+      const statutPaiement = mode.includes("Offert")
+        ? "Offert (0 €)"
+        : (nouveauCumulPaye >= mTotal ? "Soldé (100%)" : `Échéance 1/${nbEch} réglée (${nouveauCumulPaye}€/${mTotal}€)`);
+
+      const todayStr = new Date().toLocaleDateString("fr-FR");
+
+      // Compte comptable Paheko selon le mode de règlement
+      let compteDebit = "512000"; // Banque Crédit Mutuel
+      if (mode.includes("Espèces")) compteDebit = "530000"; // Caisse
+      else if (mode.includes("HelloAsso")) compteDebit = "511000"; // Encaissements HelloAsso à virer sur Crédit Mutuel
+
+      const updates = {
+        STATUT_INSCRIPTION: "Actif",
+        BLOQUE_COURS: "NON",
+        BLOQUE_ACCES: "NON",
+        MONTANT_COTISATION: mTotal,
+        MONTANT_PAYE: nouveauCumulPaye,
+        MODE_PAIEMENT: mode,
+        ECHEANCES_TOTAL: nbEch,
+        STATUT_PAIEMENT: statutPaiement,
+        DATE_PAIEMENT: todayStr
+      };
+
+      const ecriture = {
+        ID_ECRITURE: "CPT-" + Date.now(),
+        DATE: todayStr,
+        MEMBRE: fullName,
+        EMAIL: email,
+        LIBELLE: `${libelle} (${statutPaiement})`,
+        MONTANT_TOTAL: mTotal,
+        MONTANT_ENCAISSE: mEncaisse,
+        MODE_PAIEMENT: mode,
+        COMPTE_DEBIT: compteDebit,
+        COMPTE_CREDIT: "756000",
+        REFERENCE: `SSJJ-${Date.now().toString().slice(-6)}`,
+        STATUT_RAPPROCHEMENT: mode.includes("Espèces") || mode.includes("Offert") ? "Rapproché Caisse/Gratuit" : "À rapprocher Crédit Mutuel"
+      };
+
+      const btn = document.getElementById("btnValiderFactureSubmit");
+      btn.disabled = true;
+      btn.textContent = "⏳ Activation en cours...";
+
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "validerPaiementInscription",
+            _rowIndex: el._rowIndex,
+            membreNom: fullName,
+            notifyProf: true,
+            updates: updates,
+            ecriture: ecriture
+          })
+        });
+
+        Object.assign(el, updates);
+        listeEcrituresCompta.push(ecriture);
+
+        fermerModalFacturation();
+        actualiserTableauComptaEtApprovals();
+        changerEleve();
+
+        // Notification visuelle immédiate sur le compte Professeur
+        const toast = document.getElementById("profActivationToast");
+        document.getElementById("profActivationToastText").textContent =
+          `Le compte de ${fullName} est désormais DÉBLOQUÉ (${statutPaiement} — ${mode}).`;
+        toast.classList.remove("hidden");
+
+      } catch (err) {
+        alert("❌ Erreur réseau : " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "✅ Valider & Débloquer Accès";
+      }
+    }
+
+    function ouvrirModalOperationCompta() {
+      document.getElementById("opComptaLibelle").value = "";
+      document.getElementById("opComptaMontant").value = "";
+      document.getElementById("modalOperationCompta").classList.remove("hidden");
+    }
+
+    async function enregistrerOperationComptaManuelle(e) {
+      e.preventDefault();
+      const type = document.getElementById("opComptaType").value;
+      const libelle = document.getElementById("opComptaLibelle").value.trim();
+      const rawMontant = parseFloat(document.getElementById("opComptaMontant").value) || 0;
+      const montant = type === "depense" ? -Math.abs(rawMontant) : Math.abs(rawMontant);
+      const mode = document.getElementById("opComptaMode").value;
+      const todayStr = new Date().toLocaleDateString("fr-FR");
+
+      const ecriture = {
+        ID_ECRITURE: "CPT-" + Date.now(),
+        DATE: todayStr,
+        MEMBRE: "Opération Club",
+        EMAIL: "",
+        LIBELLE: libelle,
+        MONTANT_TOTAL: montant,
+        MONTANT_ENCAISSE: montant,
+        MODE_PAIEMENT: mode,
+        COMPTE_DEBIT: type === "recette" ? "512000" : "606000",
+        COMPTE_CREDIT: type === "recette" ? "758000" : "512000",
+        REFERENCE: "OP-" + Date.now().toString().slice(-5),
+        STATUT_RAPPROCHEMENT: "À rapprocher Crédit Mutuel"
+      };
+
+      await fetch(GOOGLE_SHEETS_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "addComptaEcriture", ecriture: ecriture })
+      });
+
+      listeEcrituresCompta.push(ecriture);
+      document.getElementById("modalOperationCompta").classList.add("hidden");
+      actualiserTableauComptaEtApprovals();
+    }
+
+    async function basculerRapprochementCM(idEcriture, dejaRapproche) {
+      const nouveauStatut = dejaRapproche ? "À rapprocher Crédit Mutuel" : "Rapproché Crédit Mutuel";
+      const ec = listeEcrituresCompta.find(x => String(getVal(x, ['ID_ECRITURE'], '')) === String(idEcriture));
+      if (ec) ec.STATUT_RAPPROCHEMENT = nouveauStatut;
+      actualiserTableauComptaEtApprovals();
+
+      await fetch(GOOGLE_SHEETS_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          action: "toggleRapprochementCompta",
+          idEcriture: idEcriture,
+          statut: nouveauStatut
+        })
+      });
+    }
+
+    // Export CSV directement compatible avec l'import Paheko (Comptabilité > Opérations > Importer)
+    function exporterCsvPaheko() {
+      const lignes = [
+        ["Numéro d'écriture", "Date", "Libellé", "Compte de débit", "Compte de crédit", "Montant", "Référence paiement", "Remarques"].join(";")
+      ];
+
+      listeEcrituresCompta.forEach((ec, idx) => {
+        const num = idx + 1;
+        const date = getVal(ec, ['DATE'], '');
+        const membre = getVal(ec, ['MEMBRE'], '');
+        const lib = `${membre} - ${getVal(ec, ['LIBELLE'], '')}`.replace(/;/g, ",");
+        const debit = getVal(ec, ['COMPTE_DEBIT'], '512000');
+        const credit = getVal(ec, ['COMPTE_CREDIT'], '756000');
+        const montant = (parseFloat(getVal(ec, ['MONTANT_ENCAISSE'], 0)) || 0).toFixed(2).replace(".", ",");
+        const ref = getVal(ec, ['REFERENCE'], '');
+        const rem = `${getVal(ec, ['MODE_PAIEMENT'], '')} (${getVal(ec, ['STATUT_RAPPROCHEMENT'], '')})`;
+
+        lignes.push([num, date, lib, debit, credit, montant, ref, rem].join(";"));
+      });
+
+      const blob = new Blob(["\uFEFF" + lignes.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Export_Paheko_Soul_System_JJ_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // Importation et rapprochement automatique d'un export CSV Crédit Mutuel
+    function importerReleveCreditMutuel(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        let matchesCount = 0;
+
+        listeEcrituresCompta.forEach(ec => {
+          const montant = parseFloat(getVal(ec, ['MONTANT_ENCAISSE'], 0)) || 0;
+          if (montant === 0) return;
+          const mDot = montant.toFixed(2);
+          const mComma = mDot.replace(".", ",");
+          if (text.includes(mDot) || text.includes(mComma)) {
+            ec.STATUT_RAPPROCHEMENT = "Rapproché Crédit Mutuel";
+            matchesCount++;
+          }
+        });
+
+        actualiserTableauComptaEtApprovals();
+        alert(`🏦 Rapprochement Crédit Mutuel terminé : ${matchesCount} opération(s) pointée(s) automatiquement !`);
+      };
+      reader.readAsText(file, "ISO-8859-1");
+    }
+
+    // =========================================================
+    // FAMILLE & ENFANTS
+    // =========================================================
     function reconstruireEspaceFamille() {
       if (loggedUserIsProf) {
         document.getElementById("headerFamilySwitcher").classList.add("hidden");
         return;
       }
 
-      // Recalculer les indices liés à l'email connecté (Parent + Enfants)
       familyMemberIndices = listeEleves
         .map((el, idx) => ({ el, idx }))
         .filter(({ el }) => String(getVal(el, ['EMAIL', 'Email'], '')).trim().toLowerCase() === loggedUserEmail)
@@ -1580,10 +2314,10 @@
         BARRETTES: 0,
         TOTAL_COURS: 0,
         LICENCE_CFJJB: "En cours",
-        STATUT_INSCRIPTION: "Actif",
+        STATUT_INSCRIPTION: "En attente",
         ROLE: "Élève",
-        BLOQUE_COURS: "NON",
-        BLOQUE_ACCES: "NON",
+        BLOQUE_COURS: "OUI",
+        BLOQUE_ACCES: "OUI",
         CODE_PIN: parentPin
       };
 
@@ -1609,7 +2343,7 @@
         changerEleve();
         genererClassement();
         fermerModalAjoutEnfant();
-        alert(`✅ ${prenom} ${nom} a été ajouté(e) à votre compte famille !`);
+        alert(`✅ ${prenom} ${nom} a été ajouté(e). Le secrétariat a été notifié pour valider l'inscription !`);
       } catch (err) {
         alert("❌ Erreur réseau : " + err.message);
       } finally {
@@ -1930,7 +2664,7 @@
           return;
         }
         if (liste.length >= capacite) {
-          alert(`🚫 Ce cours est complet (${capacite}/${capacite} inscrits). Aucune nouvelle inscription n'est possible.`);
+          alert(`🚫 Ce cours est complet (${capacite}/${capacite} inscrits).`);
           afficherSessionsPlanning();
           return;
         }
@@ -1989,11 +2723,16 @@
 
       const updates = {};
       updates[champ] = nouvelleValeur;
+      if (champ === 'BLOQUE_ACCES' && nouvelleValeur === 'NON') {
+        updates['STATUT_INSCRIPTION'] = 'Actif';
+        updates['BLOQUE_COURS'] = 'NON';
+      }
 
       const ok = await envoyerMiseAJourSheets(updates, null, "");
       if (ok) {
         actualiserBoutonsBlocage(el);
         afficherSessionsPlanning();
+        actualiserTableauComptaEtApprovals();
         const prenom = getVal(el, ['PRENOM'], '');
         const nom = getVal(el, ['NOM'], '');
         if (champ === 'BLOQUE_COURS') {
@@ -2003,7 +2742,7 @@
         } else {
           alert(nouvelleValeur === 'OUI'
             ? `🚫 L'accès au compte de ${prenom} ${nom} est désormais SUSPENDU.`
-            : `✅ L'accès au compte de ${prenom} ${nom} est RÉACTIVÉ.`);
+            : `✅ L'accès au compte de ${prenom} ${nom} a été ACTIVÉ manuellement !`);
         }
       }
     }
@@ -2016,18 +2755,18 @@
       const btnAcces = document.getElementById("btnToggleBloqueAcces");
 
       if (bCours) {
-        btnCours.textContent = "🔴 Inscriptions Cours : BLOQUÉES (Débloquer)";
+        btnCours.textContent = "🔴 Cours : BLOQUÉS";
         btnCours.className = "px-3 py-2 rounded-lg font-bold border bg-red-500/20 border-red-500 text-red-300 hover:bg-red-500/30 transition";
       } else {
-        btnCours.textContent = "🟢 Inscriptions Cours : Autorisées (Bloquer)";
+        btnCours.textContent = "🟢 Cours : Autorisés";
         btnCours.className = "px-3 py-2 rounded-lg font-bold border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 transition";
       }
 
       if (bAcces) {
-        btnAcces.textContent = "🚫 Accès Compte App : INTERDIT (Débloquer)";
+        btnAcces.textContent = "🔒 Compte : Bloqué (Activer)";
         btnAcces.className = "px-3 py-2 rounded-lg font-bold border bg-red-500/20 border-red-500 text-red-300 hover:bg-red-500/30 transition";
       } else {
-        btnAcces.textContent = "🟢 Accès Compte App : Actif (Interdire)";
+        btnAcces.textContent = "🟢 Compte : Actif";
         btnAcces.className = "px-3 py-2 rounded-lg font-bold border bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25 transition";
       }
     }
@@ -2478,15 +3217,15 @@
     }
 
     function basculerOnglet(nom) {
-      if (nom === 'analytics' && !loggedUserIsProf) return;
+      if ((nom === 'analytics' || nom === 'compta') && !loggedUserIsProf) return;
 
-      ["sectionDashboard", "sectionPlanning", "sectionMonProfil", "sectionClassement", "sectionAnalytics"].forEach(id => {
+      ["sectionDashboard", "sectionPlanning", "sectionMonProfil", "sectionClassement", "sectionCompta", "sectionAnalytics"].forEach(id => {
         document.getElementById(id).classList.add("hidden");
       });
 
-      ["tabDash", "tabPlan", "tabProf", "tabClass", "tabAnalytics"].forEach(id => {
+      ["tabDash", "tabPlan", "tabProf", "tabClass", "tabCompta", "tabAnalytics"].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.className = (id === "tabAnalytics")
+        if (el) el.className = (id === "tabAnalytics" || id === "tabCompta")
           ? `btnProfOnly ${loggedUserIsProf ? '' : 'hidden'} px-4 py-2 rounded-xl bg-carbone border border-gold/40 text-gold font-bold text-xs hover:bg-gold/10`
           : "px-4 py-2 rounded-xl bg-carbone border border-white/10 text-gray-300 font-bold text-xs hover:border-gold";
       });
@@ -2505,6 +3244,10 @@
       } else if (nom === 'classement') {
         document.getElementById("sectionClassement").classList.remove("hidden");
         document.getElementById("tabClass").className = activeBtnClass;
+      } else if (nom === 'compta') {
+        document.getElementById("sectionCompta").classList.remove("hidden");
+        document.getElementById("tabCompta").className = activeBtnClass;
+        actualiserTableauComptaEtApprovals();
       } else if (nom === 'analytics') {
         document.getElementById("sectionAnalytics").classList.remove("hidden");
         document.getElementById("tabAnalytics").className = activeBtnClass;
@@ -2716,8 +3459,8 @@
         data: {
           labels: beltLabels,
           datasets: [
-            { label: 'Hommes', data: beltLabels.map(b => crossGenreBelt.Hommes[b]), backgroundColor: '#D4AF37', borderRadius: 4 },
-            { label: 'Femmes', data: beltLabels.map(b => crossGenreBelt.Femmes[b]), backgroundColor: '#F472B6', borderRadius: 4 }
+            { label: 'Hommes', data: beltLabels.map(b => crossGenreBelt["Hommes"][b]), backgroundColor: '#D4AF37', borderRadius: 4 },
+            { label: 'Femmes', data: beltLabels.map(b => crossGenreBelt["Femmes"][b]), backgroundColor: '#F472B6', borderRadius: 4 }
           ]
         },
         options: commonBarOptions
@@ -2728,7 +3471,7 @@
         data: {
           labels: ageLabels,
           datasets: beltLabels.map((b, i) => ({
-            label: 'Ceinture ' + b,
+            label: `Ceinture ${b}`,
             data: ageLabels.map(a => crossAgeBelt[a][b]),
             backgroundColor: beltColors[i],
             borderRadius: 4
@@ -2742,7 +3485,7 @@
         data: {
           labels: ageLabels,
           datasets: [
-            { label: 'Hommes', data: ageLabels.map(a => crossAgeGenre[a].Hommes), backgroundColor: '#38BDF8', borderRadius: 4 },
+            { label: 'Hommes', data: ageLabels.map(a => crossAgeGenre[a].Hommes), backgroundColor: '#D4AF37', borderRadius: 4 },
             { label: 'Femmes', data: ageLabels.map(a => crossAgeGenre[a].Femmes), backgroundColor: '#F472B6', borderRadius: 4 }
           ]
         },
@@ -2753,15 +3496,14 @@
     function uploadPhotoProfil(event) {
       if (!loggedUserIsProf) return;
       const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById("profilePhotoDisplay").src = e.target.result;
-          document.getElementById("activeCardAvatar").src = e.target.result;
-          alert("📸 Photo mise à jour !");
-        };
-        reader.readAsDataURL(file);
-      }
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById("profilePhotoDisplay").src = e.target.result;
+        document.getElementById("headerAvatar").src = e.target.result;
+        document.getElementById("activeCardAvatar").src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
   </script>
 
