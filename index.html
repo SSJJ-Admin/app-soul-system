@@ -3416,7 +3416,7 @@
         type: 'doughnut',
         data: {
           labels: ageLabels,
-          datasets: [{ data: ageLabels.map(l => ageCounts[l]), backgroundColor: ['#38BDF8', '#A855F7', '#D4AF37'], borderColor: '#121418', borderWidth: 2 }]
+          datasets: [{ data: ageLabels.map(l => ageCounts[l]), backgroundColor: ['#FACC15', '#2DD4BF', '#6366F1'], borderColor: '#121418', borderWidth: 2 }]
         },
         options: commonDoughnutOptions
       });
@@ -3425,7 +3425,7 @@
         type: 'doughnut',
         data: {
           labels: ["Hommes", "Femmes"],
-          datasets: [{ data: [genreCounts["Hommes"], genreCounts["Femmes"]], backgroundColor: ['#D4AF37', '#F472B6'], borderColor: '#121418', borderWidth: 2 }]
+          datasets: [{ data: [genreCounts["Hommes"], genreCounts["Femmes"]], backgroundColor: ['#3B82F6', '#F472B6'], borderColor: '#121418', borderWidth: 2 }]
         },
         options: commonDoughnutOptions
       });
@@ -3443,12 +3443,12 @@
         type: 'bar',
         data: {
           labels: cities,
-          datasets: [{ label: 'Adhérents', data: cities.map(c => cityCounts[c]), backgroundColor: '#D4AF37', borderRadius: 6 }]
+          { label: 'Hommes', data: cities.map(c => crossGenreCity[c].Hommes), backgroundColor: '#3B82F6', borderRadius: 4 },
         },
         options: { ...commonBarOptions, indexAxis: 'y', plugins: { legend: { display: false } } }
       });
 
-      renderOrReplaceChart("chartCrossGenreCity", {
+      , {
         type: 'bar',
         data: {
           labels: cities,
@@ -3465,7 +3465,7 @@
         data: {
           labels: beltLabels,
           datasets: [
-            { label: 'Hommes', data: beltLabels.map(b => crossGenreBelt["Hommes"][b]), backgroundColor: '#D4AF37', borderRadius: 4 },
+            { label: 'Hommes', data: beltLabels.map(b => crossGenreBelt["Hommes"][b]), backgroundColor: '#3B82F6', borderRadius: 4 },
             { label: 'Femmes', data: beltLabels.map(b => crossGenreBelt["Femmes"][b]), backgroundColor: '#F472B6', borderRadius: 4 }
           ]
         },
@@ -3491,7 +3491,7 @@
         data: {
           labels: ageLabels,
           datasets: [
-            { label: 'Hommes', data: ageLabels.map(a => crossAgeGenre[a].Hommes), backgroundColor: '#D4AF37', borderRadius: 4 },
+            { label: 'Hommes', data: ageLabels.map(a => crossAgeGenre[a].Hommes), backgroundColor: '#3B82F6', borderRadius: 4 },
             { label: 'Femmes', data: ageLabels.map(a => crossAgeGenre[a].Femmes), backgroundColor: '#F472B6', borderRadius: 4 }
           ]
         },
