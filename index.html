@@ -2998,7 +2998,7 @@
 
       document.getElementById("fieldPrenom").value = prenom;
       document.getElementById("fieldNom").value = nom;
-      document.getElementById("fieldGenre").value = String(getVal(el, ['GENRE', 'SEXE'], 'Homme')).toLowerCase().startsWith('f') ? 'Femme' : 'Homme';
+      document.getElementById("fieldGenre").value = getNormalizedGender(el) === 'Femmes' ? 'Femme' : 'Homme';
       document.getElementById("fieldDateNaissance").value = getVal(el, ['DATE_NAISSANCE'], '');
       document.getElementById("fieldEmail").value = getVal(el, ['EMAIL', 'Email'], '');
       document.getElementById("fieldTel").value = getVal(el, ['TELEPHONE', 'TEL'], '');
@@ -3302,9 +3302,15 @@
       return "Adultes (16+ ans)";
     }
 
-    function getNormalizedGender(el) {
-      const g = String(getVal(el, ['GENRE', 'SEXE'], '')).trim().toLowerCase();
-      if (g.startsWith('f') || g.includes('femme') || g.includes('mme')) return "Femmes";
+   function getNormalizedGender(el) {
+      const g = String(getVal(el, ['GENRE', 'SEXE', 'Genre', 'Sexe'], '')).trim().toLowerCase();
+      if (!g) return "Hommes";
+      if (g === "homme" || g === "hommes" || g === "h" || g === "m" || g === "mr" || g === "m." || g.startsWith("masc") || g.startsWith("hom")) {
+        return "Hommes";
+      }
+      if (g === "femme" || g === "femmes" || g === "f" || g === "mme" || g === "mlle" || g.startsWith("fém") || g.startsWith("fem")) {
+        return "Femmes";
+      }
       return "Hommes";
     }
 
